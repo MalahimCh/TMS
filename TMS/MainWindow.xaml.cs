@@ -1,7 +1,5 @@
-﻿using System;
-using System.Configuration;
-using Microsoft.Data.SqlClient; // updated namespace
-using System.Windows;
+﻿using System.Windows;
+using TMS.Pages;
 
 namespace TMS
 {
@@ -10,25 +8,9 @@ namespace TMS
         public MainWindow()
         {
             InitializeComponent();
-            TestDatabaseConnection();
-        }
 
-        private void TestDatabaseConnection()
-        {
-            try
-            {
-                string connStr = ConfigurationManager.ConnectionStrings["TMS_DB"].ConnectionString;
-
-                using (SqlConnection conn = new SqlConnection(connStr))
-                {
-                    conn.Open(); // Try to connect
-                    MessageBox.Show("Connection successful!", "DB Test", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Connection failed: " + ex.Message, "DB Test", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            // Load LoginPage by default
+            MainFrame.Content = new LoginPage(MainFrame);
         }
     }
 }
