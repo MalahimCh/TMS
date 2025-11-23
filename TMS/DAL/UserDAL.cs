@@ -34,6 +34,26 @@ namespace TMS.DAL
                 await cmd.ExecuteNonQueryAsync();
             }
         }
+        // Update user info (for OTP verification)
+        public async Task UpdateUserAsync(UserDTO user)
+        {
+            using (var conn = new SqlConnection(_db.ConnectionString))
+            {
+                await conn.OpenAsync();
+                var cmd = new SqlCommand(
+                    @"UPDATE Users SET FullName=@FullName, PhoneNumber=@PhoneNumber, PasswordHash=@PasswordHash, Role=@Role, IsEmailVerified=@IsEmailVerified
+              WHERE Id=@Id", conn);
+
+                cmd.Parameters.AddWithValue("@FullName", user.FullName);
+                cmd.Parameters.AddWithValue("@PhoneNumber", (object)user.PhoneNumber ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
+                cmd.Parameters.AddWithValue("@Role", user.Role);
+                cmd.Parameters.AddWithValue("@IsEmailVerified", user.IsEmailVerified);
+                cmd.Parameters.AddWithValue("@Id", user.Id);
+
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
 
         // Login User
         public async Task<UserDTO> GetUserByEmailAsync(string email)
@@ -56,7 +76,8 @@ namespace TMS.DAL
                             PhoneNumber = reader.IsDBNull(3) ? null : reader.GetString(3),
                             PasswordHash = reader.GetString(4),
                             Role = reader.GetString(5),
-                            CreatedAt = reader.GetDateTime(6)
+                            CreatedAt = reader.GetDateTime(6),
+                            IsEmailVerified = reader.GetBoolean(7)
                         };
                     }
                 }

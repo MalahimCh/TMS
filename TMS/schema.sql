@@ -23,3 +23,24 @@ VALUES (
     'admin',
     GETUTCDATE()
 );
+
+
+--otp table
+CREATE TABLE OtpVerification (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Email NVARCHAR(255) NOT NULL,
+    OtpCode NVARCHAR(10) NOT NULL,
+    Purpose NVARCHAR(50) NOT NULL,     -- 'Register' or 'ResetPassword'
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    IsUsed BIT NOT NULL DEFAULT 0
+);
+
+
+--alter users table
+ALTER TABLE Users
+ADD IsEmailVerified BIT NOT NULL DEFAULT 0;
+
+--update admin and test customer as verified
+UPDATE Users
+SET IsEmailVerified = 1
+WHERE Email IN ('admin@gmail.com', 'customer@gmail.com');

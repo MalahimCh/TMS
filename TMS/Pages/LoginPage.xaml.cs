@@ -14,26 +14,58 @@ namespace TMS.Pages
         {
             InitializeComponent();
             _mainFrame = frame;
-            _userBL = new UserBL(new UserDAL());
+            _userBL = new UserBL(new UserDAL(), new OtpBL(new OtpDAL()));
         }
+
+       
+
+       
 
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string email = txtEmail.Text;
             string password = pwdBox.Password;
 
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            try
             {
-                MessageBox.Show("Please enter both email and password.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                {
+                    MessageBox.Show("Please enter both email and password.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var user = await _userBL.LoginAsync(email, password);
+
+                if (user != null)
+                {
+                    MessageBox.Show($"Welcome {user.FullName}! Role: {user.Role}",
+                        "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // TODO: Navigate to Dashboard
+                }
+                else
+                {
+                    MessageBox.Show("Invalid email or password.",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
+            catch (Exception ex)
+            {
+                if (ex.Message == "NOT_VERIFIED")
+                {
+                    MessageBox.Show("Your email is not verified. Please verify your account first.",
+                        "Email Not Verified", MessageBoxButton.OK, MessageBoxImage.Warning);
 
-            var user = await _userBL.LoginAsync(email, password);
-
-            if (user != null)
-                MessageBox.Show($"Welcome {user.FullName}! Role: {user.Role}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            else
-                MessageBox.Show("Invalid email or password.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // Navigate to OTP page automatically?
+                    _mainFrame.Content = new OtpPage(_mainFrame,email);
+                }
+                else
+                {
+                    MessageBox.Show("An unexpected error occurred.",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         private void NavigateToRegister_Click(object sender, RoutedEventArgs e)

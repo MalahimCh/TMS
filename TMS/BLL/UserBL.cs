@@ -7,17 +7,19 @@ namespace TMS.BLL
 {
     public class UserBL
     {
-        private readonly UserDAL _repo;
+        private readonly UserDAL _userRepo;
+        private readonly OtpBL _otpBL;
 
-        public UserBL(UserDAL repo)
+        public UserBL(UserDAL userRepo, OtpBL otpBL)
         {
-            _repo = repo;
+            _userRepo = userRepo;
+            _otpBL = otpBL;
         }
 
         // REGISTER
         public async Task<bool> RegisterUserAsync(string fullName, string email, string phone, string password, string role = "customer")
         {
-            var existing = await _repo.GetUserByEmailAsync(email);
+            var existing = await _userRepo.GetUserByEmailAsync(email);
             if (existing != null) return false; // email already taken
 
             var user = new UserDTO
@@ -26,18 +28,43 @@ namespace TMS.BLL
                 Email = email,
                 PhoneNumber = phone,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-                Role = role
+                Role = role,
+                IsEmailVerified = false
             };
 
-            await _repo.AddUserAsync(user);
+            await _userRepo.AddUserAsync(user);
+
+            // Send OTP for email verification
+            await _otpBL.SendOtpEmailAsync(email, "Register");
+
             return true;
+        }
+
+        // VERIFY OTP
+        public async Task<bool> VerifyUserOtpAsync(string email, string otpCode)
+        {
+            bool valid = await _otpBL.ValidateOtpAsync(email, otpCode, "Register");
+            if (!valid) return false;
+
+            // Mark user as verified
+            var user = await _userRepo.GetUserByEmailAsync(email);
+            if (user != null)
+            {
+                user.IsEmailVerified = true;
+                await _userRepo.UpdateUserAsync(user); // We'll add this method
+                return true;
+            }
+            return false;
         }
 
         // LOGIN
         public async Task<UserDTO> LoginAsync(string email, string password)
         {
-            var user = await _repo.GetUserByEmailAsync(email);
+            var user = await _userRepo.GetUserByEmailAsync(email);
             if (user == null) return null;
+
+            if (!user.IsEmailVerified)
+                throw new Exception("NOT_VERIFIED");
 
             bool valid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
             return valid ? user : null;

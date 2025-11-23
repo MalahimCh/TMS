@@ -14,7 +14,7 @@ namespace TMS.Pages
         {
             InitializeComponent();
             _mainFrame = frame;
-            _userBL = new UserBL(new UserDAL());
+            _userBL = new UserBL(new UserDAL(), new OtpBL(new OtpDAL()));
         }
 
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)
@@ -36,7 +36,7 @@ namespace TMS.Pages
 
             if (success)
             {
-                MessageBox.Show("Registration successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                _mainFrame.Content = new OtpPage(_mainFrame, email);
                 txtFullName.Clear();
                 txtEmail.Clear();
                 txtPhone.Clear();
