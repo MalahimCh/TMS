@@ -45,8 +45,8 @@ namespace TMS.BLL
                 mail.IsBodyHtml = true;
 
                 mail.Body = $@"
-        <div style='font-family:Segoe UI, sans-serif; padding:20px; background:#f7f9fc;'>
-            <div style='max-width:500px; margin:auto; background:white; padding:25px; border-radius:8px; 
+                <div style='font-family:Segoe UI, sans-serif; padding:20px; background:#f7f9fc;'>
+                    <div style='max-width:500px; margin:auto; background:white; padding:25px; border-radius:8px; 
                          box-shadow:0 2px 8px rgba(0,0,0,0.1);'>
 
                 <h2 style='color:#17358A; text-align:center; margin-bottom:10px;'>Tickit Verification</h2>
@@ -84,17 +84,24 @@ namespace TMS.BLL
             }
         }
 
-
-        // Validate OTP
         public async Task<bool> ValidateOtpAsync(string email, string otpCode, string purpose)
         {
             var otp = await _repo.GetLatestOtpAsync(email, purpose);
+
             if (otp != null && otp.OtpCode == otpCode)
             {
+                // Check expiry: 5 minutes
+                if ((DateTime.UtcNow - otp.CreatedAt).TotalMinutes > 5)
+                {
+                    return false; // OTP expired
+                }
+
                 await _repo.MarkOtpAsUsedAsync(otp.Id);
                 return true;
             }
+
             return false;
         }
+
     }
 }

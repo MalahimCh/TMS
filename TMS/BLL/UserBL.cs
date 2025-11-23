@@ -20,7 +20,7 @@ namespace TMS.BLL
         public async Task<bool> RegisterUserAsync(string fullName, string email, string phone, string password, string role = "customer")
         {
             var existing = await _userRepo.GetUserByEmailAsync(email);
-            if (existing != null) return false; // email already taken
+            if (existing != null) return false; 
 
             var user = new UserDTO
             {
@@ -40,10 +40,26 @@ namespace TMS.BLL
             return true;
         }
 
-        // VERIFY OTP
-        public async Task<bool> VerifyUserOtpAsync(string email, string otpCode)
+        // RESET PASSWORD
+        public async Task<bool> ResetPasswordAsync(string email, string newPassword)
         {
-            bool valid = await _otpBL.ValidateOtpAsync(email, otpCode, "Register");
+                      
+            var user = await _userRepo.GetUserByEmailAsync(email);
+            if (user == null) return false;
+
+           
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            await _userRepo.UpdateUserAsync(user);
+
+            return true;
+        }
+
+
+
+        // VERIFY User for Login
+        public async Task<bool> VerifyUserOtpAsync(string email, string otpCode,string purpose)
+        {
+            bool valid = await _otpBL.ValidateOtpAsync(email, otpCode, purpose);
             if (!valid) return false;
 
             // Mark user as verified
@@ -51,7 +67,7 @@ namespace TMS.BLL
             if (user != null)
             {
                 user.IsEmailVerified = true;
-                await _userRepo.UpdateUserAsync(user); // We'll add this method
+                await _userRepo.UpdateUserAsync(user); 
                 return true;
             }
             return false;
@@ -69,5 +85,12 @@ namespace TMS.BLL
             bool valid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
             return valid ? user : null;
         }
+
+        // Get user by email
+        public async Task<UserDTO> GetUserByEmailAsync(string email)
+        {
+            return await _userRepo.GetUserByEmailAsync(email);
+        }
+
     }
 }

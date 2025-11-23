@@ -16,10 +16,7 @@ namespace TMS.Pages
             _mainFrame = frame;
             _userBL = new UserBL(new UserDAL(), new OtpBL(new OtpDAL()));
         }
-
-       
-
-       
+   
 
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
@@ -57,7 +54,7 @@ namespace TMS.Pages
                     MessageBox.Show("Your email is not verified. Please verify your account first.",
                         "Email Not Verified", MessageBoxButton.OK, MessageBoxImage.Warning);
 
-                    // Navigate to OTP page automatically?
+                    // Navigate to OTP page automatically
                     _mainFrame.Content = new OtpPage(_mainFrame,email);
                 }
                 else
@@ -67,6 +64,12 @@ namespace TMS.Pages
                 }
             }
         }
+
+        private void ForgotPassword_Click(object sender, RoutedEventArgs e)
+        {
+            _mainFrame.Content = new ForgotPasswordPage(_mainFrame);
+        }
+
 
         private void NavigateToRegister_Click(object sender, RoutedEventArgs e)
         {

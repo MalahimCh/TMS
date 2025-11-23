@@ -30,7 +30,7 @@ namespace TMS.Pages
                 return;
             }
 
-            bool verified = await _userBL.VerifyUserOtpAsync(_userEmail, otpCode);
+            bool verified = await _userBL.VerifyUserOtpAsync(_userEmail, otpCode,"Register");
 
             if (verified)
             {
