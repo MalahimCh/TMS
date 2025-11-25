@@ -47,10 +47,10 @@ namespace TMS.Pages
                 MessageBox.Show("Email already exists!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
         private void NavigateToLogin_Click(object sender, RoutedEventArgs e)
         {
             _mainFrame.Content = new LoginPage(_mainFrame);
         }
+
     }
 }

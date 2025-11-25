@@ -48,7 +48,11 @@ namespace TMS.Pages
             try
             {
                 var otpBL = new OtpBL(new OtpDAL());
-                await otpBL.SendOtpEmailAsync(_userEmail, "Register");
+
+                string otpCode = await new OtpBL(new OtpDAL()).GenerateAndStoreOtpAsync(_userEmail, "Register");
+
+                _ = Task.Run(() => new OtpBL(new OtpDAL()).SendOtpEmailAsync(_userEmail, otpCode, "Register"));
+
                 MessageBox.Show("A new OTP has been sent to your email.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch

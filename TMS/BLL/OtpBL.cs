@@ -23,8 +23,7 @@ namespace TMS.BLL
             return rnd.Next(100000, 999999).ToString();
         }
 
-        // Send OTP email and save to DB
-        public async Task SendOtpEmailAsync(string email, string purpose)
+        public async Task<string> GenerateAndStoreOtpAsync(string email, string purpose)
         {
             string otpCode = GenerateOtp();
 
@@ -36,6 +35,13 @@ namespace TMS.BLL
             };
 
             await _repo.InsertOtpAsync(otp);
+            return otpCode;
+        }
+
+        // Send OTP email and save to DB
+        public async Task SendOtpEmailAsync(string email, string otpCode, string purpose)
+        {
+          
 
             using (var mail = new MailMessage())
             {

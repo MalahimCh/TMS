@@ -20,7 +20,7 @@ namespace TMS.BLL
         public async Task<bool> RegisterUserAsync(string fullName, string email, string phone, string password, string role = "customer")
         {
             var existing = await _userRepo.GetUserByEmailAsync(email);
-            if (existing != null) return false; 
+            if (existing != null) return false;
 
             var user = new UserDTO
             {
@@ -34,11 +34,16 @@ namespace TMS.BLL
 
             await _userRepo.AddUserAsync(user);
 
-            // Send OTP for email verification
-            await _otpBL.SendOtpEmailAsync(email, "Register");
+            // Insert OTP FIRST
+            string otpCode = await _otpBL.GenerateAndStoreOtpAsync(email, "Register");
+
+            // Send email in BACKGROUND
+            _ = Task.Run(() => _otpBL.SendOtpEmailAsync(email, otpCode,"Register"));
 
             return true;
         }
+
+  
 
         // RESET PASSWORD
         public async Task<bool> ResetPasswordAsync(string email, string newPassword)

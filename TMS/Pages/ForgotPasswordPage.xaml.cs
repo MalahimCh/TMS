@@ -25,7 +25,10 @@ namespace TMS.Pages
 
             try
             {
-                await new OtpBL(new OtpDAL()).SendOtpEmailAsync(email, "ResetPassword");
+                string otpCode = await new OtpBL(new OtpDAL()).GenerateAndStoreOtpAsync(email, "ResetPassword");
+
+                _ = Task.Run(() => new OtpBL(new OtpDAL()).SendOtpEmailAsync(email, otpCode, "ResetPassword"));
+
                 MessageBox.Show("A new OTP has been sent to your email.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch
@@ -58,8 +61,10 @@ namespace TMS.Pages
                 // Send OTP
                 try
                 {
-                    await new OtpBL(new OtpDAL()).SendOtpEmailAsync(email, "ResetPassword");
-                   
+
+                    string otpCode = await new OtpBL(new OtpDAL()).GenerateAndStoreOtpAsync(email, "ResetPassword");
+
+                    _ = Task.Run(() => new OtpBL(new OtpDAL()).SendOtpEmailAsync(email, otpCode, "ResetPassword"));
 
                     // Show OTP + New Password fields
                     lblOtp.Visibility = brdOtp.Visibility = Visibility.Visible;
