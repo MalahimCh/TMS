@@ -62,7 +62,7 @@ namespace TMS.Pages
         // ---------------------- LOGOUT ----------------------
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
-            //_mainFrame.Content = new LoginPage(_mainFrame);
+            _mainFrame.Content = new LoginPage(_mainFrame);
         }
     }
 }
