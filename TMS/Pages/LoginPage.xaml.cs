@@ -36,10 +36,16 @@ namespace TMS.Pages
 
                 if (user != null)
                 {
-                    MessageBox.Show($"Welcome {user.FullName}! Role: {user.Role}",
-                        "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                    // TODO: Navigate to Dashboard
+                    if (user.Role == "admin")
+                    {
+                        _mainFrame.Content = new AdminDashboard(_mainFrame, user.FullName);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Welcome {user.FullName}! Role: {user.Role}",
+                            "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    
                 }
                 else
                 {
