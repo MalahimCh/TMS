@@ -66,13 +66,16 @@ CREATE TABLE Seats (
 
 
 
---CREATE TABLE Routes (
---    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
---    Origin NVARCHAR(100) NOT NULL,
---    Destination NVARCHAR(100) NOT NULL,
---    DistanceKm INT NOT NULL,
---    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE()
---);
+CREATE TABLE Routes (
+    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+    Origin NVARCHAR(100) NOT NULL,
+    Destination NVARCHAR(100) NOT NULL,
+    DistanceKm INT NOT NULL,
+    EstimatedTimeMinutes INT NOT NULL,
+    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE(),
+    CONSTRAINT UQ_Route UNIQUE (Origin, Destination)
+);
+
 
 
 --CREATE TABLE Schedules (

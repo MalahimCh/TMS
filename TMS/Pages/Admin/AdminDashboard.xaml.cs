@@ -26,7 +26,7 @@ namespace TMS.Pages.Admin
         // ---------------------- ROUTES ----------------------
         private void ManageRoutes_Click(object sender, RoutedEventArgs e)
         {
-            //_mainFrame.Content = new ManageRoutesPage(_mainFrame, _username);
+            _mainFrame.Content = new ManageRoutesPage(_mainFrame, _username);
         }
 
         // ---------------------- SCHEDULES ----------------------
