@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="TMS.Controls.Admin.DeleteBusControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="Auto" Width="Auto">
+    <StackPanel Margin="20" VerticalAlignment="Top" Width="300" >
+
+        <TextBlock Text="Select Bus to Delete" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <ComboBox x:Name="cmbBuses" Height="30" Margin="0,0,0,10"/>
+        <Button Content="Load Bus Data" Click="SelectBus_Click" Height="30" Margin="0,0,0,20"/>
+
+        <TextBlock Text="Bus Number:"/>
+        <TextBox x:Name="txtBusNumber" IsReadOnly="True" Margin="0,0,0,10"/>
+
+        <TextBlock Text="Bus Type:"/>
+        <TextBox x:Name="txtBusType" IsReadOnly="True" Margin="0,0,0,10"/>
+
+        <TextBlock Text="Total Seats:"/>
+        <TextBox x:Name="txtTotalSeats" IsReadOnly="True" Margin="0,0,0,20"/>
+
+        <Button Content="Delete Bus" Click="DeleteBus_Click" Height="35" Background="Red" Foreground="White"/>
+    </StackPanel>
+</UserControl>

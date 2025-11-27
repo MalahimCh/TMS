@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="TMS.Controls.Admin.UpdateBusControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="Auto" Width="Auto">
+    <StackPanel Margin="20" VerticalAlignment="Top" Width="300">
+
+        <TextBlock Text="Select Bus to Update" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <ComboBox x:Name="cmbBuses" Height="30" Margin="0,0,0,10"/>
+        <Button Content="Load Bus Data" Click="SelectBus_Click" Height="30" Margin="0,0,0,20"/>
+
+        <TextBlock Text="Bus Number:"/>
+        <TextBox x:Name="txtBusNumber" Margin="0,0,0,10"/>
+
+        <TextBlock Text="Bus Type:"/>
+        <ComboBox x:Name="cmbBusType" Margin="0,0,0,10" Height="30">
+            <ComboBoxItem Content="AC"/>
+            <ComboBoxItem Content="Non-AC"/>
+            <ComboBoxItem Content="Luxury"/>
+        </ComboBox>
+
+        <TextBlock Text="Total Seats:"/>
+        <TextBox x:Name="txtTotalSeats" Margin="0,0,0,20"/>
+
+        <Button Content="Update Bus" Click="UpdateBus_Click" Height="35" Background="Green" Foreground="White"/>
+    </StackPanel>
+</UserControl>

@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace TMS.Pages
+namespace TMS.Pages.Admin
 {
     public partial class AdminDashboard : Page
     {
@@ -17,10 +17,16 @@ namespace TMS.Pages
             txtAdminName.Text = $"Welcome, {username}";
         }
 
+        // ---------------------- BUSES ----------------------
+        private void ManageBuses_Click(object sender, RoutedEventArgs e)
+        {
+            _mainFrame.Content = new ManageBusesPage(_mainFrame, _username);
+        }
+
         // ---------------------- ROUTES ----------------------
         private void ManageRoutes_Click(object sender, RoutedEventArgs e)
         {
-           // _mainFrame.Content = new ManageRoutesPage(_mainFrame, _username);
+            //_mainFrame.Content = new ManageRoutesPage(_mainFrame, _username);
         }
 
         // ---------------------- SCHEDULES ----------------------

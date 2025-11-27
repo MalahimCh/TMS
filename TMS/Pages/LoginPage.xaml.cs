@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using TMS.BLL;
 using TMS.DAL;
-
+using TMS.Pages.Admin;
 namespace TMS.Pages
 {
     public partial class LoginPage : Page

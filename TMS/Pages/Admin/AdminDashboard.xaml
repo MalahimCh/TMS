@@ -1,4 +1,4 @@
-﻿<Page x:Class="TMS.Pages.AdminDashboard"
+﻿<Page x:Class="TMS.Pages.Admin.AdminDashboard"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="clr-namespace:TMS.Pages"
@@ -7,13 +7,11 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <!-- Sidebar -->
             <ColumnDefinition Width="250"/>
-            <!-- Content -->
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- =================== SIDEBAR =================== -->
+        <!-- ================= SIDEBAR ================= -->
         <Grid Background="#FF17358A" Grid.Column="0">
             <StackPanel Margin="20">
                 <TextBlock Text="Admin Panel"
@@ -23,7 +21,6 @@
                            Margin="0,10,0,20"/>
 
                 <!-- SIDEBAR BUTTONS -->
-
                 <Button Content="Dashboard"
                         Height="40"
                         Background="#1E3A8A"
@@ -32,67 +29,76 @@
                         FontWeight="Bold"
                         Margin="0,5"/>
 
+                <Button Content="Manage Buses"
+                        Height="40"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderBrush="White"
+                        BorderThickness="1"
+                        Click="ManageBuses_Click"
+                        Margin="0,5"/>
+
                 <Button Content="Manage Routes"
                         Height="40"
                         Background="Transparent"
                         Foreground="White"
+                        BorderBrush="White"
                         BorderThickness="1"
                         Click="ManageRoutes_Click"
-                        BorderBrush="White"
                         Margin="0,5"/>
 
                 <Button Content="Manage Schedules"
                         Height="40"
                         Background="Transparent"
                         Foreground="White"
+                        BorderBrush="White"
                         BorderThickness="1"
                         Click="ManageSchedules_Click"
-                        BorderBrush="White"
                         Margin="0,5"/>
 
                 <Button Content="Ticket Pricing"
                         Height="40"
                         Background="Transparent"
                         Foreground="White"
+                        BorderBrush="White"
                         BorderThickness="1"
                         Click="ManagePrices_Click"
-                        BorderBrush="White"
                         Margin="0,5"/>
 
                 <Button Content="Seat Availability"
                         Height="40"
                         Background="Transparent"
                         Foreground="White"
+                        BorderBrush="White"
                         BorderThickness="1"
                         Click="ManageSeats_Click"
-                        BorderBrush="White"
                         Margin="0,5"/>
 
                 <Button Content="Reports and Statistics"
                         Height="40"
                         Background="Transparent"
                         Foreground="White"
+                        BorderBrush="White"
                         BorderThickness="1"
                         Click="Reports_Click"
-                        BorderBrush="White"
                         Margin="0,5"/>
 
                 <Button Content="Policies and Refunds"
                         Height="40"
                         Background="Transparent"
                         Foreground="White"
+                        BorderBrush="White"
                         BorderThickness="1"
                         Click="Policies_Click"
-                        BorderBrush="White"
                         Margin="0,5"/>
 
                 <Button Content="Promo and Discounts"
                         Height="40"
                         Background="Transparent"
                         Foreground="White"
+                        BorderBrush="White"
                         BorderThickness="1"
                         Click="Promo_Click"
-                        BorderBrush="White"
                         Margin="0,5"/>
 
                 <Button Content="Logout"
@@ -105,48 +111,58 @@
             </StackPanel>
         </Grid>
 
-        <!-- =================== MAIN CONTENT =================== -->
+        <!-- ================= MAIN CONTENT ================= -->
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="30">
 
-                <!-- ADMIN NAME (Dynamic from code-behind) -->
                 <TextBlock x:Name="txtAdminName"
                            FontSize="18"
                            FontWeight="SemiBold"
                            Foreground="#1E3A8A"
                            Margin="0,0,0,10"/>
 
-                <!-- Header -->
                 <TextBlock Text="Admin Dashboard"
                            FontSize="32"
                            FontWeight="Bold"
                            Foreground="#1E3A8A"/>
 
-                <TextBlock Text="Manage routes, schedules, pricing, policies, and system data."
+                <TextBlock Text="Manage buses, routes, schedules, pricing, policies, and system data."
                            Foreground="Gray"
                            FontSize="14"
                            Margin="0,5,0,25"/>
 
                 <!-- Dashboard Cards -->
-                <UniformGrid Columns="3" Margin="0,10,0,10">
+                <UniformGrid Columns="3" Margin="0,10">
 
-                    <!-- ROUTES CARD -->
-                    <Border CornerRadius="10" Background="White" Padding="20" Margin="10" 
+                    <!-- ========== MANAGE BUSES CARD (FIRST) ========== -->
+                    <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
                             BorderBrush="#1E3A8A" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Routes"
+                            <TextBlock Text="Buses"
                                        FontSize="20"
                                        FontWeight="Bold"
                                        Foreground="#1E3A8A"/>
-                            <TextBlock Text="Add, update, delete bus routes"
+                            <TextBlock Text="Add, update, delete buses"
                                        Foreground="Gray" FontSize="13"/>
                             <Button Content="Manage"
-                                    Click="ManageRoutes_Click"
+                                    Click="ManageBuses_Click"
                                     Height="35"
                                     Background="#1E3A8A"
                                     Foreground="White"
                                     FontWeight="Bold"
                                     Margin="0,10,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- ROUTES CARD -->
+                    <Border CornerRadius="10" Background="White" Padding="20" Margin="10" 
+                            BorderBrush="#1E3A8A" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="Routes" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
+                            <TextBlock Text="Add, update, delete bus routes" Foreground="Gray" FontSize="13"/>
+                            <Button Content="Manage" Click="ManageRoutes_Click"
+                                    Height="35" Background="#1E3A8A" Foreground="White"
+                                    FontWeight="Bold" Margin="0,10,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -154,19 +170,11 @@
                     <Border CornerRadius="10" Background="White" Padding="20" Margin="10" 
                             BorderBrush="#1E3A8A" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Schedules"
-                                       FontSize="20"
-                                       FontWeight="Bold"
-                                       Foreground="#1E3A8A"/>
-                            <TextBlock Text="Manage timings and daily schedules"
-                                       Foreground="Gray" FontSize="13"/>
-                            <Button Content="Manage"
-                                    Click="ManageSchedules_Click"
-                                    Height="35"
-                                    Background="#1E3A8A"
-                                    Foreground="White"
-                                    FontWeight="Bold"
-                                    Margin="0,10,0,0"/>
+                            <TextBlock Text="Schedules" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
+                            <TextBlock Text="Manage timings and daily schedules" Foreground="Gray" FontSize="13"/>
+                            <Button Content="Manage" Click="ManageSchedules_Click"
+                                    Height="35" Background="#1E3A8A" Foreground="White"
+                                    FontWeight="Bold" Margin="0,10,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -174,99 +182,59 @@
                     <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
                             BorderBrush="#1E3A8A" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Ticket Prices"
-                                       FontSize="20"
-                                       FontWeight="Bold"
-                                       Foreground="#1E3A8A"/>
-                            <TextBlock Text="Set or update fare prices"
-                                       Foreground="Gray" FontSize="13"/>
-                            <Button Content="Manage"
-                                    Click="ManagePrices_Click"
-                                    Height="35"
-                                    Background="#1E3A8A"
-                                    Foreground="White"
-                                    FontWeight="Bold"
-                                    Margin="0,10,0,0"/>
+                            <TextBlock Text="Ticket Prices" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
+                            <TextBlock Text="Set or update fare prices" Foreground="Gray" FontSize="13"/>
+                            <Button Content="Manage" Click="ManagePrices_Click"
+                                    Height="35" Background="#1E3A8A" Foreground="White"
+                                    FontWeight="Bold" Margin="0,10,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- SEATS -->
+                    <!-- SEATS CARD -->
                     <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
                             BorderBrush="#1E3A8A" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Seat Availability"
-                                       FontSize="20"
-                                       FontWeight="Bold"
-                                       Foreground="#1E3A8A"/>
-                            <TextBlock Text="Real-time availability management"
-                                       Foreground="Gray" FontSize="13"/>
-                            <Button Content="Manage"
-                                    Click="ManageSeats_Click"
-                                    Height="35"
-                                    Background="#1E3A8A"
-                                    Foreground="White"
-                                    FontWeight="Bold"
-                                    Margin="0,10,0,0"/>
+                            <TextBlock Text="Seat Availability" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
+                            <TextBlock Text="Real-time availability management" Foreground="Gray" FontSize="13"/>
+                            <Button Content="Manage" Click="ManageSeats_Click"
+                                    Height="35" Background="#1E3A8A" Foreground="White"
+                                    FontWeight="Bold" Margin="0,10,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- REPORTS -->
+                    <!-- REPORTS CARD -->
                     <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
                             BorderBrush="#1E3A8A" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Reports"
-                                       FontSize="20"
-                                       FontWeight="Bold"
-                                       Foreground="#1E3A8A"/>
-                            <TextBlock Text="View statistics and analytics"
-                                       Foreground="Gray" FontSize="13"/>
-                            <Button Content="View"
-                                    Click="Reports_Click"
-                                    Height="35"
-                                    Background="#1E3A8A"
-                                    Foreground="White"
-                                    FontWeight="Bold"
-                                    Margin="0,10,0,0"/>
+                            <TextBlock Text="Reports" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
+                            <TextBlock Text="View statistics and analytics" Foreground="Gray" FontSize="13"/>
+                            <Button Content="View" Click="Reports_Click"
+                                    Height="35" Background="#1E3A8A" Foreground="White"
+                                    FontWeight="Bold" Margin="0,10,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- POLICIES -->
+                    <!-- POLICIES CARD -->
                     <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
                             BorderBrush="#1E3A8A" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Cancellation Policies"
-                                       FontSize="20"
-                                       FontWeight="Bold"
-                                       Foreground="#1E3A8A"/>
-                            <TextBlock Text="Set refund and cancellation rules"
-                                       Foreground="Gray" FontSize="13"/>
-                            <Button Content="Configure"
-                                    Click="Policies_Click"
-                                    Height="35"
-                                    Background="#1E3A8A"
-                                    Foreground="White"
-                                    FontWeight="Bold"
-                                    Margin="0,10,0,0"/>
+                            <TextBlock Text="Cancellation Policies" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
+                            <TextBlock Text="Set refund and cancellation rules" Foreground="Gray" FontSize="13"/>
+                            <Button Content="Configure" Click="Policies_Click"
+                                    Height="35" Background="#1E3A8A" Foreground="White"
+                                    FontWeight="Bold" Margin="0,10,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- DISCOUNTS -->
+                    <!-- DISCOUNTS CARD -->
                     <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
                             BorderBrush="#1E3A8A" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Promo Codes"
-                                       FontSize="20"
-                                       FontWeight="Bold"
-                                       Foreground="#1E3A8A"/>
-                            <TextBlock Text="Manage promotions and discounts"
-                                       Foreground="Gray" FontSize="13"/>
-                            <Button Content="Manage"
-                                    Click="Promo_Click"
-                                    Height="35"
-                                    Background="#1E3A8A"
-                                    Foreground="White"
-                                    FontWeight="Bold"
-                                    Margin="0,10,0,0"/>
+                            <TextBlock Text="Promo Codes" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
+                            <TextBlock Text="Manage promotions and discounts" Foreground="Gray" FontSize="13"/>
+                            <Button Content="Manage" Click="Promo_Click"
+                                    Height="35" Background="#1E3A8A" Foreground="White"
+                                    FontWeight="Bold" Margin="0,10,0,0"/>
                         </StackPanel>
                     </Border>
 
