@@ -16,6 +16,41 @@ namespace TMS.Pages
             _mainFrame = frame;
             _userBL = new UserBL(new UserDAL(), new OtpBL(new OtpDAL()));
         }
+        private bool _isPasswordVisible = false;
+
+        private void TogglePasswordVisibility_Click(object sender, RoutedEventArgs e)
+        {
+            _isPasswordVisible = !_isPasswordVisible;
+
+            if (_isPasswordVisible)
+            {
+                txtPasswordVisible.Text = pwdBox.Password;
+                PasswordBorder.Visibility = Visibility.Collapsed;
+                PasswordTextBorder.Visibility = Visibility.Visible;
+
+                EyePack.Kind = MaterialDesignThemes.Wpf.PackIconKind.EyeOff;
+            }
+            else
+            {
+                pwdBox.Password = txtPasswordVisible.Text;
+                PasswordBorder.Visibility = Visibility.Visible;
+                PasswordTextBorder.Visibility = Visibility.Collapsed;
+
+                EyePack.Kind = MaterialDesignThemes.Wpf.PackIconKind.Eye;
+            }
+        }
+
+        private void pwdBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (!_isPasswordVisible)
+                txtPasswordVisible.Text = pwdBox.Password;
+        }
+
+        private void txtPasswordVisible_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_isPasswordVisible)
+                pwdBox.Password = txtPasswordVisible.Text;
+        }
 
         private async void RegisterButton_Click(object sender, RoutedEventArgs e)
         {

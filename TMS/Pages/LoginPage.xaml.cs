@@ -18,31 +18,34 @@ namespace TMS.Pages
         }
 
         private bool _isPasswordVisible = false;
+
         private void TogglePasswordVisibility_Click(object sender, RoutedEventArgs e)
         {
             _isPasswordVisible = !_isPasswordVisible;
 
             if (_isPasswordVisible)
             {
+                // Show password
                 txtPasswordVisible.Text = pwdBox.Password;
                 PasswordBorder.Visibility = Visibility.Collapsed;
                 PasswordTextBorder.Visibility = Visibility.Visible;
 
-                // Change icon to "eye"
-                btnTogglePassword.Content = "👁";
+                EyePack.Kind = MaterialDesignThemes.Wpf.PackIconKind.EyeOff;
             }
             else
             {
+                // Hide password
                 pwdBox.Password = txtPasswordVisible.Text;
                 PasswordBorder.Visibility = Visibility.Visible;
                 PasswordTextBorder.Visibility = Visibility.Collapsed;
 
-                // Change icon to "slashed eye"
-                btnTogglePassword.Content = "👁‍🗨";
+                EyePack.Kind = MaterialDesignThemes.Wpf.PackIconKind.Eye;
             }
         }
 
-     
+
+
+
 
         private void pwdBox_PasswordChanged(object sender, RoutedEventArgs e)
         {

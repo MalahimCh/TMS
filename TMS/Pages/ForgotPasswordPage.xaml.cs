@@ -18,6 +18,80 @@ namespace TMS.Pages
             _mainFrame = frame;
             _userBL = new UserBL(new UserDAL(), new OtpBL(new OtpDAL()));
         }
+
+        private bool _isPasswordVisibleNew = false;
+
+        private void TogglePasswordVisibilityNew_Click(object sender, RoutedEventArgs e)
+        {
+            _isPasswordVisibleNew = !_isPasswordVisibleNew;
+
+            if (_isPasswordVisibleNew)
+            {
+                txtPasswordVisibleNew.Text = pwdNew.Password;
+                PasswordBorderNew.Visibility = Visibility.Collapsed;
+                PasswordTextBorderNew.Visibility = Visibility.Visible;
+
+                EyePackNew.Kind = MaterialDesignThemes.Wpf.PackIconKind.EyeOff;
+            }
+            else
+            {
+                pwdNew.Password = txtPasswordVisibleNew.Text;
+                PasswordBorderNew.Visibility = Visibility.Visible;
+                PasswordTextBorderNew.Visibility = Visibility.Collapsed;
+
+                EyePackNew.Kind = MaterialDesignThemes.Wpf.PackIconKind.Eye;
+            }
+        }
+
+        private void pwdNew_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (!_isPasswordVisibleNew)
+                txtPasswordVisibleNew.Text = pwdNew.Password;
+        }
+
+        private void txtPasswordVisibleNew_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_isPasswordVisibleNew)
+                pwdNew.Password = txtPasswordVisibleNew.Text;
+        }
+
+
+        private bool _isPasswordVisibleConfirm = false;
+
+        private void TogglePasswordVisibilityConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            _isPasswordVisibleConfirm = !_isPasswordVisibleConfirm;
+
+            if (_isPasswordVisibleConfirm)
+            {
+                txtPasswordVisibleConfirm.Text = pwdConfirm.Password;
+                PasswordBorderConfirm.Visibility = Visibility.Collapsed;
+                PasswordTextBorderConfirm.Visibility = Visibility.Visible;
+
+                EyePackConfirm.Kind = MaterialDesignThemes.Wpf.PackIconKind.EyeOff;
+            }
+            else
+            {
+                pwdConfirm.Password = txtPasswordVisibleConfirm.Text;
+                PasswordBorderConfirm.Visibility = Visibility.Visible;
+                PasswordTextBorderConfirm.Visibility = Visibility.Collapsed;
+
+                EyePackConfirm.Kind = MaterialDesignThemes.Wpf.PackIconKind.Eye;
+            }
+        }
+
+        private void pwdConfirm_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (!_isPasswordVisibleConfirm)
+                txtPasswordVisibleConfirm.Text = pwdConfirm.Password;
+        }
+
+        private void txtPasswordVisibleConfirm_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_isPasswordVisibleConfirm)
+                pwdConfirm.Password = txtPasswordVisibleConfirm.Text;
+        }
+
         private async void ResendButton_Click(object sender, RoutedEventArgs e)
         {
             string email = txtEmail.Text.Trim();
@@ -65,12 +139,15 @@ namespace TMS.Pages
                     string otpCode = await new OtpBL(new OtpDAL()).GenerateAndStoreOtpAsync(email, "ResetPassword");
 
                     _ = Task.Run(() => new OtpBL(new OtpDAL()).SendOtpEmailAsync(email, otpCode, "ResetPassword"));
+                    lblOtp.Visibility = brdOtp.Visibility = Visibility.Visible;
+
+                    lblNewPassword.Visibility = Visibility.Visible;
+                    grdNewPassword.Visibility = Visibility.Visible;
+
+                    lblConfirmPassword.Visibility = Visibility.Visible;
+                    grdConfirmPassword.Visibility = Visibility.Visible;
 
                     // Show OTP + New Password fields
-                    lblOtp.Visibility = brdOtp.Visibility = Visibility.Visible;
-                    lblNewPassword.Visibility = brdNewPassword.Visibility = Visibility.Visible;
-                    lblConfirmPassword.Visibility = brdConfirmPassword.Visibility = Visibility.Visible;
-
                     // Show Resend OTP button
                     btnResend.Visibility = Visibility.Visible;
 

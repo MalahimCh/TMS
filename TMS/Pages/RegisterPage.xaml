@@ -1,6 +1,7 @@
 ﻿<Page x:Class="TMS.Pages.RegisterPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       Title="Register"
       Background="White">
 
@@ -68,10 +69,52 @@
                 </Border>
 
                 <!-- Password -->
+                <!-- Password -->
                 <TextBlock Text="Password" FontWeight="SemiBold" Margin="0,10,0,5"/>
-                <Border CornerRadius="5" Background="#F0F4FF" BorderBrush="#1E3A8A" BorderThickness="1">
-                    <PasswordBox x:Name="pwdBox" Background="Transparent" BorderThickness="0" Padding="10"/>
-                </Border>
+
+                <Grid>
+                    <!-- Hidden password input -->
+                    <Border x:Name="PasswordBorder"
+            CornerRadius="5"
+            Background="#F0F4FF"
+            BorderBrush="#1E3A8A"
+            BorderThickness="1">
+                        <PasswordBox x:Name="pwdBox"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     Padding="10"
+                     PasswordChanged="pwdBox_PasswordChanged"/>
+                    </Border>
+
+                    <!-- Visible password text -->
+                    <Border x:Name="PasswordTextBorder"
+            CornerRadius="5"
+            Background="#F0F4FF"
+            BorderBrush="#1E3A8A"
+            BorderThickness="1"
+            Visibility="Collapsed">
+                        <TextBox x:Name="txtPasswordVisible"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 Padding="10"
+                 TextChanged="txtPasswordVisible_TextChanged"/>
+                    </Border>
+
+                    <!-- Eye Button -->
+                    <Button x:Name="btnTogglePassword"
+            Width="32" Height="32"
+            Background="Transparent"
+            BorderThickness="0"
+            HorizontalAlignment="Right"
+            Click="TogglePasswordVisibility_Click">
+                        <materialDesign:PackIcon x:Name="EyePack"
+                                 Kind="Eye"
+                                 Width="22"
+                                 Height="22"
+                                 Foreground="#1E3A8A"/>
+                    </Button>
+                </Grid>
+
 
                 <!-- Register Button -->
                 <Button Content="Register" Height="40" Margin="0,20,0,10"
