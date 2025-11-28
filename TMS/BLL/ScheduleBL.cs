@@ -29,10 +29,18 @@ namespace TMS.BLL
         public async Task<bool> UpdateScheduleAsync(ScheduleDTO s) => await _dal.UpdateScheduleAsync(s);
         public async Task<bool> DeleteScheduleAsync(Guid id) => await _dal.DeleteScheduleAsync(id);
         public async Task<List<ScheduleDTO>> GetAllSchedulesAsync() => await _dal.GetAllSchedulesAsync();
+        public async Task<List<RecurringScheduleDTO>> GetAllRecurringSchedulesAsync() => await _dal.GetAllRecurringSchedulesAsync();
 
+      
         // ----- RECURRING SCHEDULE -----
-        public async Task AddRecurringScheduleAsync(RecurringScheduleDTO rec) => await _dal.AddRecurringScheduleAsync(rec);
-        public async Task<bool> UpdateRecurringScheduleAsync(RecurringScheduleDTO rec) => await _dal.UpdateRecurringScheduleAsync(rec);
+        public async Task AddRecurringScheduleAsync(RecurringScheduleDTO rec)
+    => await _dal.AddRecurringScheduleAsync(rec);
+
+       public async Task<bool> UpdateRecurringScheduleAsync(RecurringScheduleDTO rec)
+            => await _dal.UpdateRecurringScheduleAsync(rec);
+
+        
+
         public async Task<bool> DeleteRecurringScheduleAsync(Guid id) => await _dal.DeleteRecurringScheduleAsync(id);
     }
 }

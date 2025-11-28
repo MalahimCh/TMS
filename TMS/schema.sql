@@ -90,7 +90,6 @@ CREATE TABLE RecurringSchedules (
     DepartureTime TIME NOT NULL,
     ArrivalTime TIME NOT NULL,
     Price DECIMAL(10,2) NOT NULL,
-    NextRunDate DATE NOT NULL,
     CreatedAt DATETIME2(7) DEFAULT GETUTCDATE(),
 
     CONSTRAINT UQ_Recurring UNIQUE (BusId, StartDate, DepartureTime)
@@ -114,6 +113,9 @@ CREATE TABLE Schedules (
 
 ALTER TABLE Schedules
 ADD Completed BIT NOT NULL DEFAULT 0;
+
+ALTER TABLE RecurringSchedules
+ADD SelectedDays NVARCHAR(20) NULL;
 
 
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using TMS.DTO;
+﻿using TMS.DTO;
 
 public static class RecurringHelper
 {
@@ -11,9 +9,19 @@ public static class RecurringHelper
 
         while (current <= rec.EndDate)
         {
-            if (rec.Frequency == "Daily" ||
-                (rec.Frequency == "Weekly" && current.DayOfWeek == rec.StartDate.DayOfWeek) ||
-                (rec.Frequency == "Mon-Fri" && current.DayOfWeek >= DayOfWeek.Monday && current.DayOfWeek <= DayOfWeek.Friday))
+            bool shouldCreate = false;
+
+            if (rec.Frequency.Equals("Daily", StringComparison.OrdinalIgnoreCase))
+            {
+                shouldCreate = true;
+            }
+            else if (rec.Frequency.Equals("Weekly", StringComparison.OrdinalIgnoreCase))
+            {
+                if (rec.SelectedDays.Contains(current.DayOfWeek))
+                    shouldCreate = true;
+            }
+
+            if (shouldCreate)
             {
                 schedules.Add(new ScheduleDTO
                 {
@@ -22,7 +30,9 @@ public static class RecurringHelper
                     RecurringScheduleId = rec.Id,
                     DepartureTime = current.Date + rec.DepartureTime,
                     ArrivalTime = current.Date + rec.ArrivalTime,
-                    Price = rec.Price
+                    Price = rec.Price,
+                    Completed = false,
+                    CreatedAt = DateTime.UtcNow
                 });
             }
 

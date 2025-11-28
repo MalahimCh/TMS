@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +13,7 @@ namespace TMS.Controls.Admin
         private readonly Frame _mainFrame;
         private readonly string _username;
         private readonly ScheduleBL _scheduleBL;
+        private TimeSpan _routeEstimatedTime;   // For auto-calculation of arrival
 
         public AddScheduleControl(Frame frame, string username)
         {
@@ -22,8 +24,17 @@ namespace TMS.Controls.Admin
 
             LoadBuses();
             LoadRoutes();
+
+            Loaded += AddScheduleControl_Loaded;
         }
 
+        private void AddScheduleControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            ShowPanels();
+            DaysSelectionPanel.Visibility = Visibility.Collapsed; // hide days checkboxes initially
+        }
+
+        #region Load Combo Data
         private async void LoadBuses()
         {
             var buses = await new BusBL(new DAL.BusDAL()).GetAllBusesAsync();
@@ -39,10 +50,111 @@ namespace TMS.Controls.Admin
             cmbRouteAdd.DisplayMemberPath = "RouteDisplay";
             cmbRouteAdd.SelectedValuePath = "Id";
         }
+        #endregion
 
-        private void ChkRecurringAdd_Checked(object sender, RoutedEventArgs e) => RecurringPanelAdd.Visibility = Visibility.Visible;
-        private void ChkRecurringAdd_Unchecked(object sender, RoutedEventArgs e) => RecurringPanelAdd.Visibility = Visibility.Collapsed;
+        #region Route ETA & Arrival Calculation
+        private async void cmbRouteAdd_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbRouteAdd.SelectedValue == null) return;
 
+            var routeId = (Guid)cmbRouteAdd.SelectedValue;
+            var routeBL = new RouteBL(new DAL.RouteDAL());
+            var route = await routeBL.GetRouteByIdAsync(routeId);
+
+            _routeEstimatedTime = TimeSpan.FromMinutes(route?.EstimatedTimeMinutes ?? 0);
+
+            UpdateArrivalTimeOneTime();
+            UpdateArrivalTimeRecurring();
+        }
+
+        private void DepartureDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateArrivalTimeOneTime();
+        }
+
+        private void DepartureTimeChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            UpdateArrivalTimeOneTime();
+            UpdateArrivalTimeRecurring();
+        }
+
+        private void UpdateArrivalTimeOneTime()
+        {
+            if (_routeEstimatedTime == TimeSpan.Zero) return;
+            if (dpDepartureDateAdd.SelectedDate.HasValue && tpDepartureTimeAdd.Value.HasValue)
+            {
+                var dep = dpDepartureDateAdd.SelectedDate.Value + tpDepartureTimeAdd.Value.Value.TimeOfDay;
+                var arr = dep + _routeEstimatedTime;
+                dpArrivalDateAdd.SelectedDate = arr.Date;
+                tpArrivalTimeAdd.Value = arr;
+            }
+        }
+
+        private void UpdateArrivalTimeRecurring()
+        {
+            if (_routeEstimatedTime == TimeSpan.Zero) return;
+            if (tpDepartureTimeRecurring.Value.HasValue)
+            {
+                tpArrivalTimeRecurring.Value = tpDepartureTimeRecurring.Value.Value + _routeEstimatedTime;
+            }
+        }
+        #endregion
+
+        #region Panel Switch
+        private void ScheduleType_Checked(object sender, RoutedEventArgs e) => ShowPanels();
+
+        private void ShowPanels()
+        {
+            if (OneTimePanel == null) return;
+            OneTimePanel.Visibility = rbOneTime.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+            RecurringPanelAdd.Visibility = rbOneTime.IsChecked == true ? Visibility.Collapsed : Visibility.Visible;
+        }
+        #endregion
+
+        #region Recurring Days Handling
+        private void FrequencyChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var freq = ((ComboBoxItem)cmbFrequencyAdd.SelectedItem)?.Content.ToString();
+
+            if (freq == "Daily")
+            {
+                DaysSelectionPanel.Visibility = Visibility.Collapsed;
+            }
+            else if (freq == "Weekly")
+            {
+                DaysSelectionPanel.Visibility = Visibility.Visible;
+            }
+        }
+
+        private List<DayOfWeek> GetSelectedDays()
+        {
+            var freq = ((ComboBoxItem)cmbFrequencyAdd.SelectedItem)?.Content.ToString();
+
+            if (freq == "Daily")
+            {
+                // All days for daily
+                return new List<DayOfWeek>
+                {
+                    DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
+                    DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday,
+                    DayOfWeek.Sunday
+                };
+            }
+
+            // Weekly -> checkboxes
+            var days = new List<DayOfWeek>();
+            if (chkMon.IsChecked == true) days.Add(DayOfWeek.Monday);
+            if (chkTue.IsChecked == true) days.Add(DayOfWeek.Tuesday);
+            if (chkWed.IsChecked == true) days.Add(DayOfWeek.Wednesday);
+            if (chkThu.IsChecked == true) days.Add(DayOfWeek.Thursday);
+            if (chkFri.IsChecked == true) days.Add(DayOfWeek.Friday);
+            if (chkSat.IsChecked == true) days.Add(DayOfWeek.Saturday);
+            if (chkSun.IsChecked == true) days.Add(DayOfWeek.Sunday);
+            return days;
+        }
+        #endregion
+
+        #region Save Button
         private async void AddScheduleAdd_Click(object sender, RoutedEventArgs e)
         {
             if (cmbBusAdd.SelectedValue == null || cmbRouteAdd.SelectedValue == null)
@@ -57,18 +169,35 @@ namespace TMS.Controls.Admin
                 return;
             }
 
-            if (!TimeSpan.TryParse(txtDepartureTimeAdd.Text.Trim(), out TimeSpan depTime) ||
-                !TimeSpan.TryParse(txtArrivalTimeAdd.Text.Trim(), out TimeSpan arrTime))
+            // ONE-TIME
+            if (rbOneTime.IsChecked == true)
             {
-                MessageBox.Show("Invalid time format. Use HH:mm.");
-                return;
-            }
-
-            if (chkRecurringAdd.IsChecked == true)
-            {
-                if (!dpStartDateAdd.SelectedDate.HasValue || !dpEndDateAdd.SelectedDate.HasValue)
+                if (!dpDepartureDateAdd.SelectedDate.HasValue || tpDepartureTimeAdd.Value == null)
                 {
-                    MessageBox.Show("Select start and end date for recurring schedule");
+                    MessageBox.Show("Fill all departure fields.");
+                    return;
+                }
+
+                var schedule = new ScheduleDTO
+                {
+                    BusId = (Guid)cmbBusAdd.SelectedValue,
+                    RouteId = (Guid)cmbRouteAdd.SelectedValue,
+                    DepartureTime = dpDepartureDateAdd.SelectedDate.Value + tpDepartureTimeAdd.Value.Value.TimeOfDay,
+                    ArrivalTime = dpArrivalDateAdd.SelectedDate.Value + tpArrivalTimeAdd.Value.Value.TimeOfDay,
+                    Price = price,
+                    Completed = false,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                await _scheduleBL.AddScheduleAsync(schedule);
+                MessageBox.Show("One-Time schedule added.");
+            }
+            // RECURRING
+            else
+            {
+                if (!dpStartDateAdd.SelectedDate.HasValue || !dpEndDateAdd.SelectedDate.HasValue || tpDepartureTimeRecurring.Value == null)
+                {
+                    MessageBox.Show("Fill all recurring fields.");
                     return;
                 }
 
@@ -76,43 +205,49 @@ namespace TMS.Controls.Admin
                 {
                     BusId = (Guid)cmbBusAdd.SelectedValue,
                     RouteId = (Guid)cmbRouteAdd.SelectedValue,
-                    DepartureTime = depTime,
-                    ArrivalTime = arrTime,
+                    DepartureTime = tpDepartureTimeRecurring.Value.Value.TimeOfDay,
+                    ArrivalTime = tpArrivalTimeRecurring.Value.Value.TimeOfDay,
                     Price = price,
                     StartDate = dpStartDateAdd.SelectedDate.Value,
                     EndDate = dpEndDateAdd.SelectedDate.Value,
-                    Frequency = ((ComboBoxItem)cmbFrequencyAdd.SelectedItem).Content.ToString(),
-                    NextRunDate = dpStartDateAdd.SelectedDate.Value
+                    Frequency = ((ComboBoxItem)cmbFrequencyAdd.SelectedItem)?.Content.ToString(),
+                    SelectedDays = GetSelectedDays() // <--- assign the selected days here
                 };
 
                 await _scheduleBL.AddRecurringScheduleAsync(rec);
-                MessageBox.Show("Recurring schedule added successfully!");
-            }
-            else
-            {
-                var schedule = new ScheduleDTO
-                {
-                    BusId = (Guid)cmbBusAdd.SelectedValue,
-                    RouteId = (Guid)cmbRouteAdd.SelectedValue,
-                    DepartureTime = dpDepartureDateAdd.SelectedDate.Value + depTime,
-                    ArrivalTime = dpArrivalDateAdd.SelectedDate.Value + arrTime,
-                    Price = price,
-                    Completed = false
-                };
 
-                await _scheduleBL.AddScheduleAsync(schedule);
-                MessageBox.Show("Schedule added successfully!");
+                MessageBox.Show("Recurring schedule added.");
             }
 
-            // Reset
+            ResetForm();
+        }
+        #endregion
+
+        #region Reset Form
+        private void ResetForm()
+        {
             cmbBusAdd.SelectedIndex = -1;
             cmbRouteAdd.SelectedIndex = -1;
-            dpDepartureDateAdd.SelectedDate = null;
-            txtDepartureTimeAdd.Text = "";
-            dpArrivalDateAdd.SelectedDate = null;
-            txtArrivalTimeAdd.Text = "";
             txtPriceAdd.Text = "";
-            chkRecurringAdd.IsChecked = false;
+
+            dpDepartureDateAdd.SelectedDate = null;
+            tpDepartureTimeAdd.Value = null;
+            dpArrivalDateAdd.SelectedDate = null;
+            tpArrivalTimeAdd.Value = null;
+
+            dpStartDateAdd.SelectedDate = null;
+            dpEndDateAdd.SelectedDate = null;
+            tpDepartureTimeRecurring.Value = null;
+            tpArrivalTimeRecurring.Value = null;
+
+            cmbFrequencyAdd.SelectedIndex = -1;
+
+            chkMon.IsChecked = chkTue.IsChecked = chkWed.IsChecked =
+            chkThu.IsChecked = chkFri.IsChecked = chkSat.IsChecked = chkSun.IsChecked = false;
+
+            rbOneTime.IsChecked = true;
+            ShowPanels();
         }
+        #endregion
     }
 }

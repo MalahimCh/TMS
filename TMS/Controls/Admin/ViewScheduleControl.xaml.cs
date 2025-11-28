@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows.Controls;
 using TMS.BLL;
 using TMS.DTO;
@@ -25,27 +26,55 @@ namespace TMS.Controls.Admin
         private async void LoadSchedulesAsync()
         {
             var schedules = await _scheduleBL.GetAllSchedulesAsync();
+            var recurringSchedules = (await _scheduleBL.GetAllRecurringSchedulesAsync()) ?? new System.Collections.Generic.List<RecurringScheduleDTO>();
             var buses = await _busBL.GetAllBusesAsync();
             var routes = await _routeBL.GetAllRoutesAsync();
 
-            var displayList = schedules.Select(s =>
+            // ---------------- Recurring Schedules ----------------
+            var recurringDisplay = recurringSchedules.Select(r =>
             {
-                var bus = buses.FirstOrDefault(b => b.Id == s.BusId);
-                var route = routes.FirstOrDefault(r => r.Id == s.RouteId);
+                var bus = buses.FirstOrDefault(b => b.Id == r.BusId);
+                var route = routes.FirstOrDefault(ro => ro.Id == r.RouteId);
+
+                // Abbreviate days to 3 letters each
+                var daysAbbr = string.Join(",", r.SelectedDays.Select(d => d.ToString().Substring(0, 3)));
 
                 return new
                 {
                     BusName = bus?.BusNumber ?? "N/A",
                     RouteName = route?.RouteDisplay ?? "N/A",
-                    DepartureTime = s.DepartureTime.ToString("yyyy-MM-dd HH:mm"),
-                    ArrivalTime = s.ArrivalTime.ToString("yyyy-MM-dd HH:mm"),
-                    Price = s.Price,
-                    Completed = s.Completed ? "Yes" : "No",
-                    IsRecurring = s.RecurringScheduleId != null ? "Yes" : "No"
+                    DateRange = $"{r.StartDate:yyyy-MM-dd} → {r.EndDate:yyyy-MM-dd}",
+                    Days = daysAbbr,
+                    Frequency = r.Frequency,
+                    DepartureTime = r.DepartureTime.ToString(@"hh\:mm"),
+                    ArrivalTime = r.ArrivalTime.ToString(@"hh\:mm"),
+                    Price = r.Price
                 };
             }).ToList();
 
-            dgSchedules.ItemsSource = displayList;
+
+            dgRecurringSchedules.ItemsSource = recurringDisplay;
+
+            // ---------------- One-Time Schedules ----------------
+            var oneTimeDisplay = schedules
+                .Where(s => s.RecurringScheduleId == null)
+                .Select(s =>
+                {
+                    var bus = buses.FirstOrDefault(b => b.Id == s.BusId);
+                    var route = routes.FirstOrDefault(r => r.Id == s.RouteId);
+
+                    return new
+                    {
+                        BusName = bus?.BusNumber ?? "N/A",
+                        RouteName = route?.RouteDisplay ?? "N/A",
+                        DepartureTime = s.DepartureTime.ToString("yyyy-MM-dd HH:mm"),
+                        ArrivalTime = s.ArrivalTime.ToString("yyyy-MM-dd HH:mm"),
+                        Price = s.Price,
+                        Completed = s.Completed ? "Yes" : "No"
+                    };
+                }).ToList();
+
+            dgOneTimeSchedules.ItemsSource = oneTimeDisplay;
         }
     }
 }

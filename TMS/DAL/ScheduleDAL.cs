@@ -1,7 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using TMS.BLL;
 using TMS.DTO;
 
 namespace TMS.DAL
@@ -38,30 +40,38 @@ namespace TMS.DAL
         // ---------------- UPDATE NORMAL SCHEDULE ----------------
         public async Task<bool> UpdateScheduleAsync(ScheduleDTO s)
         {
-            using var conn = new SqlConnection(_db.ConnectionString);
-            await conn.OpenAsync();
+            try
+            {
+                using var conn = new SqlConnection(_db.ConnectionString);
+                await conn.OpenAsync();
 
-            var cmd = new SqlCommand(@"
-                UPDATE Schedules SET
-                    RouteId=@RouteId,
-                    BusId=@BusId,
-                    DepartureTime=@DepartureTime,
-                    ArrivalTime=@ArrivalTime,
-                    Price=@Price,
-                    Completed=@Completed
-                WHERE Id=@Id", conn);
+                var cmd = new SqlCommand(@"
+UPDATE Schedules
+SET RouteId = @RouteId,
+    BusId = @BusId,
+    DepartureTime = @DepartureTime,
+    ArrivalTime = @ArrivalTime,
+    Price = @Price,
+    Completed = @Completed
+WHERE Id = @Id", conn);
 
-            cmd.Parameters.AddWithValue("@Id", s.Id);
-            cmd.Parameters.AddWithValue("@RouteId", s.RouteId);
-            cmd.Parameters.AddWithValue("@BusId", s.BusId);
-            cmd.Parameters.AddWithValue("@DepartureTime", s.DepartureTime);
-            cmd.Parameters.AddWithValue("@ArrivalTime", s.ArrivalTime);
-            cmd.Parameters.AddWithValue("@Price", s.Price);
-            cmd.Parameters.AddWithValue("@Completed", s.Completed);
+                cmd.Parameters.AddWithValue("@Id", s.Id);
+                cmd.Parameters.AddWithValue("@RouteId", s.RouteId);
+                cmd.Parameters.AddWithValue("@BusId", s.BusId);
+                cmd.Parameters.AddWithValue("@DepartureTime", s.DepartureTime);
+                cmd.Parameters.AddWithValue("@ArrivalTime", s.ArrivalTime);
+                cmd.Parameters.AddWithValue("@Price", s.Price);
+                cmd.Parameters.AddWithValue("@Completed", s.Completed);
 
-            int rows = await cmd.ExecuteNonQueryAsync();
-            return rows > 0;
+                var rows = await cmd.ExecuteNonQueryAsync();
+                return rows > 0; // true if any row was updated
+            }
+            catch
+            {
+                return false;
+            }
         }
+
 
         // ---------------- DELETE NORMAL SCHEDULE ----------------
         public async Task<bool> DeleteScheduleAsync(Guid id)
@@ -85,11 +95,13 @@ namespace TMS.DAL
 
             try
             {
-                // Insert recurring template
+                // Convert SelectedDays to comma-separated int list
+                string daysString = string.Join(",", rec.SelectedDays.Select(d => (int)d));
+
                 var cmd = new SqlCommand(@"
-                    INSERT INTO RecurringSchedules
-                    (Id, RouteId, BusId, StartDate, EndDate, Frequency, DepartureTime, ArrivalTime, Price, NextRunDate, CreatedAt)
-                    VALUES (@Id,@RouteId,@BusId,@StartDate,@EndDate,@Frequency,@DepartureTime,@ArrivalTime,@Price,@NextRunDate,@CreatedAt)",
+            INSERT INTO RecurringSchedules
+            (Id, RouteId, BusId, StartDate, EndDate, Frequency, SelectedDays, DepartureTime, ArrivalTime, Price, CreatedAt)
+            VALUES (@Id,@RouteId,@BusId,@StartDate,@EndDate,@Frequency,@SelectedDays,@DepartureTime,@ArrivalTime,@Price,@CreatedAt)",
                     conn, trans);
 
                 cmd.Parameters.AddWithValue("@Id", rec.Id);
@@ -98,24 +110,25 @@ namespace TMS.DAL
                 cmd.Parameters.AddWithValue("@StartDate", rec.StartDate);
                 cmd.Parameters.AddWithValue("@EndDate", rec.EndDate);
                 cmd.Parameters.AddWithValue("@Frequency", rec.Frequency);
+                cmd.Parameters.AddWithValue("@SelectedDays", daysString);
                 cmd.Parameters.AddWithValue("@DepartureTime", rec.DepartureTime);
                 cmd.Parameters.AddWithValue("@ArrivalTime", rec.ArrivalTime);
                 cmd.Parameters.AddWithValue("@Price", rec.Price);
-                cmd.Parameters.AddWithValue("@NextRunDate", rec.NextRunDate);
                 cmd.Parameters.AddWithValue("@CreatedAt", rec.CreatedAt);
 
                 await cmd.ExecuteNonQueryAsync();
 
-                // Generate schedules
+                // 🔥 Generate schedules based on DTO only
                 var schedules = RecurringHelper.GenerateSchedules(rec);
+
                 foreach (var s in schedules)
                 {
                     s.RecurringScheduleId = rec.Id;
 
                     var scheduleCmd = new SqlCommand(@"
-                        INSERT INTO Schedules
-                        (Id, RouteId, BusId, RecurringScheduleId, DepartureTime, ArrivalTime, Price, Completed, CreatedAt)
-                        VALUES (@Id,@RouteId,@BusId,@RecurringScheduleId,@DepartureTime,@ArrivalTime,@Price,@Completed,@CreatedAt)",
+                INSERT INTO Schedules
+                (Id, RouteId, BusId, RecurringScheduleId, DepartureTime, ArrivalTime, Price, Completed, CreatedAt)
+                VALUES (@Id,@RouteId,@BusId,@RecurringScheduleId,@DepartureTime,@ArrivalTime,@Price,@Completed,@CreatedAt)",
                         conn, trans);
 
                     scheduleCmd.Parameters.AddWithValue("@Id", s.Id);
@@ -140,28 +153,31 @@ namespace TMS.DAL
             }
         }
 
-        // ---------------- UPDATE RECURRING SCHEDULE ----------------
+        //---------------- UPDATE RECURRING SCHEDULE ----------------
+
         public async Task<bool> UpdateRecurringScheduleAsync(RecurringScheduleDTO rec)
         {
-            using var conn = new SqlConnection(_db.ConnectionString);
-            await conn.OpenAsync();
-            using var trans = conn.BeginTransaction();
-
             try
             {
-                // 1) Update template
+                using var conn = new SqlConnection(_db.ConnectionString);
+                await conn.OpenAsync();
+                using var trans = conn.BeginTransaction();
+
+                // Update recurring schedule info
+                string daysString = string.Join(",", rec.SelectedDays.Select(d => (int)d));
+
                 var cmd = new SqlCommand(@"
-                    UPDATE RecurringSchedules SET
-                        RouteId=@RouteId,
-                        BusId=@BusId,
-                        StartDate=@StartDate,
-                        EndDate=@EndDate,
-                        Frequency=@Frequency,
-                        DepartureTime=@DepartureTime,
-                        ArrivalTime=@ArrivalTime,
-                        Price=@Price,
-                        NextRunDate=@NextRunDate
-                    WHERE Id=@Id", conn, trans);
+UPDATE RecurringSchedules
+SET RouteId = @RouteId,
+    BusId = @BusId,
+    StartDate = @StartDate,
+    EndDate = @EndDate,
+    Frequency = @Frequency,
+    SelectedDays = @SelectedDays,
+    DepartureTime = @DepartureTime,
+    ArrivalTime = @ArrivalTime,
+    Price = @Price
+WHERE Id = @Id", conn, trans);
 
                 cmd.Parameters.AddWithValue("@Id", rec.Id);
                 cmd.Parameters.AddWithValue("@RouteId", rec.RouteId);
@@ -169,44 +185,47 @@ namespace TMS.DAL
                 cmd.Parameters.AddWithValue("@StartDate", rec.StartDate);
                 cmd.Parameters.AddWithValue("@EndDate", rec.EndDate);
                 cmd.Parameters.AddWithValue("@Frequency", rec.Frequency);
+                cmd.Parameters.AddWithValue("@SelectedDays", daysString);
                 cmd.Parameters.AddWithValue("@DepartureTime", rec.DepartureTime);
                 cmd.Parameters.AddWithValue("@ArrivalTime", rec.ArrivalTime);
                 cmd.Parameters.AddWithValue("@Price", rec.Price);
-                cmd.Parameters.AddWithValue("@NextRunDate", rec.NextRunDate);
 
                 await cmd.ExecuteNonQueryAsync();
 
-                // 2) Delete all future schedules linked to this recurring schedule
-                var delCmd = new SqlCommand(@"
-                    DELETE FROM Schedules
-                    WHERE RecurringScheduleId=@Id AND DepartureTime >= @Now", conn, trans);
-                delCmd.Parameters.AddWithValue("@Id", rec.Id);
-                delCmd.Parameters.AddWithValue("@Now", DateTime.UtcNow);
-                await delCmd.ExecuteNonQueryAsync();
+                // Delete future child schedules only
+                var deleteCmd = new SqlCommand(@"
+DELETE FROM Schedules 
+WHERE RecurringScheduleId = @Id 
+  AND DepartureTime >= @Now", conn, trans);
 
-                // 3) Generate new schedules
+                deleteCmd.Parameters.AddWithValue("@Id", rec.Id);
+                deleteCmd.Parameters.AddWithValue("@Now", DateTime.UtcNow);
+                await deleteCmd.ExecuteNonQueryAsync();
+
+                // Regenerate schedules based on updated DTO
                 var schedules = RecurringHelper.GenerateSchedules(rec);
+
                 foreach (var s in schedules)
                 {
                     s.RecurringScheduleId = rec.Id;
 
-                    var addCmd = new SqlCommand(@"
-                        INSERT INTO Schedules
-                        (Id, RouteId, BusId, RecurringScheduleId, DepartureTime, ArrivalTime, Price, Completed, CreatedAt)
-                        VALUES (@Id,@RouteId,@BusId,@RecurringScheduleId,@DepartureTime,@ArrivalTime,@Price,@Completed,@CreatedAt)",
+                    var scheduleCmd = new SqlCommand(@"
+INSERT INTO Schedules
+(Id, RouteId, BusId, RecurringScheduleId, DepartureTime, ArrivalTime, Price, Completed, CreatedAt)
+VALUES (@Id,@RouteId,@BusId,@RecurringScheduleId,@DepartureTime,@ArrivalTime,@Price,@Completed,@CreatedAt)",
                         conn, trans);
 
-                    addCmd.Parameters.AddWithValue("@Id", s.Id);
-                    addCmd.Parameters.AddWithValue("@RouteId", s.RouteId);
-                    addCmd.Parameters.AddWithValue("@BusId", s.BusId);
-                    addCmd.Parameters.AddWithValue("@RecurringScheduleId", s.RecurringScheduleId);
-                    addCmd.Parameters.AddWithValue("@DepartureTime", s.DepartureTime);
-                    addCmd.Parameters.AddWithValue("@ArrivalTime", s.ArrivalTime);
-                    addCmd.Parameters.AddWithValue("@Price", s.Price);
-                    addCmd.Parameters.AddWithValue("@Completed", s.Completed);
-                    addCmd.Parameters.AddWithValue("@CreatedAt", s.CreatedAt);
+                    scheduleCmd.Parameters.AddWithValue("@Id", s.Id);
+                    scheduleCmd.Parameters.AddWithValue("@RouteId", s.RouteId);
+                    scheduleCmd.Parameters.AddWithValue("@BusId", s.BusId);
+                    scheduleCmd.Parameters.AddWithValue("@RecurringScheduleId", s.RecurringScheduleId);
+                    scheduleCmd.Parameters.AddWithValue("@DepartureTime", s.DepartureTime);
+                    scheduleCmd.Parameters.AddWithValue("@ArrivalTime", s.ArrivalTime);
+                    scheduleCmd.Parameters.AddWithValue("@Price", s.Price);
+                    scheduleCmd.Parameters.AddWithValue("@Completed", s.Completed);
+                    scheduleCmd.Parameters.AddWithValue("@CreatedAt", s.CreatedAt);
 
-                    await addCmd.ExecuteNonQueryAsync();
+                    await scheduleCmd.ExecuteNonQueryAsync();
                 }
 
                 trans.Commit();
@@ -214,7 +233,6 @@ namespace TMS.DAL
             }
             catch
             {
-                trans.Rollback();
                 return false;
             }
         }
@@ -228,7 +246,6 @@ namespace TMS.DAL
 
             try
             {
-                // Delete future schedules linked to this recurring schedule
                 var delCmd = new SqlCommand(@"
                     DELETE FROM Schedules
                     WHERE RecurringScheduleId=@Id AND DepartureTime >= @Now", conn, trans);
@@ -236,7 +253,6 @@ namespace TMS.DAL
                 delCmd.Parameters.AddWithValue("@Now", DateTime.UtcNow);
                 await delCmd.ExecuteNonQueryAsync();
 
-                // Delete recurring schedule
                 var cmd = new SqlCommand("DELETE FROM RecurringSchedules WHERE Id=@Id", conn, trans);
                 cmd.Parameters.AddWithValue("@Id", id);
                 int rows = await cmd.ExecuteNonQueryAsync();
@@ -251,6 +267,24 @@ namespace TMS.DAL
             }
         }
 
+       
+
+
+
+        // ---------------- UPDATE COMPLETED STATUS ----------------
+        public async Task<int> UpdateCompletedSchedulesAsync()
+        {
+            using var conn = new SqlConnection(_db.ConnectionString);
+            await conn.OpenAsync();
+
+            var cmd = new SqlCommand(@"
+                UPDATE Schedules
+                SET Completed = 1
+                WHERE DepartureTime <= SYSUTCDATETIME() AND Completed = 0",
+                conn);
+
+            return await cmd.ExecuteNonQueryAsync();
+        }
         // ---------------- GET ALL SCHEDULES ----------------
         public async Task<List<ScheduleDTO>> GetAllSchedulesAsync()
         {
@@ -258,7 +292,14 @@ namespace TMS.DAL
             using var conn = new SqlConnection(_db.ConnectionString);
             await conn.OpenAsync();
 
-            var cmd = new SqlCommand("SELECT * FROM Schedules ORDER BY DepartureTime", conn);
+            var cmd = new SqlCommand(@"
+SELECT s.Id, s.RouteId, s.BusId, s.RecurringScheduleId, s.DepartureTime, s.ArrivalTime, s.Price, s.Completed, s.CreatedAt,
+       b.BusNumber, r.Origin, r.Destination
+FROM Schedules s
+JOIN Buses b ON s.BusId = b.Id
+JOIN Routes r ON s.RouteId = r.Id
+ORDER BY s.DepartureTime", conn);
+
             using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -272,25 +313,13 @@ namespace TMS.DAL
                     ArrivalTime = reader.GetDateTime(5),
                     Price = reader.GetDecimal(6),
                     Completed = reader.GetBoolean(7),
-                    CreatedAt = reader.GetDateTime(8)
+                    CreatedAt = reader.GetDateTime(8),
+                    BusNumber = reader.GetString(9),
+                    RouteDisplay = $"{reader.GetString(10)} → {reader.GetString(11)}"
                 });
             }
+
             return list;
-        }
-
-        // ---------------- UPDATE COMPLETED STATUS ----------------
-        public async Task<int> UpdateCompletedSchedulesAsync()
-        {
-            using var conn = new SqlConnection(_db.ConnectionString);
-            await conn.OpenAsync();
-
-            var cmd = new SqlCommand(@"
-        UPDATE Schedules
-        SET Completed = 1
-        WHERE DepartureTime <= SYSUTCDATETIME() AND Completed = 0",
-                conn);
-
-            return await cmd.ExecuteNonQueryAsync(); // returns number of schedules updated
         }
 
         // ---------------- GET SCHEDULE BY ID ----------------
@@ -299,7 +328,14 @@ namespace TMS.DAL
             using var conn = new SqlConnection(_db.ConnectionString);
             await conn.OpenAsync();
 
-            var cmd = new SqlCommand("SELECT * FROM Schedules WHERE Id=@Id", conn);
+            var cmd = new SqlCommand(@"
+SELECT s.Id, s.RouteId, s.BusId, s.RecurringScheduleId, s.DepartureTime, s.ArrivalTime, s.Price, s.Completed, s.CreatedAt,
+       b.BusNumber, r.Origin, r.Destination
+FROM Schedules s
+JOIN Buses b ON s.BusId = b.Id
+JOIN Routes r ON s.RouteId = r.Id
+WHERE s.Id = @Id", conn);
+
             cmd.Parameters.AddWithValue("@Id", id);
 
             using var reader = await cmd.ExecuteReaderAsync();
@@ -315,11 +351,13 @@ namespace TMS.DAL
                     ArrivalTime = reader.GetDateTime(5),
                     Price = reader.GetDecimal(6),
                     Completed = reader.GetBoolean(7),
-                    CreatedAt = reader.GetDateTime(8)
+                    CreatedAt = reader.GetDateTime(8),
+                    BusNumber = reader.GetString(9),
+                    RouteDisplay = $"{reader.GetString(10)} → {reader.GetString(11)}"
                 };
             }
 
-            return null; // not found
+            return null;
         }
 
         // ---------------- GET RECURRING SCHEDULE BY ID ----------------
@@ -328,12 +366,24 @@ namespace TMS.DAL
             using var conn = new SqlConnection(_db.ConnectionString);
             await conn.OpenAsync();
 
-            var cmd = new SqlCommand("SELECT * FROM RecurringSchedules WHERE Id=@Id", conn);
+            var cmd = new SqlCommand(@"
+SELECT Id, RouteId, BusId, StartDate, EndDate, Frequency, SelectedDays, DepartureTime, ArrivalTime, Price, CreatedAt
+FROM RecurringSchedules 
+WHERE Id=@Id", conn);
+
             cmd.Parameters.AddWithValue("@Id", id);
 
             using var reader = await cmd.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
+                // Parse SelectedDays (stored as comma-separated integers)
+                var selectedDaysString = reader.IsDBNull(6) ? "" : reader.GetString(6);
+                var selectedDays = selectedDaysString
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(int.Parse)
+                    .Select(d => (DayOfWeek)d)
+                    .ToList();
+
                 return new RecurringScheduleDTO
                 {
                     Id = reader.GetGuid(0),
@@ -342,16 +392,61 @@ namespace TMS.DAL
                     StartDate = reader.GetDateTime(3),
                     EndDate = reader.GetDateTime(4),
                     Frequency = reader.GetString(5),
-                    DepartureTime = reader.GetTimeSpan(6),
-                    ArrivalTime = reader.GetTimeSpan(7),
-                    Price = reader.GetDecimal(8),
-                    NextRunDate = reader.GetDateTime(9),
+                    SelectedDays = selectedDays,
+                    DepartureTime = reader.GetTimeSpan(7),
+                    ArrivalTime = reader.GetTimeSpan(8),
+                    Price = reader.GetDecimal(9),
                     CreatedAt = reader.GetDateTime(10)
                 };
             }
 
-            return null; // not found
+            return null;
         }
+
+        // ---------------- GET ALL RECURRING SCHEDULES ----------------
+        public async Task<List<RecurringScheduleDTO>> GetAllRecurringSchedulesAsync()
+        {
+            var list = new List<RecurringScheduleDTO>();
+
+            using var conn = new SqlConnection(_db.ConnectionString);
+            await conn.OpenAsync();
+
+            var cmd = new SqlCommand(@"
+SELECT Id, RouteId, BusId, StartDate, EndDate, Frequency, SelectedDays, DepartureTime, ArrivalTime, Price, CreatedAt
+FROM RecurringSchedules
+ORDER BY StartDate", conn);
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                // Parse SelectedDays (stored as comma-separated integers)
+                var selectedDaysString = reader.IsDBNull(6) ? "" : reader.GetString(6);
+                var selectedDays = selectedDaysString
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(int.Parse)
+                    .Select(d => (DayOfWeek)d)
+                    .ToList();
+
+                list.Add(new RecurringScheduleDTO
+                {
+                    Id = reader.GetGuid(0),
+                    RouteId = reader.GetGuid(1),
+                    BusId = reader.GetGuid(2),
+                    StartDate = reader.GetDateTime(3),
+                    EndDate = reader.GetDateTime(4),
+                    Frequency = reader.GetString(5),
+                    SelectedDays = selectedDays,
+                    DepartureTime = reader.GetTimeSpan(7),
+                    ArrivalTime = reader.GetTimeSpan(8),
+                    Price = reader.GetDecimal(9),
+                    CreatedAt = reader.GetDateTime(10)
+                });
+            }
+
+            return list;
+        }
+
+
 
 
     }

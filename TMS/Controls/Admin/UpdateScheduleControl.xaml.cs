@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using TMS.BLL;
 using TMS.DTO;
-using TMS.DAL;
+using System.Collections.Generic;
 
 namespace TMS.Controls.Admin
 {
@@ -17,6 +17,8 @@ namespace TMS.Controls.Admin
         private readonly RouteBL _routeBL;
 
         private ScheduleDTO selectedSchedule;
+        private RecurringScheduleDTO selectedRecurring;
+        private TimeSpan _routeEstimatedTime;
 
         public UpdateScheduleControl(Frame frame, string username)
         {
@@ -31,6 +33,20 @@ namespace TMS.Controls.Admin
             LoadBuses();
             LoadRoutes();
             LoadSchedules();
+        }
+
+        private void UpdateOption_Checked(object sender, RoutedEventArgs e)
+        {
+            if (rbUpdateAllFuture.IsChecked == true)
+            {
+                // Disable departure date for all future updates
+                dpDepartureDateUpdate.IsEnabled = false;
+            }
+            else
+            {
+                // Enable departure date for single instance
+                dpDepartureDateUpdate.IsEnabled = true;
+            }
         }
 
         private async void LoadBuses()
@@ -57,86 +73,150 @@ namespace TMS.Controls.Admin
             cmbScheduleUpdate.SelectedValuePath = "Id";
         }
 
-        private void CmbScheduleUpdate_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void CmbScheduleUpdate_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             selectedSchedule = cmbScheduleUpdate.SelectedItem as ScheduleDTO;
-            if (selectedSchedule == null) return;
+            if (selectedSchedule == null)
+            {
+                SchedulePanelUpdate.Visibility = Visibility.Collapsed;
+                RecurringUpdateModePanel.Visibility = Visibility.Collapsed;
+                return;
+            }
 
             cmbBusUpdate.SelectedValue = selectedSchedule.BusId;
             cmbRouteUpdate.SelectedValue = selectedSchedule.RouteId;
-            dpDepartureDateUpdate.SelectedDate = selectedSchedule.DepartureTime.Date;
-            txtDepartureTimeUpdate.Text = selectedSchedule.DepartureTime.ToString("HH:mm");
-            dpArrivalDateUpdate.SelectedDate = selectedSchedule.ArrivalTime.Date;
-            txtArrivalTimeUpdate.Text = selectedSchedule.ArrivalTime.ToString("HH:mm");
             txtPriceUpdate.Text = selectedSchedule.Price.ToString();
+
+            var route = await _routeBL.GetRouteByIdAsync(selectedSchedule.RouteId);
+            _routeEstimatedTime = TimeSpan.FromMinutes(route?.EstimatedTimeMinutes ?? 0);
+
+            // Show common schedule panel
+            SchedulePanelUpdate.Visibility = Visibility.Visible;
+
+            // Fill departure
+            dpDepartureDateUpdate.SelectedDate = selectedSchedule.DepartureTime.Date;
+            tpDepartureTimeUpdate.Value = selectedSchedule.DepartureTime;
+
+            // Auto-fill arrival
+            UpdateArrivalTime();
 
             if (selectedSchedule.RecurringScheduleId != null)
             {
-                chkRecurringUpdate.IsChecked = true;
-                RecurringPanelUpdate.Visibility = Visibility.Visible;
+                // Recurring schedule
+                selectedRecurring = await _scheduleBL.GetRecurringScheduleByIdAsync(selectedSchedule.RecurringScheduleId.Value);
+                RecurringUpdateModePanel.Visibility = Visibility.Visible;
 
-                var rec = new ScheduleBL(new ScheduleDAL()).GetRecurringScheduleByIdAsync(selectedSchedule.RecurringScheduleId.Value).Result;
-                dpStartDateUpdate.SelectedDate = rec.StartDate;
-                dpEndDateUpdate.SelectedDate = rec.EndDate;
-                cmbFrequencyUpdate.SelectedItem = cmbFrequencyUpdate.Items.OfType<ComboBoxItem>()
-                    .FirstOrDefault(x => x.Content.ToString() == rec.Frequency);
+                rbUpdateThisInstance.IsChecked = true;
+                rbUpdateAllFuture.IsChecked = false;
             }
             else
             {
-                chkRecurringUpdate.IsChecked = false;
-                RecurringPanelUpdate.Visibility = Visibility.Collapsed;
+                // One-time schedule
+                selectedRecurring = null;
+                RecurringUpdateModePanel.Visibility = Visibility.Collapsed;
             }
         }
 
-        private void ChkRecurringUpdate_Checked(object sender, RoutedEventArgs e) => RecurringPanelUpdate.Visibility = Visibility.Visible;
-        private void ChkRecurringUpdate_Unchecked(object sender, RoutedEventArgs e) => RecurringPanelUpdate.Visibility = Visibility.Collapsed;
+        private async void CmbRouteUpdate_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbRouteUpdate.SelectedValue == null) return;
+            var route = await _routeBL.GetRouteByIdAsync((Guid)cmbRouteUpdate.SelectedValue);
+            _routeEstimatedTime = TimeSpan.FromMinutes(route?.EstimatedTimeMinutes ?? 0);
+            UpdateArrivalTime();
+        }
+
+        private void DepartureDateUpdate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateArrivalTime();
+        }
+
+        private void DepartureTimeUpdate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            UpdateArrivalTime();
+        }
+
+        private void UpdateArrivalTime()
+        {
+            if (_routeEstimatedTime == TimeSpan.Zero) return;
+            if (dpDepartureDateUpdate.SelectedDate.HasValue && tpDepartureTimeUpdate.Value.HasValue)
+            {
+                var dep = dpDepartureDateUpdate.SelectedDate.Value + tpDepartureTimeUpdate.Value.Value.TimeOfDay;
+                var arr = dep + _routeEstimatedTime;
+                dpArrivalDateUpdate.SelectedDate = arr.Date;
+                tpArrivalTimeUpdate.Value = arr;
+            }
+        }
 
         private async void UpdateScheduleUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedSchedule == null) { MessageBox.Show("Select a schedule."); return; }
+            if (selectedSchedule == null && selectedRecurring == null)
+            {
+                MessageBox.Show("Select a schedule first.");
+                return;
+            }
 
             if (!decimal.TryParse(txtPriceUpdate.Text.Trim(), out decimal price))
             {
-                MessageBox.Show("Invalid price"); return;
+                MessageBox.Show("Invalid price.");
+                return;
             }
 
-            if (!TimeSpan.TryParse(txtDepartureTimeUpdate.Text.Trim(), out TimeSpan depTime) ||
-                !TimeSpan.TryParse(txtArrivalTimeUpdate.Text.Trim(), out TimeSpan arrTime))
-            {
-                MessageBox.Show("Invalid time format. Use HH:mm."); return;
-            }
+            // Compute departure & arrival
+            var newDepartureDateTime = dpDepartureDateUpdate.SelectedDate.Value + tpDepartureTimeUpdate.Value.Value.TimeOfDay;
+            var newArrivalDateTime = newDepartureDateTime + _routeEstimatedTime;
 
-            if (chkRecurringUpdate.IsChecked == true)
+            if (selectedRecurring != null)
             {
-                var rec = new RecurringScheduleDTO
+                bool updateThisInstance = rbUpdateThisInstance.IsChecked == true;
+
+                if (updateThisInstance)
                 {
-                    Id = selectedSchedule.RecurringScheduleId.Value,
-                    BusId = (Guid)cmbBusUpdate.SelectedValue,
-                    RouteId = (Guid)cmbRouteUpdate.SelectedValue,
-                    DepartureTime = depTime,
-                    ArrivalTime = arrTime,
-                    Price = price,
-                    StartDate = dpStartDateUpdate.SelectedDate.Value,
-                    EndDate = dpEndDateUpdate.SelectedDate.Value,
-                    Frequency = ((ComboBoxItem)cmbFrequencyUpdate.SelectedItem).Content.ToString(),
-                    NextRunDate = dpStartDateUpdate.SelectedDate.Value
-                };
-                await _scheduleBL.UpdateRecurringScheduleAsync(rec);
-                MessageBox.Show("Recurring schedule updated!");
+                    // Update only this instance
+                    var scheduleDto = new ScheduleDTO
+                    {
+                        Id = selectedSchedule.Id,
+                        BusId = (Guid)cmbBusUpdate.SelectedValue,
+                        RouteId = (Guid)cmbRouteUpdate.SelectedValue,
+                        DepartureTime = newDepartureDateTime,
+                        ArrivalTime = newArrivalDateTime,
+                        Price = price,
+                        Completed = selectedSchedule.Completed
+                    };
+
+                    bool success = await _scheduleBL.UpdateScheduleAsync(scheduleDto);
+                    MessageBox.Show(success ? "Schedule instance updated!" : "Failed to update schedule instance.");
+                }
+                else
+                {
+                    // Update all future instances by updating the recurring template
+                    selectedRecurring.BusId = (Guid)cmbBusUpdate.SelectedValue;
+                    selectedRecurring.RouteId = (Guid)cmbRouteUpdate.SelectedValue;
+                    selectedRecurring.Price = price;
+
+                    // Update DepartureTime & ArrivalTime (TimeSpan of day)
+                    selectedRecurring.DepartureTime = newDepartureDateTime.TimeOfDay;
+                    selectedRecurring.ArrivalTime = newArrivalDateTime.TimeOfDay;
+
+                    bool success = await _scheduleBL.UpdateRecurringScheduleAsync(selectedRecurring);
+                    MessageBox.Show(success ? "All future schedules updated!" : "Failed to update recurring schedules.");
+                }
             }
-            else
+            else if (selectedSchedule != null)
             {
+                // One-time schedule update
                 selectedSchedule.BusId = (Guid)cmbBusUpdate.SelectedValue;
                 selectedSchedule.RouteId = (Guid)cmbRouteUpdate.SelectedValue;
-                selectedSchedule.DepartureTime = dpDepartureDateUpdate.SelectedDate.Value + depTime;
-                selectedSchedule.ArrivalTime = dpArrivalDateUpdate.SelectedDate.Value + arrTime;
+                selectedSchedule.DepartureTime = newDepartureDateTime;
+                selectedSchedule.ArrivalTime = newArrivalDateTime;
                 selectedSchedule.Price = price;
 
-                await _scheduleBL.UpdateScheduleAsync(selectedSchedule);
-                MessageBox.Show("Schedule updated!");
+                bool success = await _scheduleBL.UpdateScheduleAsync(selectedSchedule);
+                MessageBox.Show(success ? "Schedule updated!" : "Failed to update schedule.");
             }
 
             LoadSchedules();
         }
+
+
     }
 }
