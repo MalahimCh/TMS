@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="TMS.Controls.Admin.DeleteScheduleControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="Auto" Width="Auto">
+    <StackPanel Margin="20" Width="400" VerticalAlignment="Top">
+        <TextBlock Text="Delete Schedule" FontSize="24" FontWeight="Bold" Foreground="#1E3A8A" Margin="0,0,0,20"/>
+
+        <!-- Schedule Selection -->
+        <TextBlock Text="Select Schedule"/>
+        <ComboBox x:Name="cmbScheduleDelete" Width="300" Margin="0,0,0,10" SelectionChanged="CmbScheduleDelete_SelectionChanged"/>
+
+        <!-- Recurring schedule warning -->
+        <StackPanel x:Name="RecurringWarningPanel" Visibility="Collapsed" Margin="0,10,0,10">
+            <TextBlock Text="⚠ This schedule is part of a recurring schedule. Deleting it will remove all future occurrences!" 
+                       Foreground="Red" FontWeight="Bold" TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <Button Content="Delete Schedule"
+                Width="160"
+                Height="35"
+                Background="#DC2626"
+                Foreground="White"
+                FontWeight="Bold"
+                Click="DeleteScheduleDelete_Click"/>
+    </StackPanel>
+</UserControl>
