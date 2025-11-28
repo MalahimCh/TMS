@@ -126,11 +126,24 @@ ADD SelectedDays NVARCHAR(20) NULL;
 --    UserId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Users(Id),
 --    ScheduleId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Schedules(Id),
 --    BookingDate DATETIME2(7) DEFAULT GETUTCDATE(),
+
+--    -- Amounts
 --    TotalAmount DECIMAL(10,2) NOT NULL,
---    BookingStatus NVARCHAR(50) DEFAULT 'Pending', -- Pending, Confirmed, Cancelled
---    PaymentStatus NVARCHAR(50) DEFAULT 'Pending', -- Paid, Failed
+--    DiscountAmount DECIMAL(10,2) DEFAULT 0,
+--    PromotionCode NVARCHAR(50) NULL,
+--    FinalAmount AS (TotalAmount - DiscountAmount) PERSISTED,
+
+--    -- Status
+--    BookingStatus NVARCHAR(50) DEFAULT 'Pending', 
+--    PaymentStatus NVARCHAR(50) DEFAULT 'Pending',
+
+--    -- Payment tracking
+--    TransactionId NVARCHAR(100) NULL,
+--    PaymentMethod NVARCHAR(50) NULL,
+
 --    BookingReference NVARCHAR(50) NOT NULL UNIQUE
 --);
+
 
 
 --CREATE TABLE BookingSeats (
@@ -145,17 +158,20 @@ ADD SelectedDays NVARCHAR(20) NULL;
 --    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
 --    Code NVARCHAR(50) NOT NULL UNIQUE,
 --    DiscountPercentage INT NOT NULL,
+--    MinOrderAmount DECIMAL(10,2) NULL,
 --    ValidFrom DATETIME2(7) NOT NULL,
 --    ValidTo DATETIME2(7) NOT NULL,
 --    MaxUsage INT NULL,
+--    UsageCount INT NOT NULL DEFAULT 0,
+--    IsActive BIT NOT NULL DEFAULT 1,
 --    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE()
 --);
 
 
 --CREATE TABLE CancellationPolicies (
 --    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
---    ScheduleId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Schedules(Id),
---    RefundPercentage INT NOT NULL,       -- % refunded
+--    RefundPercentage INT NOT NULL,
 --    CutoffHoursBeforeDeparture INT NOT NULL,
+--    IsActive BIT NOT NULL DEFAULT 1,
 --    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE()
 --);
