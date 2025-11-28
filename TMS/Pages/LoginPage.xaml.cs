@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using TMS.BLL;
 using TMS.DAL;
 using TMS.Pages.Admin;
+using TMS.Pages.Customer;
 namespace TMS.Pages
 {
     public partial class LoginPage : Page
@@ -82,6 +83,10 @@ namespace TMS.Pages
                     if (user.Role == "admin")
                     {
                         _mainFrame.Content = new AdminDashboard(_mainFrame, user.FullName);
+                    }
+                    else if (user.Role == "customer")
+                    {
+                        _mainFrame.Content = new CustomerDashboard(_mainFrame, user.FullName);
                     }
                     else
                     {
