@@ -8,8 +8,8 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Column="0">
@@ -39,22 +39,23 @@
                 <TextBlock Text="Email" FontWeight="SemiBold" Foreground="#1E3A8A" Margin="15,0,0,5"/>
 
                 <Border CornerRadius="25" 
-                        Background="#BBDEFB" 
+                        Background="#B9F6CA" 
                         Height="50"
                         Margin="0,0,0,20">
                     <TextBox x:Name="txtEmail" 
                              Background="Transparent" 
                              BorderThickness="0" 
-                             Padding="20,15,20,0"
+                             Padding="20,0,20,0"
                              FontSize="14"
                              VerticalContentAlignment="Center"
+                             HorizontalContentAlignment="Center"
                              Foreground="#1E3A8A"/>
                 </Border>
 
                 <TextBlock Text="Password" FontWeight="SemiBold" Foreground="#1E3A8A" Margin="15,0,0,5"/>
 
                 <Border CornerRadius="25" 
-                        Background="#BBDEFB" 
+                        Background="#B9F6CA" 
                         Height="50"
                         Margin="0,0,0,10">
                     <Grid>
@@ -62,9 +63,10 @@
                             <PasswordBox x:Name="pwdBox"
                                          Background="Transparent"
                                          BorderThickness="0"
-                                         Padding="20,15,45,0" 
+                                         Padding="20,0,45,0" 
                                          FontSize="14"
                                          VerticalContentAlignment="Center"
+                                         HorizontalContentAlignment="Center"
                                          Foreground="#1E3A8A"
                                          PasswordChanged="pwdBox_PasswordChanged"/>
                         </Border>
@@ -76,9 +78,10 @@
                             <TextBox x:Name="txtPasswordVisible"
                                      Background="Transparent"
                                      BorderThickness="0"
-                                     Padding="20,15,45,0"
+                                     Padding="20,0,45,0"
                                      FontSize="14"
                                      VerticalContentAlignment="Center"
+                                     HorizontalContentAlignment="Center"
                                      Foreground="#1E3A8A"
                                      TextChanged="txtPasswordVisible_TextChanged"/>
                         </Border>
