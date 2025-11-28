@@ -8,12 +8,15 @@ namespace TMS.Pages.Admin
         private readonly Frame _mainFrame;
         private readonly string _username;
 
+        public string UsernameDisplay => $"{_username} ▼";
+
         public AdminDashboard(Frame frame, string username)
         {
             InitializeComponent();
             _mainFrame = frame;
             _username = username;
 
+            DataContext = this; // for profile menu binding
             txtAdminName.Text = $"Welcome, {username}";
         }
 
@@ -69,6 +72,19 @@ namespace TMS.Pages.Admin
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
             _mainFrame.Content = new LoginPage(_mainFrame);
+        }
+
+        // ---------------------- PROFILE MENU HANDLERS ----------------------
+        private void UpdateProfile_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Update Profile clicked (connect your page here)");
+            //_mainFrame.Content = new UpdateProfilePage(_mainFrame, _username);
+        }
+
+        private void ChangePassword_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Change Password clicked (connect your page here)");
+            //_mainFrame.Content = new ChangePasswordPage(_mainFrame, _username);
         }
     }
 }
