@@ -5,6 +5,77 @@
       Title="Admin Dashboard"
       Background="#F5F7FF">
 
+    <!-- ===================== GLOBAL RESOURCES ===================== -->
+    <Page.Resources>
+
+        <!-- Card Hover Animation -->
+        <Style x:Key="HoverCard" TargetType="Border">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                                 To="1.03" Duration="0:0:0.15"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                                 To="1.03" Duration="0:0:0.15"/>
+                                <ColorAnimation Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                To="#0F2A6F" Duration="0:0:0.15"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
+                                                 To="1" Duration="0:0:0.15"/>
+                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
+                                                 To="1" Duration="0:0:0.15"/>
+                                <ColorAnimation Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)"
+                                                To="#1E3A8A" Duration="0:0:0.15"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Modern Popup Menu Style -->
+        <Style x:Key="PopupMenuItem" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Left" Margin="5"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#EEF2FF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Page.Resources>
+
+
+    <!-- ===================== PAGE CONTENT ===================== -->
     <Grid>
 
         <Grid.ColumnDefinitions>
@@ -12,7 +83,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- ================= SIDEBAR ================= -->
+        <!-- ================= SIDE BAR ================= -->
         <Grid Background="#FF17358A" Grid.Column="0">
             <StackPanel Margin="20">
                 <TextBlock Text="Admin Panel"
@@ -111,39 +182,70 @@
             </StackPanel>
         </Grid>
 
-        <!-- ================= MAIN CONTENT ================= -->
+
+        <!-- ================= RIGHT CONTENT ================= -->
         <Grid Grid.Column="1">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="60"/>
-                <!-- TOP BAR WITH PROFILE -->
                 <RowDefinition Height="*"/>
-                <!-- Main ScrollViewer content -->
             </Grid.RowDefinitions>
 
-            <!-- ================== TOP RIGHT PROFILE DROPDOWN ================== -->
+
+            <!-- ===================== TOP RIGHT PROFILE DROPDOWN ===================== -->
             <Grid Background="#F5F7FF" Grid.Row="0">
-                <DockPanel LastChildFill="False" Margin="0,10,20,0">
+                <Grid HorizontalAlignment="Right" Margin="0,10,20,0">
 
-                    <Menu DockPanel.Dock="Right" Background="Transparent" BorderThickness="0">
-                        <MenuItem Header="{Binding UsernameDisplay}"
-                                  x:Name="menuProfile"
-                                  HorizontalAlignment="Right">
+                    <!-- Profile Button -->
+                    <Button x:Name="btnProfile"
+                            Content="{Binding UsernameDisplay}"
+                            Background="White"
+                            Foreground="#1E3A8A"
+                            Padding="12,6"
+                            BorderBrush="#1E3A8A"
+                            BorderThickness="1"
+                            FontWeight="Bold"
+                            Cursor="Hand"
+                            Click="ProfileMenu_Click"/>
 
-                            <MenuItem Header="Update Profile"
-                                      Click="UpdateProfile_Click"/>
+                    <!-- Popup -->
+                    <Popup x:Name="ProfilePopup"
+                           Placement="Bottom"
+                           AllowsTransparency="True"
+                           StaysOpen="False">
 
-                            <MenuItem Header="Change Password"
-                                      Click="ChangePassword_Click"/>
+                        <Border Background="White"
+                                Padding="10"
+                                CornerRadius="10"
+                                BorderBrush="#1E3A8A"
+                                BorderThickness="1"
+                                Width="180"
+                                Margin="0,5,0,0">
 
-                            <Separator/>
+                            <StackPanel>
 
-                            <MenuItem Header="Logout"
-                                      Click="Logout_Click"/>
-                        </MenuItem>
-                    </Menu>
-                </DockPanel>
+                                <Button Style="{StaticResource PopupMenuItem}"
+                                        Content="Update Profile"
+                                        Click="UpdateProfile_Click"/>
+
+                                <Button Style="{StaticResource PopupMenuItem}"
+                                        Content="Change Password"
+                                        Click="ChangePassword_Click"/>
+
+                                <Separator Margin="0,5"/>
+
+                                <Button Style="{StaticResource PopupMenuItem}"
+                                        Content="Logout"
+                                        Click="Logout_Click"/>
+                            </StackPanel>
+
+                        </Border>
+
+                    </Popup>
+
+                </Grid>
             </Grid>
+
 
             <!-- ================= MAIN DASHBOARD CONTENT ================= -->
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -168,107 +270,107 @@
                     <!-- Dashboard Cards -->
                     <UniformGrid Columns="3" Margin="0,10">
 
-                        <!-- ========== MANAGE BUSES CARD ========== -->
-                        <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
+                        <!-- BUS CARD -->
+                        <Border Style="{StaticResource HoverCard}"
+                                CornerRadius="10" Background="White" Padding="20" Margin="10"
                                 BorderBrush="#1E3A8A" BorderThickness="1">
                             <StackPanel>
-                                <TextBlock Text="Buses"
-                                           FontSize="20"
-                                           FontWeight="Bold"
-                                           Foreground="#1E3A8A"/>
-                                <TextBlock Text="Add, update, delete buses"
-                                           Foreground="Gray" FontSize="13"/>
-                                <Button Content="Manage"
-                                        Click="ManageBuses_Click"
-                                        Height="35"
-                                        Background="#1E3A8A"
-                                        Foreground="White"
-                                        FontWeight="Bold"
-                                        Margin="0,10,0,0"/>
+                                <TextBlock Text="Buses" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
+                                <TextBlock Text="Add, update, delete buses" Foreground="Gray" FontSize="13"/>
+                                <Button Content="Manage" Click="ManageBuses_Click"
+                                        Height="35" Background="#1E3A8A"
+                                        Foreground="White" FontWeight="Bold" Margin="0,10,0,0"/>
                             </StackPanel>
                         </Border>
 
                         <!-- ROUTES CARD -->
-                        <Border CornerRadius="10" Background="White" Padding="20" Margin="10" 
+                        <Border Style="{StaticResource HoverCard}"
+                                CornerRadius="10" Background="White" Padding="20" Margin="10"
                                 BorderBrush="#1E3A8A" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Routes" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
                                 <TextBlock Text="Add, update, delete bus routes" Foreground="Gray" FontSize="13"/>
                                 <Button Content="Manage" Click="ManageRoutes_Click"
-                                        Height="35" Background="#1E3A8A" Foreground="White"
-                                        FontWeight="Bold" Margin="0,10,0,0"/>
+                                        Height="35" Background="#1E3A8A"
+                                        Foreground="White" FontWeight="Bold" Margin="0,10,0,0"/>
                             </StackPanel>
                         </Border>
 
                         <!-- SCHEDULES CARD -->
-                        <Border CornerRadius="10" Background="White" Padding="20" Margin="10" 
+                        <Border Style="{StaticResource HoverCard}"
+                                CornerRadius="10" Background="White" Padding="20" Margin="10"
                                 BorderBrush="#1E3A8A" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Schedules" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
                                 <TextBlock Text="Manage timings and daily schedules" Foreground="Gray" FontSize="13"/>
                                 <Button Content="Manage" Click="ManageSchedules_Click"
-                                        Height="35" Background="#1E3A8A" Foreground="White"
-                                        FontWeight="Bold" Margin="0,10,0,0"/>
+                                        Height="35" Background="#1E3A8A"
+                                        Foreground="White" FontWeight="Bold" Margin="0,10,0,0"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- PRICING CARD -->
-                        <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
+                        <!-- PRICES CARD -->
+                        <Border Style="{StaticResource HoverCard}"
+                                CornerRadius="10" Background="White" Padding="20" Margin="10"
                                 BorderBrush="#1E3A8A" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Ticket Prices" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
                                 <TextBlock Text="Set or update fare prices" Foreground="Gray" FontSize="13"/>
                                 <Button Content="Manage" Click="ManagePrices_Click"
-                                        Height="35" Background="#1E3A8A" Foreground="White"
-                                        FontWeight="Bold" Margin="0,10,0,0"/>
+                                        Height="35" Background="#1E3A8A"
+                                        Foreground="White" FontWeight="Bold" Margin="0,10,0,0"/>
                             </StackPanel>
                         </Border>
 
                         <!-- SEATS CARD -->
-                        <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
+                        <Border Style="{StaticResource HoverCard}"
+                                CornerRadius="10" Background="White" Padding="20" Margin="10"
                                 BorderBrush="#1E3A8A" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Seat Availability" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
                                 <TextBlock Text="Real-time availability management" Foreground="Gray" FontSize="13"/>
                                 <Button Content="Manage" Click="ManageSeats_Click"
-                                        Height="35" Background="#1E3A8A" Foreground="White"
-                                        FontWeight="Bold" Margin="0,10,0,0"/>
+                                        Height="35" Background="#1E3A8A"
+                                        Foreground="White" FontWeight="Bold" Margin="0,10,0,0"/>
                             </StackPanel>
                         </Border>
 
                         <!-- REPORTS CARD -->
-                        <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
+                        <Border Style="{StaticResource HoverCard}"
+                                CornerRadius="10" Background="White" Padding="20" Margin="10"
                                 BorderBrush="#1E3A8A" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Reports" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
                                 <TextBlock Text="View statistics and analytics" Foreground="Gray" FontSize="13"/>
                                 <Button Content="View" Click="Reports_Click"
-                                        Height="35" Background="#1E3A8A" Foreground="White"
-                                        FontWeight="Bold" Margin="0,10,0,0"/>
+                                        Height="35" Background="#1E3A8A"
+                                        Foreground="White" FontWeight="Bold" Margin="0,10,0,0"/>
                             </StackPanel>
                         </Border>
 
                         <!-- POLICIES CARD -->
-                        <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
+                        <Border Style="{StaticResource HoverCard}"
+                                CornerRadius="10" Background="White" Padding="20" Margin="10"
                                 BorderBrush="#1E3A8A" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Cancellation Policies" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
                                 <TextBlock Text="Set refund and cancellation rules" Foreground="Gray" FontSize="13"/>
                                 <Button Content="Configure" Click="Policies_Click"
-                                        Height="35" Background="#1E3A8A" Foreground="White"
-                                        FontWeight="Bold" Margin="0,10,0,0"/>
+                                        Height="35" Background="#1E3A8A"
+                                        Foreground="White" FontWeight="Bold" Margin="0,10,0,0"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- DISCOUNTS CARD -->
-                        <Border CornerRadius="10" Background="White" Padding="20" Margin="10"
+                        <!-- PROMO CARD -->
+                        <Border Style="{StaticResource HoverCard}"
+                                CornerRadius="10" Background="White" Padding="20" Margin="10"
                                 BorderBrush="#1E3A8A" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Promo Codes" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
                                 <TextBlock Text="Manage promotions and discounts" Foreground="Gray" FontSize="13"/>
                                 <Button Content="Manage" Click="Promo_Click"
-                                        Height="35" Background="#1E3A8A" Foreground="White"
-                                        FontWeight="Bold" Margin="0,10,0,0"/>
+                                        Height="35" Background="#1E3A8A"
+                                        Foreground="White" FontWeight="Bold" Margin="0,10,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -276,5 +378,6 @@
                 </StackPanel>
             </ScrollViewer>
         </Grid>
+
     </Grid>
 </Page>

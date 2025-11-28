@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using TMS.Controls;
 
 namespace TMS.Pages.Admin
 {
@@ -77,14 +78,22 @@ namespace TMS.Pages.Admin
         // ---------------------- PROFILE MENU HANDLERS ----------------------
         private void UpdateProfile_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Update Profile clicked (connect your page here)");
-            //_mainFrame.Content = new UpdateProfilePage(_mainFrame, _username);
+            // Navigate to UpdateInfo page (formerly AdminSettingsPage)
+            _mainFrame.Content = new UpdateInfo(_username);
         }
 
         private void ChangePassword_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Change Password clicked (connect your page here)");
-            //_mainFrame.Content = new ChangePasswordPage(_mainFrame, _username);
+            // Navigate to UpdateInfo page but open ChangePasswordControl by default
+            var updatePage = new UpdateInfo(_username);
+            updatePage.ContentArea.Content = new ChangePasswordControl(_username);
+            _mainFrame.Content = updatePage;
+        }
+
+        private void ProfileMenu_Click(object sender, RoutedEventArgs e)
+        {
+            // Toggle the popup open/close
+            ProfilePopup.IsOpen = !ProfilePopup.IsOpen;
         }
     }
 }

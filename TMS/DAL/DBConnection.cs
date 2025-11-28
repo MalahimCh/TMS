@@ -9,7 +9,7 @@ namespace TMS.DAL
 
         public DBConnection()
         {
-            ConnectionString = ConfigurationManager.ConnectionStrings["TMS_DB"].ConnectionString;
+            ConnectionString = ConfigurationManager.ConnectionStrings["TMS"].ConnectionString;
         }
     }
 }
