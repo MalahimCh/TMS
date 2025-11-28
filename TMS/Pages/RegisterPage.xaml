@@ -3,137 +3,174 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       Title="Register"
-      Background="White">
+      FontFamily="Segoe UI"
+      Background="#F0F2F5">
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" />
-            <!-- Left side -->
-            <ColumnDefinition Width="2*" />
-            <!-- Right side -->
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="220" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <!-- Left Panel -->
-        <Grid Grid.Column="0" Background="#FF17358A">
-            <Grid.Effect>
-                <DropShadowEffect/>
-            </Grid.Effect>
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20">
-                <TextBlock Text="Ticketing Management System" 
-                           Foreground="White" 
-                           FontSize="28" 
-                           FontWeight="Bold" 
-                           TextAlignment="Center"
-                           TextWrapping="Wrap"/>
-                <TextBlock Text="Simplify ticket management efficiently." 
-                           Foreground="White" 
-                           FontSize="16" 
-                           Margin="0,10,0,0" 
-                           TextWrapping="Wrap"
-                           TextAlignment="Center"/>
-            </StackPanel>
+        <Grid Grid.Row="0">
+            <Grid.Background>
+                <ImageBrush ImageSource="/images/tickit.png" Stretch="UniformToFill" Opacity="0.9"/>
+            </Grid.Background>
+            <Border Background="#10000000"/>
         </Grid>
 
-        <!-- Right Panel -->
-        <Grid Grid.Column="1" Margin="40">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
+        <Border Grid.Row="0" Grid.RowSpan="2"
+                Width="420"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Background="White" 
+                CornerRadius="15"
+                Margin="0,60,0,0">
 
-                <!-- Title -->
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="25" ShadowDepth="5" Opacity="0.15" Color="Black"/>
+            </Border.Effect>
+
+            <StackPanel Margin="30">
+
                 <TextBlock Text="Create an Account" 
-                           FontSize="28" 
+                           FontSize="26" 
                            FontWeight="Bold" 
                            Foreground="#1E3A8A" 
-                           HorizontalAlignment="Center"/>
+                           HorizontalAlignment="Center" 
+                           Margin="0,0,0,5"/>
+
                 <TextBlock Text="Please fill the form below" 
                            FontSize="14" 
                            Foreground="Gray" 
                            HorizontalAlignment="Center" 
-                           Margin="0,5,0,20"/>
+                           Margin="0,0,0,25"/>
 
-                <!-- Full Name -->
-                <TextBlock Text="Full Name" FontWeight="SemiBold" Margin="0,10,0,5"/>
-                <Border CornerRadius="5" Background="#F0F4FF" BorderBrush="#1E3A8A" BorderThickness="1">
-                    <TextBox x:Name="txtFullName" Background="Transparent" BorderThickness="0" Padding="10"/>
+                <TextBlock Text="Full Name" FontWeight="Bold" Foreground="#1E3A8A" Margin="2,0,0,5"/>
+
+                <Border CornerRadius="8" 
+                        Background="#F0F4FF" 
+                        BorderBrush="#1E3A8A" 
+                        BorderThickness="1" 
+                        Height="45" 
+                        Margin="0,0,0,15">
+                    <TextBox x:Name="txtFullName"
+                             Background="Transparent" 
+                             BorderThickness="0" 
+                             Padding="15,0,15,0"
+                             FontSize="14"
+                             VerticalContentAlignment="Center"
+                             Foreground="Black"/>
                 </Border>
 
-                <!-- Email -->
-                <TextBlock Text="Email" FontWeight="SemiBold" Margin="0,10,0,5"/>
-                <Border CornerRadius="5" Background="#F0F4FF" BorderBrush="#1E3A8A" BorderThickness="1">
-                    <TextBox x:Name="txtEmail" Background="Transparent" BorderThickness="0" Padding="10"/>
+                <TextBlock Text="Email" FontWeight="Bold" Foreground="#1E3A8A" Margin="2,0,0,5"/>
+
+                <Border CornerRadius="8" 
+                        Background="#F0F4FF" 
+                        BorderBrush="#1E3A8A" 
+                        BorderThickness="1" 
+                        Height="45" 
+                        Margin="0,0,0,15">
+                    <TextBox x:Name="txtEmail"
+                             Background="Transparent" 
+                             BorderThickness="0" 
+                             Padding="15,0,15,0"
+                             FontSize="14"
+                             VerticalContentAlignment="Center"
+                             Foreground="Black"/>
                 </Border>
 
-                <!-- Phone -->
-                <TextBlock Text="Phone" FontWeight="SemiBold" Margin="0,10,0,5"/>
-                <Border CornerRadius="5" Background="#F0F4FF" BorderBrush="#1E3A8A" BorderThickness="1">
-                    <TextBox x:Name="txtPhone" Background="Transparent" BorderThickness="0" Padding="10"/>
+                <TextBlock Text="Phone" FontWeight="Bold" Foreground="#1E3A8A" Margin="2,0,0,5"/>
+
+                <Border CornerRadius="8" 
+                        Background="#F0F4FF" 
+                        BorderBrush="#1E3A8A" 
+                        BorderThickness="1" 
+                        Height="45" 
+                        Margin="0,0,0,15">
+                    <TextBox x:Name="txtPhone" 
+                             Background="Transparent" 
+                             BorderThickness="0" 
+                             Padding="15,0,15,0"
+                             FontSize="14"
+                             VerticalContentAlignment="Center"
+                             Foreground="Black"/>
                 </Border>
 
-                <!-- Password -->
-                <!-- Password -->
-                <TextBlock Text="Password" FontWeight="SemiBold" Margin="0,10,0,5"/>
+                <TextBlock Text="Password" FontWeight="Bold" Foreground="#1E3A8A" Margin="2,0,0,5"/>
 
-                <Grid>
-                    <!-- Hidden password input -->
-                    <Border x:Name="PasswordBorder"
-            CornerRadius="5"
-            Background="#F0F4FF"
-            BorderBrush="#1E3A8A"
-            BorderThickness="1">
-                        <PasswordBox x:Name="pwdBox"
-                     Background="Transparent"
-                     BorderThickness="0"
-                     Padding="10"
-                     PasswordChanged="pwdBox_PasswordChanged"/>
-                    </Border>
+                <Border CornerRadius="8" 
+                        Background="#F0F4FF" 
+                        BorderBrush="#1E3A8A" 
+                        BorderThickness="1" 
+                        Height="45" 
+                        Margin="0,0,0,25">
+                    <Grid>
+                        <Border x:Name="PasswordBorder" Background="Transparent" BorderThickness="0">
+                            <PasswordBox x:Name="pwdBox"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         Padding="15,0,45,0" 
+                                         FontSize="14"
+                                         VerticalContentAlignment="Center"
+                                         Foreground="Black"
+                                         PasswordChanged="pwdBox_PasswordChanged"/>
+                        </Border>
 
-                    <!-- Visible password text -->
-                    <Border x:Name="PasswordTextBorder"
-            CornerRadius="5"
-            Background="#F0F4FF"
-            BorderBrush="#1E3A8A"
-            BorderThickness="1"
-            Visibility="Collapsed">
-                        <TextBox x:Name="txtPasswordVisible"
-                 Background="Transparent"
-                 BorderThickness="0"
-                 Padding="10"
-                 TextChanged="txtPasswordVisible_TextChanged"/>
-                    </Border>
+                        <Border x:Name="PasswordTextBorder" Background="Transparent" BorderThickness="0" Visibility="Collapsed">
+                            <TextBox x:Name="txtPasswordVisible"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Padding="15,0,45,0"
+                                     FontSize="14"
+                                     VerticalContentAlignment="Center"
+                                     Foreground="Black"
+                                     TextChanged="txtPasswordVisible_TextChanged"/>
+                        </Border>
 
-                    <!-- Eye Button -->
-                    <Button x:Name="btnTogglePassword"
-            Width="32" Height="32"
-            Background="Transparent"
-            BorderThickness="0"
-            HorizontalAlignment="Right"
-            Click="TogglePasswordVisibility_Click">
-                        <materialDesign:PackIcon x:Name="EyePack"
-                                 Kind="Eye"
-                                 Width="22"
-                                 Height="22"
-                                 Foreground="#1E3A8A"/>
-                    </Button>
-                </Grid>
+                        <Button x:Name="btnTogglePassword"
+                                Width="30" Height="30"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Margin="0,0,10,0"
+                                Click="TogglePasswordVisibility_Click">
+                            <materialDesign:PackIcon x:Name="EyePack" Kind="Eye" Foreground="#1E3A8A" Opacity="0.8"/>
+                        </Button>
+                    </Grid>
+                </Border>
 
-
-                <!-- Register Button -->
-                <Button Content="Register" Height="40" Margin="0,20,0,10"
-                        Background="#1E3A8A" Foreground="White" 
+                <Button Content="Register" 
+                        Height="45" 
+                        Margin="0,0,0,20"
+                        Background="#1E3A8A" 
+                        Foreground="White" 
                         FontWeight="Bold"
+                        FontSize="16"
                         BorderThickness="0" 
-                        Click="RegisterButton_Click"/>
+                        Click="RegisterButton_Click">
 
-                <!-- Navigate to Login -->
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="Already have an account? " Foreground="Gray"/>
+                    <TextBlock Text="Already have an account? " Foreground="#757575"/>
                     <Button Content="Login" 
                             Background="Transparent" 
                             Foreground="#1E3A8A" 
                             BorderThickness="0" 
                             FontWeight="Bold"
+                            Margin="5,0,0,0"
+                            Padding="0"
                             Click="NavigateToLogin_Click"/>
                 </StackPanel>
+
             </StackPanel>
-        </Grid>
+        </Border>
     </Grid>
 </Page>

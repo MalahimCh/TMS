@@ -48,7 +48,6 @@
                              Padding="20,0,20,0"
                              FontSize="14"
                              VerticalContentAlignment="Center"
-                             HorizontalContentAlignment="Center"
                              Foreground="#1E3A8A"/>
                 </Border>
 
@@ -66,7 +65,6 @@
                                          Padding="20,0,45,0" 
                                          FontSize="14"
                                          VerticalContentAlignment="Center"
-                                         HorizontalContentAlignment="Center"
                                          Foreground="#1E3A8A"
                                          PasswordChanged="pwdBox_PasswordChanged"/>
                         </Border>
@@ -81,7 +79,6 @@
                                      Padding="20,0,45,0"
                                      FontSize="14"
                                      VerticalContentAlignment="Center"
-                                     HorizontalContentAlignment="Center"
                                      Foreground="#1E3A8A"
                                      TextChanged="txtPasswordVisible_TextChanged"/>
                         </Border>
