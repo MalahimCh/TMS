@@ -32,7 +32,7 @@ namespace TMS.Pages.Admin
         // ---------------------- SCHEDULES ----------------------
         private void ManageSchedules_Click(object sender, RoutedEventArgs e)
         {
-            //_mainFrame.Content = new ManageSchedulesPage(_mainFrame, _username);
+            _mainFrame.Content = new ManageSchedulesPage(_mainFrame, _username);
         }
 
         // ---------------------- PRICES ----------------------
