@@ -1,74 +1,108 @@
 ﻿<Page x:Class="TMS.Pages.Admin.ManageBusesPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Background="#F5F7FF">
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      Title="Manage Buses"
+      Background="#F0F2F5">
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <!-- ============ SIDEBAR ============ -->
         <Border Background="#17358A" Grid.Column="0">
-            <StackPanel Margin="20">
+            <StackPanel Margin="0,20,0,0">
 
                 <!-- BACK BUTTON -->
-                <Button Content="← Back"
-                        Click="Back_Click"
+                <!-- Changed: Added Icon, Left Aligned, Removed Text Arrow -->
+                <Button Click="Back_Click"
+                        Height="50"
                         Background="Transparent"
                         BorderThickness="0"
                         Foreground="White"
-                        FontSize="16"
-                        FontWeight="Bold"
-                        Margin="0,0,0,30"/>
+                        HorizontalContentAlignment="Left"
+                        Padding="20,0,0,0"
+                        Margin="0,0,0,30">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ArrowLeft" Width="20" Height="20" Margin="0,0,10,0"/>
+                        <TextBlock Text="Back" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
                 <TextBlock Text="Manage Buses"
                            FontSize="22"
                            Foreground="White"
                            FontWeight="Bold"
-                           Margin="0,0,0,20" />
+                           Margin="25,0,0,20" />
 
                 <!-- SIDEBAR BUTTONS -->
-                <Button Content="Add Bus"
-                        Height="40"
-                        Tag="Add"
-                        Click="Sidebar_Click"
-                        Background="Transparent"
-                        Foreground="White"
-                        BorderBrush="White"
-                        BorderThickness="1"
-                        Margin="0,8"/>
 
-                <Button Content="Update Bus"
-                        Height="40"
-                        Tag="Update"
+                <!-- ADD BUS -->
+                <Button Tag="Add"
                         Click="Sidebar_Click"
+                        Height="50"
                         Background="Transparent"
                         Foreground="White"
-                        BorderBrush="White"
-                        BorderThickness="1"
-                        Margin="0,8"/>
+                        BorderThickness="0" 
+                        HorizontalContentAlignment="Left"
+                        Padding="25,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <!-- FIX: Used 'Plus' icon which is safe for all versions -->
+                        <materialDesign:PackIcon Kind="Plus" Width="24" Height="24" Margin="0,0,15,0"/>
+                        <TextBlock Text="Add Bus" FontSize="15" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
-                <Button Content="Delete Bus"
-                        Height="40"
-                        Tag="Delete"
+                <!-- UPDATE BUS -->
+                <Button Tag="Update"
                         Click="Sidebar_Click"
+                        Height="50"
                         Background="Transparent"
                         Foreground="White"
-                        BorderBrush="White"
-                        BorderThickness="1"
-                        Margin="0,8"/>
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Left"
+                        Padding="25,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <!-- FIX: Used 'Pencil' icon -->
+                        <materialDesign:PackIcon Kind="Pencil" Width="24" Height="24" Margin="0,0,15,0"/>
+                        <TextBlock Text="Update Bus" FontSize="15" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
-                <Button Content="View All Buses"
-                        Height="40"
-                        Tag="View"
+                <!-- DELETE BUS -->
+                <Button Tag="Delete"
                         Click="Sidebar_Click"
+                        Height="50"
                         Background="Transparent"
                         Foreground="White"
-                        BorderBrush="White"
-                        BorderThickness="1"
-                        Margin="0,8"/>
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Left"
+                        Padding="25,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <!-- FIX: Used 'Delete' icon -->
+                        <materialDesign:PackIcon Kind="Delete" Width="24" Height="24" Margin="0,0,15,0"/>
+                        <TextBlock Text="Delete Bus" FontSize="15" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- VIEW ALL BUSES -->
+                <Button Tag="View"
+                        Click="Sidebar_Click"
+                        Height="50"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Left"
+                        Padding="25,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <!-- FIX: Used 'ViewList' icon -->
+                        <materialDesign:PackIcon Kind="ViewList" Width="24" Height="24" Margin="0,0,15,0"/>
+                        <TextBlock Text="View All Buses" FontSize="15" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
             </StackPanel>
         </Border>
 
