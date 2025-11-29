@@ -82,11 +82,11 @@ namespace TMS.Pages
                 {
                     if (user.Role == "admin")
                     {
-                        _mainFrame.Content = new AdminDashboard(_mainFrame, user.FullName);
+                        _mainFrame.Content = new AdminDashboard(_mainFrame, user.FullName,user.Email);
                     }
                     else if (user.Role == "customer")
                     {
-                        _mainFrame.Content = new CustomerDashboard(_mainFrame, user.FullName);
+                        _mainFrame.Content = new CustomerDashboard(_mainFrame, user.FullName,user.Email);
                     }
                     else
                     {

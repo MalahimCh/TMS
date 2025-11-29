@@ -271,12 +271,16 @@ VALUES (@RouteId,@BusId,@RecurringScheduleId,@DepartureTime,@ArrivalTime,@Price,
             await conn.OpenAsync();
 
             var cmd = new SqlCommand(@"
-                SELECT s.Id, s.RouteId, s.BusId, s.RecurringScheduleId, s.DepartureTime, s.ArrivalTime, s.Price, s.Completed, s.CreatedAt,
-                       b.BusNumber, r.Origin, r.Destination
-                FROM Schedules s
-                JOIN Buses b ON s.BusId = b.Id
-                JOIN Routes r ON s.RouteId = r.Id
-                ORDER BY s.DepartureTime", conn);
+        SELECT s.Id, s.RouteId, s.BusId, s.RecurringScheduleId, s.DepartureTime, s.ArrivalTime, s.Price, s.Completed, s.CreatedAt,
+               b.BusNumber,
+               locOrigin.Name AS OriginName,
+               locDest.Name AS DestinationName
+        FROM Schedules s
+        JOIN Buses b ON s.BusId = b.Id
+        JOIN Routes r ON s.RouteId = r.Id
+        JOIN Locations locOrigin ON r.OriginId = locOrigin.Id
+        JOIN Locations locDest   ON r.DestinationId = locDest.Id
+        ORDER BY s.DepartureTime", conn);
 
             using var reader = await cmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -299,6 +303,7 @@ VALUES (@RouteId,@BusId,@RecurringScheduleId,@DepartureTime,@ArrivalTime,@Price,
 
             return list;
         }
+
 
         // ---------------- GET SCHEDULE BY ID ----------------
         public async Task<ScheduleDTO?> GetScheduleByIdAsync(int id)
@@ -420,5 +425,139 @@ VALUES (@RouteId,@BusId,@RecurringScheduleId,@DepartureTime,@ArrivalTime,@Price,
 
             return list;
         }
+
+        //---------------- GET SCHEDULES WITH FILTERS ----------------
+        //    public async Task<List<ScheduleDTO>> GetSchedulesAsync(
+        // int originId,
+        // int destinationId,
+        // DateTime? date = null,
+        // string? busType = null)
+        //    {
+        //        var list = new List<ScheduleDTO>();
+        //        using var conn = new SqlConnection(_db.ConnectionString);
+        //        await conn.OpenAsync();
+
+        //        var query = @"
+        //    SELECT s.Id, s.RouteId, s.BusId, s.RecurringScheduleId, s.DepartureTime, s.ArrivalTime, s.Price, s.Completed, s.CreatedAt,
+        //           b.BusNumber, b.BusType, locOrigin.Name AS OriginName, locDest.Name AS DestinationName
+        //    FROM Schedules s
+        //    JOIN Buses b ON s.BusId = b.Id
+        //    JOIN Routes r ON s.RouteId = r.Id
+        //    JOIN Locations locOrigin ON r.OriginId = locOrigin.Id
+        //    JOIN Locations locDest   ON r.DestinationId = locDest.Id
+        //    WHERE r.OriginId = @OriginId
+        //      AND r.DestinationId = @DestinationId
+        //";
+
+        //        if (date.HasValue)
+        //            query += " AND CAST(s.DepartureTime AS DATE) = @Date";
+
+        //        if (!string.IsNullOrEmpty(busType))
+        //            query += " AND b.BusType = @BusType";
+
+        //        query += " ORDER BY s.DepartureTime";
+
+        //        using var cmd = new SqlCommand(query, conn);
+        //        cmd.Parameters.AddWithValue("@OriginId", originId);
+        //        cmd.Parameters.AddWithValue("@DestinationId", destinationId);
+
+        //        if (date.HasValue)
+        //            cmd.Parameters.AddWithValue("@Date", date.Value.Date);
+
+        //        if (!string.IsNullOrEmpty(busType))
+        //            cmd.Parameters.AddWithValue("@BusType", busType);
+
+        //        using var reader = await cmd.ExecuteReaderAsync();
+        //        while (await reader.ReadAsync())
+        //        {
+        //            list.Add(new ScheduleDTO
+        //            {
+        //                Id = reader.GetInt32(0),
+        //                RouteId = reader.GetInt32(1),
+        //                BusId = reader.GetInt32(2),
+        //                RecurringScheduleId = reader.IsDBNull(3) ? null : reader.GetInt32(3),
+        //                DepartureTime = reader.GetDateTime(4),
+        //                ArrivalTime = reader.GetDateTime(5),
+        //                Price = reader.GetDecimal(6),
+        //                Completed = reader.GetBoolean(7),
+        //                CreatedAt = reader.GetDateTime(8),
+        //                BusNumber = reader.GetString(9),
+        //                BusType = reader.GetString(10),
+        //                RouteDisplay = $"{reader.GetString(11)} → {reader.GetString(12)}"
+        //            });
+        //        }
+
+        //        return list;
+        //    }
+
+
+        public async Task<List<ScheduleDTO>> GetSchedulesAsync(
+    int originId,
+    int destinationId,
+    DateTime? date = null,
+    string? busType = null)
+        {
+            var list = new List<ScheduleDTO>();
+            using var conn = new SqlConnection(_db.ConnectionString);
+            await conn.OpenAsync();
+
+            var query = @"
+SELECT s.Id, s.RouteId, s.BusId, s.RecurringScheduleId, s.DepartureTime, s.ArrivalTime, s.Price, s.Completed, s.CreatedAt,
+       b.BusNumber, b.BusType, locOrigin.Name AS OriginName, locDest.Name AS DestinationName,
+       r.DistanceKm, r.EstimatedTimeMinutes
+FROM Schedules s
+JOIN Buses b ON s.BusId = b.Id
+JOIN Routes r ON s.RouteId = r.Id
+JOIN Locations locOrigin ON r.OriginId = locOrigin.Id
+JOIN Locations locDest ON r.DestinationId = locDest.Id
+WHERE r.OriginId = @OriginId
+  AND r.DestinationId = @DestinationId";
+
+            if (date.HasValue)
+                query += " AND CAST(s.DepartureTime AS DATE) = @Date";
+
+            if (!string.IsNullOrEmpty(busType))
+                query += " AND b.BusType = @BusType";
+
+            query += " ORDER BY s.DepartureTime";
+
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@OriginId", originId);
+            cmd.Parameters.AddWithValue("@DestinationId", destinationId);
+
+            if (date.HasValue)
+                cmd.Parameters.AddWithValue("@Date", date.Value.Date);
+
+            if (!string.IsNullOrEmpty(busType))
+                cmd.Parameters.AddWithValue("@BusType", busType);
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var departure = reader.GetDateTime(4);
+                var arrival = reader.GetDateTime(5);
+
+                list.Add(new ScheduleDTO
+                {
+                    Id = reader.GetInt32(0),
+                    RouteId = reader.GetInt32(1),
+                    BusId = reader.GetInt32(2),
+                    RecurringScheduleId = reader.IsDBNull(3) ? null : reader.GetInt32(3),
+                    DepartureTime = departure,
+                    ArrivalTime = arrival,
+                    Price = reader.GetDecimal(6),
+                    Completed = reader.GetBoolean(7),
+                    CreatedAt = reader.GetDateTime(8),
+                    BusNumber = reader.GetString(9),
+                    BusType = reader.GetString(10),
+                    RouteDisplay = $"{reader.GetString(11)} → {reader.GetString(12)}",
+                    DistanceKm = reader.GetInt32(13),
+                    Duration = $"{reader.GetInt32(14) / 60}h {reader.GetInt32(14) % 60}m"
+                });
+            }
+
+            return list;
+        }
+
     }
 }

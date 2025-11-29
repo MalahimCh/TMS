@@ -9,14 +9,15 @@ namespace TMS.Pages.Customer
     {
         private readonly Frame _mainFrame;
         private readonly string _username;
-
+        private readonly string _email;
         public string UsernameDisplay => $"{_username} ▼";
 
-        public CustomerDashboard(Frame frame, string username)
+        public CustomerDashboard(Frame frame, string username,string email)
         {
             InitializeComponent();
             _mainFrame = frame;
             _username = username;
+            _email = email;
 
             DataContext = this;
             txtCustomerName.Text = $"Welcome, {username}";
@@ -25,7 +26,7 @@ namespace TMS.Pages.Customer
         // ---------------------- DASHBOARD BUTTONS ----------------------
         private void SearchTickets_Click(object sender, RoutedEventArgs e)
         {
-            //_mainFrame.Content = new SearchTicketsPage(_mainFrame, _username);
+            _mainFrame.Content = new SearchTicketsPage(_mainFrame, _username,_email);
         }
 
         private void MyBookings_Click(object sender, RoutedEventArgs e)
@@ -61,13 +62,13 @@ namespace TMS.Pages.Customer
         // ---------------------- PROFILE MENU HANDLERS ----------------------
         private void UpdateProfile_Click(object sender, RoutedEventArgs e)
         {
-            _mainFrame.Content = new UpdateInfo(_username);
+            _mainFrame.Content = new UpdateInfo(_email,_username,"customer");
         }
 
         private void ChangePassword_Click(object sender, RoutedEventArgs e)
         {
-            var updatePage = new UpdateInfo(_username);
-            updatePage.ContentArea.Content = new ChangePasswordControl(_username);
+            var updatePage = new UpdateInfo(_email,_username,"customer");
+            updatePage.ContentArea.Content = new ChangePasswordControl(_email);
             _mainFrame.Content = updatePage;
         }
 

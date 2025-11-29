@@ -8,19 +8,19 @@ namespace TMS.Pages.Admin
     {
         private readonly Frame _mainFrame;
         private readonly string _username;
-
-        public ManageSchedulesPage(Frame frame, string username)
+        private readonly string _email;
+        public ManageSchedulesPage(Frame frame, string username,string email)
         {
             InitializeComponent();
             _mainFrame = frame;
             _username = username;
-
+            _email = email;
             ContentArea.Content = new ViewScheduleControl(_mainFrame, _username);
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            _mainFrame.Content = new AdminDashboard(_mainFrame, _username);
+            _mainFrame.Content = new AdminDashboard(_mainFrame, _username, _email);
         }
 
         private void Sidebar_Click(object sender, RoutedEventArgs e)

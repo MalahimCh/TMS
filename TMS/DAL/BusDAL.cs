@@ -15,6 +15,27 @@ namespace TMS.DAL
             _db = new DBConnection();
         }
 
+        //------------- GET ALL BUS TYPES ----------------
+        public async Task<List<string>> GetAllBusTypesAsync()
+        {
+            var busTypes = new List<string>();
+
+            using (var conn = new SqlConnection(_db.ConnectionString))
+            {
+                await conn.OpenAsync();
+                var cmd = new SqlCommand("SELECT DISTINCT BusType FROM Buses ORDER BY BusType", conn);
+
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        busTypes.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            return busTypes;
+        }
         // ---------------- ADD BUS ----------------
         public async Task AddBusAsync(BusDTO bus)
         {

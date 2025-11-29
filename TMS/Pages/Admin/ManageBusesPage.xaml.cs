@@ -8,11 +8,13 @@ namespace TMS.Pages.Admin
     {
         private readonly Frame _mainFrame;
         private readonly string _username;
+        private readonly string _email;
 
-        public ManageBusesPage(Frame frame, string username)
+        public ManageBusesPage(Frame frame, string username,string email)
         {
             InitializeComponent();
             _mainFrame = frame;
+            _email = email;
             _username = username;
             ContentArea.Content = new ViewBusControl(_mainFrame, _username);
         }
@@ -21,7 +23,7 @@ namespace TMS.Pages.Admin
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             // Navigate back to AdminDashboard
-            _mainFrame.Content = new AdminDashboard(_mainFrame, _username);
+            _mainFrame.Content = new AdminDashboard(_mainFrame, _username,_email);
         }
 
         // ---------------------- SIDEBAR NAVIGATION ----------------------

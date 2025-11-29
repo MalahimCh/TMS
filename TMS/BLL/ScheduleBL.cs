@@ -15,6 +15,17 @@ namespace TMS.BLL
             _dal = dal;
         }
 
+        // ---------------- GET SCHEDULES ----------------
+        public async Task<List<ScheduleDTO>> GetSchedulesAsync(
+            int originId,
+            int destinationId,
+            DateTime? date = null,
+            string? busType = null)
+        {
+            return await _dal.GetSchedulesAsync(originId, destinationId, date, busType);
+        }
+
+
         // ---------------- COMPLETED SCHEDULES ----------------
         public async Task<int> UpdateCompletedSchedulesAsync()
         {

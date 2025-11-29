@@ -15,6 +15,12 @@ namespace TMS.BLL
             _busRepo = busRepo;
         }
 
+        //---------------- GET ALL BUS TYPES ----------------
+        public async Task<List<string>> GetAllBusTypesAsync()
+        {
+            return await _busRepo.GetAllBusTypesAsync();
+        }
+
         // ---------------- ADD BUS ----------------
         public async Task<bool> AddBusAsync(string busNumber, string busType, int totalSeats)
         {

@@ -16,6 +16,8 @@ namespace TMS.BLL
             _otpBL = otpBL;
         }
 
+    
+
         // REGISTER
         public async Task<bool> RegisterUserAsync(string fullName, string email, string phone, string password, string role = "customer")
         {
@@ -43,7 +45,19 @@ namespace TMS.BLL
             return true;
         }
 
-  
+        public async Task<bool> UpdateUserInfoAsync(string email, string name,string phone)
+        {
+            var user = await _userRepo.GetUserByEmailAsync(email);
+            if (user == null) return false;
+
+
+            user.FullName = name;
+            user.PhoneNumber = phone;
+            await _userRepo.UpdateUserAsync(user);
+
+            return true;
+        }
+
 
         // RESET PASSWORD
         public async Task<bool> ResetPasswordAsync(string email, string newPassword)
