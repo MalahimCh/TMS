@@ -62,10 +62,9 @@
                                   Background="Transparent" 
                                   BorderThickness="0"
                                   VerticalContentAlignment="Center">
-                            <ComboBoxItem Content="Seater"/>
+                            <ComboBoxItem Content="Economy"/>
+                            <ComboBoxItem Content="Luxury"/>
                             <ComboBoxItem Content="Sleeper"/>
-                            <ComboBoxItem Content="AC"/>
-                            <ComboBoxItem Content="Non-AC"/>
                         </ComboBox>
                     </Border>
 
