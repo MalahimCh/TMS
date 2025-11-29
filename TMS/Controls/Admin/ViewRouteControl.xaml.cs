@@ -25,12 +25,13 @@ namespace TMS.Controls.Admin
         private async void LoadRoutes()
         {
             List<RouteDTO> routes = await _routeBL.GetAllRoutesAsync();
-            if (routes != null)
+            if (routes != null && routes.Count > 0)
             {
                 dgRoutes.ItemsSource = routes;
             }
             else
             {
+                dgRoutes.ItemsSource = null;
                 MessageBox.Show("No routes found.");
             }
         }

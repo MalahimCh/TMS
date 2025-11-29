@@ -16,22 +16,20 @@ namespace TMS.BLL
         }
 
         // ---------------- ADD ROUTE ----------------
-        public async Task<bool> AddRouteAsync(string origin, string destination, int distanceKm, int estimatedTimeMinutes)
+        public async Task<bool> AddRouteAsync(int originId, int destinationId, int distanceKm, int estimatedTimeMinutes)
         {
             var allRoutes = await _routeRepo.GetAllRoutesAsync();
 
-            // prevent duplicate routes
-            if (allRoutes.Exists(r =>
-                r.Origin.Equals(origin, StringComparison.OrdinalIgnoreCase) &&
-                r.Destination.Equals(destination, StringComparison.OrdinalIgnoreCase)))
+            // prevent duplicate routes (by OriginId + DestinationId)
+            if (allRoutes.Exists(r => r.OriginId == originId && r.DestinationId == destinationId))
             {
                 return false;
             }
 
             var route = new RouteDTO
             {
-                Origin = origin,
-                Destination = destination,
+                OriginId = originId,
+                DestinationId = destinationId,
                 DistanceKm = distanceKm,
                 EstimatedTimeMinutes = estimatedTimeMinutes
             };

@@ -40,11 +40,15 @@ namespace TMS.Controls.Admin
                 return;
             }
 
-            txtOrigin.Text = _route.Origin;
-            txtDestination.Text = _route.Destination;
+            // Show names (read-only)
+            txtOrigin.Text = _route.OriginName;
+            txtDestination.Text = _route.DestinationName;
+
+            // Show editable fields
             txtDistance.Text = _route.DistanceKm.ToString();
             txtEstimatedTime.Text = _route.EstimatedTimeMinutes.ToString();
         }
+
 
         private async void UpdateRoute_Click(object sender, RoutedEventArgs e)
         {
@@ -53,9 +57,6 @@ namespace TMS.Controls.Admin
                 MessageBox.Show("No route selected.");
                 return;
             }
-
-            _route.Origin = txtOrigin.Text.Trim();
-            _route.Destination = txtDestination.Text.Trim();
 
             if (!int.TryParse(txtDistance.Text, out int distanceKm))
             {
@@ -68,11 +69,13 @@ namespace TMS.Controls.Admin
                 return;
             }
 
+            // Update only distance and estimated time
             _route.DistanceKm = distanceKm;
             _route.EstimatedTimeMinutes = estimatedTime;
 
             bool updated = await _routeBL.UpdateRouteAsync(_route);
             MessageBox.Show(updated ? "Route updated successfully!" : "Failed to update route.");
         }
+
     }
 }

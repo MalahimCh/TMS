@@ -40,11 +40,14 @@ namespace TMS.Controls.Admin
                 return;
             }
 
-            txtOrigin.Text = _route.Origin;
-            txtDestination.Text = _route.Destination;
+            // Use names instead of IDs
+            txtOrigin.Text = _route.OriginName;
+            txtDestination.Text = _route.DestinationName;
+
             txtDistance.Text = _route.DistanceKm.ToString();
             txtEstimatedTime.Text = _route.EstimatedTimeMinutes.ToString();
         }
+
 
         private async void DeleteRoute_Click(object sender, RoutedEventArgs e)
         {

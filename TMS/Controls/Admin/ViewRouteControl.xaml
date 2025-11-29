@@ -4,15 +4,19 @@
              Height="Auto" Width="Auto">
     <StackPanel Margin="20" VerticalAlignment="Top">
 
-        <TextBlock Text="All Routes" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+        <TextBlock Text="All Routes" FontSize="22" FontWeight="Bold" Margin="0,0,0,15"/>
 
-        <DataGrid x:Name="dgRoutes" AutoGenerateColumns="False" CanUserAddRows="False" Height="400" Width="600">
+        <DataGrid x:Name="dgRoutes" AutoGenerateColumns="False" CanUserAddRows="False" 
+                  Height="400" Width="Auto" MinWidth="600"
+                  HorizontalAlignment="Stretch" GridLinesVisibility="Horizontal" 
+                  IsReadOnly="True" RowBackground="#F9F9F9" AlternatingRowBackground="#FFFFFF"
+                  SelectionMode="Single" Margin="0,0,0,10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Route ID" Binding="{Binding Id}" Width="*"/>
-                <DataGridTextColumn Header="Origin" Binding="{Binding Origin}" Width="*"/>
-                <DataGridTextColumn Header="Destination" Binding="{Binding Destination}" Width="*"/>
-                <DataGridTextColumn Header="Distance (Km)" Binding="{Binding DistanceKm}" Width="*"/>
-                <DataGridTextColumn Header="Estimated Time (min)" Binding="{Binding EstimatedTimeMinutes}" Width="*"/>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                <DataGridTextColumn Header="Origin" Binding="{Binding OriginName}" Width="*"/>
+                <DataGridTextColumn Header="Destination" Binding="{Binding DestinationName}" Width="*"/>
+                <DataGridTextColumn Header="Distance (Km)" Binding="{Binding DistanceKm}" Width="100"/>
+                <DataGridTextColumn Header="Estimated Time (min)" Binding="{Binding EstimatedTimeMinutes}" Width="150"/>
             </DataGrid.Columns>
         </DataGrid>
     </StackPanel>

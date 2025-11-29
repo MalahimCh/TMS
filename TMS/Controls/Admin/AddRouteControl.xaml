@@ -42,39 +42,21 @@
                 <StackPanel Grid.Row="1" Margin="30,25,30,20">
 
                     <TextBlock Text="Origin" FontWeight="SemiBold" Foreground="#666666" Margin="0,0,0,5"/>
-                    <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,15">
-                        <TextBox x:Name="txtOrigin" 
-                                 Padding="10" 
-                                 FontSize="14" 
-                                 Background="Transparent" 
-                                 BorderThickness="0"/>
-                    </Border>
+                    <ComboBox x:Name="cmbOrigin" IsEditable="True" IsTextSearchEnabled="True" 
+              Background="#F7F9FC" Margin="0,0,0,15" Padding="5" FontSize="14"/>
 
                     <TextBlock Text="Destination" FontWeight="SemiBold" Foreground="#666666" Margin="0,0,0,5"/>
-                    <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,15">
-                        <TextBox x:Name="txtDestination" 
-                                 Padding="10" 
-                                 FontSize="14" 
-                                 Background="Transparent" 
-                                 BorderThickness="0"/>
-                    </Border>
+                    <ComboBox x:Name="cmbDestination" IsEditable="True" IsTextSearchEnabled="True" 
+              Background="#F7F9FC" Margin="0,0,0,15" Padding="5" FontSize="14"/>
 
                     <TextBlock Text="Distance (Km)" FontWeight="SemiBold" Foreground="#666666" Margin="0,0,0,5"/>
                     <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,15">
-                        <TextBox x:Name="txtDistance" 
-                                 Padding="10" 
-                                 FontSize="14" 
-                                 Background="Transparent" 
-                                 BorderThickness="0"/>
+                        <TextBox x:Name="txtDistance" Padding="10" FontSize="14" Background="Transparent" BorderThickness="0"/>
                     </Border>
 
                     <TextBlock Text="Estimated Time (minutes)" FontWeight="SemiBold" Foreground="#666666" Margin="0,0,0,5"/>
                     <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,15">
-                        <TextBox x:Name="txtEstimatedTime" 
-                                 Padding="10" 
-                                 FontSize="14" 
-                                 Background="Transparent" 
-                                 BorderThickness="0"/>
+                        <TextBox x:Name="txtEstimatedTime" Padding="10" FontSize="14" Background="Transparent" BorderThickness="0"/>
                     </Border>
 
                 </StackPanel>

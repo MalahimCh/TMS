@@ -26,7 +26,7 @@ VALUES (
     'Customer',
     'customer@gmail.com',
     '03000000000',
-    '$2a$11$q4FCOgL0n86JGZUdOdWqaumclr0HsqiNN4pDOOP1O5Ls7KLtY3fDa.',
+    '$2a$11$q4FCOgL0n86JGZUdOdWqaumclr0HsqiNN4pDOOP1O5Ls7KLtY3fDa',
     'customer'
 );
 
@@ -67,15 +67,83 @@ CREATE TABLE Seats (
     CONSTRAINT UQ_Seat_Bus UNIQUE (BusId, SeatNumber)
 );
 
+CREATE TABLE Locations (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100) NOT NULL,
+    CONSTRAINT UQ_LocationName UNIQUE (Name)
+);
+
+INSERT INTO Locations (Name) VALUES 
+('Karachi'),
+('Lahore'),
+('Faisalabad'),
+('Rawalpindi'),
+('Gujranwala'),
+('Peshawar'),
+('Multan'),
+('Hyderabad'),
+('Islamabad'),
+('Quetta'),
+('Sargodha'),
+('Sialkot'),
+('Bahawalpur'),
+('Sheikhupura'),
+('Sukkur'),
+('Larkana'),
+('Rahim Yar Khan'),
+('Okara'),
+('Kasur'),
+('Gujrat'),
+('Jhelum'),
+('Dera Ghazi Khan'),
+('Muzaffargarh'),
+('Bahawalnagar'),
+('Sahiwal'),
+('Gojra'),
+('Mardan'),
+('Nawabshah'),
+('Chiniot'),
+('Mirpur Khas'),
+('Mingora'),
+('Dera Ismail Khan'),
+('Swat'),
+('Abbottabad'),
+('Kohat'),
+('Chaman'),
+('Taxila'),
+('Murree'),
+('Pakpattan'),
+('Dadu'),
+('Kotri'),
+('Jacobabad'),
+('Shikarpur'),
+('Haripur'),
+('Narowal'),
+('Kamoke'),
+('Samundri'),
+('Jaranwala'),
+('Vehari'),
+('Wah Cantt'),
+('Kot Addu'),
+('Attock'),
+('Chakwal'),
+('Khuzdar');
+
+
+
+
 CREATE TABLE Routes (
     Id INT IDENTITY(1,1) PRIMARY KEY,
-    Origin NVARCHAR(100) NOT NULL,
-    Destination NVARCHAR(100) NOT NULL,
+    OriginId INT NOT NULL,
+    DestinationId INT NOT NULL,
     DistanceKm INT NOT NULL,
     EstimatedTimeMinutes INT NOT NULL,
     CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE(),
-    CONSTRAINT UQ_Route UNIQUE (Origin, Destination)
+    CONSTRAINT UQ_Route UNIQUE (OriginId, DestinationId),
+    CONSTRAINT FK_Route_Origin FOREIGN KEY (OriginId) REFERENCES Locations(Id),
+    CONSTRAINT FK_Route_Destination FOREIGN KEY (DestinationId) REFERENCES Locations(Id)
 );
+
 
 
 CREATE TABLE RecurringSchedules (

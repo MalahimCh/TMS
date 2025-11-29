@@ -73,20 +73,14 @@
 
                     <TextBlock Text="Origin" FontWeight="SemiBold" Foreground="#666666" Margin="0,0,0,5"/>
                     <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,10">
-                        <TextBox x:Name="txtOrigin" 
-                                 Padding="10" 
-                                 FontSize="14" 
-                                 Background="Transparent" 
-                                 BorderThickness="0"/>
+                        <TextBox x:Name="txtOrigin" Padding="10" FontSize="14" Background="Transparent" BorderThickness="0" IsReadOnly="True"/>
+                        
                     </Border>
 
                     <TextBlock Text="Destination" FontWeight="SemiBold" Foreground="#666666" Margin="0,0,0,5"/>
                     <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,10">
-                        <TextBox x:Name="txtDestination" 
-                                 Padding="10" 
-                                 FontSize="14" 
-                                 Background="Transparent" 
-                                 BorderThickness="0"/>
+                        <TextBox x:Name="txtDestination" Padding="10" FontSize="14" Background="Transparent" BorderThickness="0" IsReadOnly="True"/>
+
                     </Border>
 
                     <TextBlock Text="Distance (Km)" FontWeight="SemiBold" Foreground="#666666" Margin="0,0,0,5"/>
