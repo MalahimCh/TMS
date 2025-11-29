@@ -1,4 +1,6 @@
 ﻿using TMS.DTO;
+using System;
+using System.Collections.Generic;
 
 public static class RecurringHelper
 {
@@ -25,9 +27,9 @@ public static class RecurringHelper
             {
                 schedules.Add(new ScheduleDTO
                 {
-                    RouteId = rec.RouteId,
-                    BusId = rec.BusId,
-                    RecurringScheduleId = rec.Id,
+                    RouteId = rec.RouteId,               // int
+                    BusId = rec.BusId,                   // int
+                    RecurringScheduleId = rec.Id,        // int? (nullable)
                     DepartureTime = current.Date + rec.DepartureTime,
                     ArrivalTime = current.Date + rec.ArrivalTime,
                     Price = rec.Price,

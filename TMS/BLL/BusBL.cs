@@ -41,13 +41,13 @@ namespace TMS.BLL
         }
 
         // ---------------- DELETE BUS ----------------
-        public async Task <bool>DeleteBusAsync(Guid busId)
+        public async Task<bool> DeleteBusAsync(int busId)
         {
             return await _busRepo.DeleteBusAsync(busId);
         }
 
         // ---------------- GET BY ID ----------------
-        public async Task<BusDTO> GetBusByIdAsync(Guid id)
+        public async Task<BusDTO> GetBusByIdAsync(int id)
         {
             return await _busRepo.GetBusByIdAsync(id);
         }

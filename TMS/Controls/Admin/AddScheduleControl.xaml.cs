@@ -57,7 +57,7 @@ namespace TMS.Controls.Admin
         {
             if (cmbRouteAdd.SelectedValue == null) return;
 
-            var routeId = (Guid)cmbRouteAdd.SelectedValue;
+            var routeId = (int)cmbRouteAdd.SelectedValue; // <-- int now
             var routeBL = new RouteBL(new DAL.RouteDAL());
             var route = await routeBL.GetRouteByIdAsync(routeId);
 
@@ -67,6 +67,7 @@ namespace TMS.Controls.Admin
             UpdateArrivalTimeRecurring();
         }
 
+  
         private void DepartureDateChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateArrivalTimeOneTime();
@@ -155,6 +156,8 @@ namespace TMS.Controls.Admin
         #endregion
 
         #region Save Button
+
+
         private async void AddScheduleAdd_Click(object sender, RoutedEventArgs e)
         {
             if (cmbBusAdd.SelectedValue == null || cmbRouteAdd.SelectedValue == null)
@@ -180,8 +183,8 @@ namespace TMS.Controls.Admin
 
                 var schedule = new ScheduleDTO
                 {
-                    BusId = (Guid)cmbBusAdd.SelectedValue,
-                    RouteId = (Guid)cmbRouteAdd.SelectedValue,
+                    BusId = (int)cmbBusAdd.SelectedValue,    // <-- changed to int
+                    RouteId = (int)cmbRouteAdd.SelectedValue,// <-- changed to int
                     DepartureTime = dpDepartureDateAdd.SelectedDate.Value + tpDepartureTimeAdd.Value.Value.TimeOfDay,
                     ArrivalTime = dpArrivalDateAdd.SelectedDate.Value + tpArrivalTimeAdd.Value.Value.TimeOfDay,
                     Price = price,
@@ -203,15 +206,15 @@ namespace TMS.Controls.Admin
 
                 var rec = new RecurringScheduleDTO
                 {
-                    BusId = (Guid)cmbBusAdd.SelectedValue,
-                    RouteId = (Guid)cmbRouteAdd.SelectedValue,
+                    BusId = (int)cmbBusAdd.SelectedValue,      // <-- changed to int
+                    RouteId = (int)cmbRouteAdd.SelectedValue,  // <-- changed to int
                     DepartureTime = tpDepartureTimeRecurring.Value.Value.TimeOfDay,
                     ArrivalTime = tpArrivalTimeRecurring.Value.Value.TimeOfDay,
                     Price = price,
                     StartDate = dpStartDateAdd.SelectedDate.Value,
                     EndDate = dpEndDateAdd.SelectedDate.Value,
                     Frequency = ((ComboBoxItem)cmbFrequencyAdd.SelectedItem)?.Content.ToString(),
-                    SelectedDays = GetSelectedDays() // <--- assign the selected days here
+                    SelectedDays = GetSelectedDays()
                 };
 
                 await _scheduleBL.AddRecurringScheduleAsync(rec);

@@ -5,14 +5,14 @@ namespace TMS.DTO
 {
     public class RecurringScheduleDTO
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public Guid RouteId { get; set; }
-        public Guid BusId { get; set; }
+        public int Id { get; set; }   // INT IDENTITY
+        public int RouteId { get; set; }
+        public int BusId { get; set; }
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        public string Frequency { get; set; } = "Daily"; // or Daily
+        public string Frequency { get; set; } = "Daily";
 
         public List<DayOfWeek> SelectedDays { get; set; } = new List<DayOfWeek>();
 
@@ -21,8 +21,6 @@ namespace TMS.DTO
 
         public decimal Price { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
     }
-
-
 }

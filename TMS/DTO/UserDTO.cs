@@ -9,7 +9,7 @@ namespace TMS.DTO
 
     public class UserDTO
     {
-        public Guid Id { get; set; } = Guid.NewGuid(); // unique user ID
+        public int Id{ get; set; }
         public string FullName { get; set; }           // Name
         public string Email { get; set; }              // Email (used for login)
         public string PhoneNumber { get; set; }        // Optional

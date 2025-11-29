@@ -1,28 +1,35 @@
 ﻿--Users Table
 CREATE TABLE Users (
-    [Id] UNIQUEIDENTIFIER NOT NULL,
-    [FullName] NVARCHAR(100) NOT NULL,
-    [Email] NVARCHAR(100) NOT NULL,
-    [PhoneNumber] NVARCHAR(20) NULL,
-    [PasswordHash] NVARCHAR(255) NOT NULL,
-    [Role] NVARCHAR(50) DEFAULT ('customer') NOT NULL,
-    [CreatedAt] DATETIME2(7) DEFAULT GETUTCDATE() NOT NULL,
-    PRIMARY KEY CLUSTERED ([Id] ASC),
-    UNIQUE NONCLUSTERED ([Email] ASC)
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    FullName NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(100) NOT NULL UNIQUE,
+    PhoneNumber NVARCHAR(20),
+    PasswordHash NVARCHAR(255) NOT NULL,
+    Role NVARCHAR(50) NOT NULL DEFAULT 'customer',
+    CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE(),
+    IsEmailVerified BIT NOT NULL DEFAULT 0
 );
 
 --default admin user 
 --password is admin@123
-INSERT INTO Users (Id, FullName, Email, PhoneNumber, PasswordHash, Role, CreatedAt)
+INSERT INTO Users (FullName, Email, PhoneNumber, PasswordHash, Role)
 VALUES (
-    NEWID(),
     'Admin',
     'admin@gmail.com',
     '03000000000',
     '$2a$11$zI6bG/l7/ThMb/23mHV14eTM/wrjal0YPwxh5sx9y4BH7i4si8rx.',
-    'admin',
-    GETUTCDATE()
+    'admin'
 );
+
+INSERT INTO Users (FullName, Email, PhoneNumber, PasswordHash, Role)
+VALUES (
+    'Customer',
+    'customer@gmail.com',
+    '03000000000',
+    '$2a$11$q4FCOgL0n86JGZUdOdWqaumclr0HsqiNN4pDOOP1O5Ls7KLtY3fDa.',
+    'customer'
+);
+
 
 
 --otp table
@@ -36,53 +43,46 @@ CREATE TABLE OtpVerification (
 );
 
 
---alter users table
-ALTER TABLE Users
-ADD IsEmailVerified BIT NOT NULL DEFAULT 0;
 
 --update admin and test customer as verified
 UPDATE Users
 SET IsEmailVerified = 1
 WHERE Email IN ('admin@gmail.com', 'customer@gmail.com');
 
-
-
 CREATE TABLE Buses (
-    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+    Id INT IDENTITY(1,1) PRIMARY KEY,
     BusNumber NVARCHAR(20) NOT NULL UNIQUE,
-    BusType NVARCHAR(50) NOT NULL,       -- e.g., Sleeper, Seater, AC, Non-AC
+    BusType NVARCHAR(50) NOT NULL,
     TotalSeats INT NOT NULL,
-    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE()
+    CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE()
 );
 
 CREATE TABLE Seats (
-    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
-    BusId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Buses(Id),
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    BusId INT NOT NULL FOREIGN KEY REFERENCES Buses(Id),
     SeatNumber NVARCHAR(10) NOT NULL,
-    Status NVARCHAR(20) NOT NULL DEFAULT 'Available',  
-    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE(),
+    Status NVARCHAR(20) NOT NULL DEFAULT 'Available',
+    CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE(),
+
     CONSTRAINT UQ_Seat_Bus UNIQUE (BusId, SeatNumber)
 );
 
-
-
 CREATE TABLE Routes (
-    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+    Id INT IDENTITY(1,1) PRIMARY KEY,
     Origin NVARCHAR(100) NOT NULL,
     Destination NVARCHAR(100) NOT NULL,
     DistanceKm INT NOT NULL,
     EstimatedTimeMinutes INT NOT NULL,
-    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE(),
+    CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE(),
     CONSTRAINT UQ_Route UNIQUE (Origin, Destination)
 );
 
 
-
 CREATE TABLE RecurringSchedules (
-    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+    Id INT IDENTITY(1,1) PRIMARY KEY,
 
-    RouteId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Routes(Id),
-    BusId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Buses(Id),
+    RouteId INT NOT NULL FOREIGN KEY REFERENCES Routes(Id),
+    BusId INT NOT NULL FOREIGN KEY REFERENCES Buses(Id),
 
     StartDate DATE NOT NULL,
     EndDate DATE NOT NULL,
@@ -90,32 +90,32 @@ CREATE TABLE RecurringSchedules (
     DepartureTime TIME NOT NULL,
     ArrivalTime TIME NOT NULL,
     Price DECIMAL(10,2) NOT NULL,
-    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE(),
+    CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE(),
+    SelectedDays NVARCHAR(20) NULL,
 
     CONSTRAINT UQ_Recurring UNIQUE (BusId, StartDate, DepartureTime)
 );
 
 CREATE TABLE Schedules (
-    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
-    RouteId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Routes(Id),
-    BusId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Buses(Id),
+    Id INT IDENTITY(1,1) PRIMARY KEY,
 
-    RecurringScheduleId UNIQUEIDENTIFIER NULL
-        FOREIGN KEY REFERENCES RecurringSchedules(Id),
+    RouteId INT NOT NULL FOREIGN KEY REFERENCES Routes(Id),
+    BusId INT NOT NULL FOREIGN KEY REFERENCES Buses(Id),
+
+    RecurringScheduleId INT NULL FOREIGN KEY REFERENCES RecurringSchedules(Id),
 
     DepartureTime DATETIME2(7) NOT NULL,
     ArrivalTime DATETIME2(7) NOT NULL,
     Price DECIMAL(10,2) NOT NULL,
-    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE(),
+    CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE(),
+    Completed BIT NOT NULL DEFAULT 0,
 
     CONSTRAINT UQ_BusSchedule UNIQUE (BusId, DepartureTime)
 );
 
-ALTER TABLE Schedules
-ADD Completed BIT NOT NULL DEFAULT 0;
 
-ALTER TABLE RecurringSchedules
-ADD SelectedDays NVARCHAR(20) NULL;
+
+
 
 
 

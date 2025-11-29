@@ -37,16 +37,7 @@ namespace TMS.Controls.Admin
 
         private void UpdateOption_Checked(object sender, RoutedEventArgs e)
         {
-            if (rbUpdateAllFuture.IsChecked == true)
-            {
-                // Disable departure date for all future updates
-                dpDepartureDateUpdate.IsEnabled = false;
-            }
-            else
-            {
-                // Enable departure date for single instance
-                dpDepartureDateUpdate.IsEnabled = true;
-            }
+            dpDepartureDateUpdate.IsEnabled = rbUpdateAllFuture.IsChecked != true;
         }
 
         private async void LoadBuses()
@@ -54,7 +45,7 @@ namespace TMS.Controls.Admin
             var buses = await _busBL.GetAllBusesAsync();
             cmbBusUpdate.ItemsSource = buses;
             cmbBusUpdate.DisplayMemberPath = "BusNumber";
-            cmbBusUpdate.SelectedValuePath = "Id";
+            cmbBusUpdate.SelectedValuePath = "Id"; // int
         }
 
         private async void LoadRoutes()
@@ -62,7 +53,7 @@ namespace TMS.Controls.Admin
             var routes = await _routeBL.GetAllRoutesAsync();
             cmbRouteUpdate.ItemsSource = routes;
             cmbRouteUpdate.DisplayMemberPath = "RouteDisplay";
-            cmbRouteUpdate.SelectedValuePath = "Id";
+            cmbRouteUpdate.SelectedValuePath = "Id"; // int
         }
 
         private async void LoadSchedules()
@@ -70,7 +61,7 @@ namespace TMS.Controls.Admin
             var schedules = await _scheduleBL.GetAllSchedulesAsync();
             cmbScheduleUpdate.ItemsSource = schedules;
             cmbScheduleUpdate.DisplayMemberPath = "DisplayName";
-            cmbScheduleUpdate.SelectedValuePath = "Id";
+            cmbScheduleUpdate.SelectedValuePath = "Id"; // int
         }
 
         private async void CmbScheduleUpdate_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -90,28 +81,22 @@ namespace TMS.Controls.Admin
             var route = await _routeBL.GetRouteByIdAsync(selectedSchedule.RouteId);
             _routeEstimatedTime = TimeSpan.FromMinutes(route?.EstimatedTimeMinutes ?? 0);
 
-            // Show common schedule panel
             SchedulePanelUpdate.Visibility = Visibility.Visible;
 
-            // Fill departure
             dpDepartureDateUpdate.SelectedDate = selectedSchedule.DepartureTime.Date;
             tpDepartureTimeUpdate.Value = selectedSchedule.DepartureTime;
 
-            // Auto-fill arrival
             UpdateArrivalTime();
 
             if (selectedSchedule.RecurringScheduleId != null)
             {
-                // Recurring schedule
                 selectedRecurring = await _scheduleBL.GetRecurringScheduleByIdAsync(selectedSchedule.RecurringScheduleId.Value);
                 RecurringUpdateModePanel.Visibility = Visibility.Visible;
-
                 rbUpdateThisInstance.IsChecked = true;
                 rbUpdateAllFuture.IsChecked = false;
             }
             else
             {
-                // One-time schedule
                 selectedRecurring = null;
                 RecurringUpdateModePanel.Visibility = Visibility.Collapsed;
             }
@@ -120,20 +105,14 @@ namespace TMS.Controls.Admin
         private async void CmbRouteUpdate_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbRouteUpdate.SelectedValue == null) return;
-            var route = await _routeBL.GetRouteByIdAsync((Guid)cmbRouteUpdate.SelectedValue);
+            var route = await _routeBL.GetRouteByIdAsync((int)cmbRouteUpdate.SelectedValue); // cast to int
             _routeEstimatedTime = TimeSpan.FromMinutes(route?.EstimatedTimeMinutes ?? 0);
             UpdateArrivalTime();
         }
 
-        private void DepartureDateUpdate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
-        {
-            UpdateArrivalTime();
-        }
+        private void DepartureDateUpdate_SelectedDateChanged(object sender, SelectionChangedEventArgs e) => UpdateArrivalTime();
 
-        private void DepartureTimeUpdate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            UpdateArrivalTime();
-        }
+        private void DepartureTimeUpdate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e) => UpdateArrivalTime();
 
         private void UpdateArrivalTime()
         {
@@ -161,7 +140,6 @@ namespace TMS.Controls.Admin
                 return;
             }
 
-            // Compute departure & arrival
             var newDepartureDateTime = dpDepartureDateUpdate.SelectedDate.Value + tpDepartureTimeUpdate.Value.Value.TimeOfDay;
             var newArrivalDateTime = newDepartureDateTime + _routeEstimatedTime;
 
@@ -171,16 +149,16 @@ namespace TMS.Controls.Admin
 
                 if (updateThisInstance)
                 {
-                    // Update only this instance
                     var scheduleDto = new ScheduleDTO
                     {
                         Id = selectedSchedule.Id,
-                        BusId = (Guid)cmbBusUpdate.SelectedValue,
-                        RouteId = (Guid)cmbRouteUpdate.SelectedValue,
+                        BusId = (int)cmbBusUpdate.SelectedValue,
+                        RouteId = (int)cmbRouteUpdate.SelectedValue,
                         DepartureTime = newDepartureDateTime,
                         ArrivalTime = newArrivalDateTime,
                         Price = price,
-                        Completed = selectedSchedule.Completed
+                        Completed = selectedSchedule.Completed,
+                        RecurringScheduleId = selectedSchedule.RecurringScheduleId
                     };
 
                     bool success = await _scheduleBL.UpdateScheduleAsync(scheduleDto);
@@ -188,12 +166,9 @@ namespace TMS.Controls.Admin
                 }
                 else
                 {
-                    // Update all future instances by updating the recurring template
-                    selectedRecurring.BusId = (Guid)cmbBusUpdate.SelectedValue;
-                    selectedRecurring.RouteId = (Guid)cmbRouteUpdate.SelectedValue;
+                    selectedRecurring.BusId = (int)cmbBusUpdate.SelectedValue;
+                    selectedRecurring.RouteId = (int)cmbRouteUpdate.SelectedValue;
                     selectedRecurring.Price = price;
-
-                    // Update DepartureTime & ArrivalTime (TimeSpan of day)
                     selectedRecurring.DepartureTime = newDepartureDateTime.TimeOfDay;
                     selectedRecurring.ArrivalTime = newArrivalDateTime.TimeOfDay;
 
@@ -203,9 +178,8 @@ namespace TMS.Controls.Admin
             }
             else if (selectedSchedule != null)
             {
-                // One-time schedule update
-                selectedSchedule.BusId = (Guid)cmbBusUpdate.SelectedValue;
-                selectedSchedule.RouteId = (Guid)cmbRouteUpdate.SelectedValue;
+                selectedSchedule.BusId = (int)cmbBusUpdate.SelectedValue;
+                selectedSchedule.RouteId = (int)cmbRouteUpdate.SelectedValue;
                 selectedSchedule.DepartureTime = newDepartureDateTime;
                 selectedSchedule.ArrivalTime = newArrivalDateTime;
                 selectedSchedule.Price = price;
@@ -216,7 +190,5 @@ namespace TMS.Controls.Admin
 
             LoadSchedules();
         }
-
-
     }
 }

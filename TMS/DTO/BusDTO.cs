@@ -4,10 +4,10 @@ namespace TMS.DTO
 {
     public class BusDTO
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public int Id { get; set; }   // INT IDENTITY
         public string BusNumber { get; set; }
         public string BusType { get; set; }
         public int TotalSeats { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
     }
 }

@@ -22,19 +22,21 @@ namespace TMS.DAL
             {
                 await conn.OpenAsync();
 
+                // Use OUTPUT INSERTED.Id to get new identity
                 var cmd = new SqlCommand(
-                    @"INSERT INTO Routes (Id, Origin, Destination, DistanceKm, EstimatedTimeMinutes, CreatedAt)
-                      VALUES (@Id, @Origin, @Destination, @DistanceKm, @EstimatedTimeMinutes, @CreatedAt)",
+                    @"INSERT INTO Routes (Origin, Destination, DistanceKm, EstimatedTimeMinutes)
+                      OUTPUT INSERTED.Id
+                      VALUES (@Origin, @Destination, @DistanceKm, @EstimatedTimeMinutes)",
                     conn);
 
-                cmd.Parameters.AddWithValue("@Id", route.Id);
                 cmd.Parameters.AddWithValue("@Origin", route.Origin);
                 cmd.Parameters.AddWithValue("@Destination", route.Destination);
                 cmd.Parameters.AddWithValue("@DistanceKm", route.DistanceKm);
                 cmd.Parameters.AddWithValue("@EstimatedTimeMinutes", route.EstimatedTimeMinutes);
-                cmd.Parameters.AddWithValue("@CreatedAt", route.CreatedAt);
 
-                await cmd.ExecuteNonQueryAsync();
+                // Capture newly generated ID
+                int newRouteId = (int)await cmd.ExecuteScalarAsync();
+                route.Id = newRouteId;
             }
         }
 
@@ -62,7 +64,7 @@ namespace TMS.DAL
         }
 
         // ---------------- DELETE ROUTE ----------------
-        public async Task<bool> DeleteRouteAsync(Guid routeId)
+        public async Task<bool> DeleteRouteAsync(int routeId)
         {
             using (var conn = new SqlConnection(_db.ConnectionString))
             {
@@ -80,7 +82,7 @@ namespace TMS.DAL
         }
 
         // ---------------- GET SINGLE ROUTE ----------------
-        public async Task<RouteDTO> GetRouteByIdAsync(Guid routeId)
+        public async Task<RouteDTO> GetRouteByIdAsync(int routeId)
         {
             using (var conn = new SqlConnection(_db.ConnectionString))
             {
@@ -95,7 +97,7 @@ namespace TMS.DAL
                     {
                         return new RouteDTO
                         {
-                            Id = reader.GetGuid(0),
+                            Id = reader.GetInt32(0),
                             Origin = reader.GetString(1),
                             Destination = reader.GetString(2),
                             DistanceKm = reader.GetInt32(3),
@@ -125,7 +127,7 @@ namespace TMS.DAL
                     {
                         routes.Add(new RouteDTO
                         {
-                            Id = reader.GetGuid(0),
+                            Id = reader.GetInt32(0),
                             Origin = reader.GetString(1),
                             Destination = reader.GetString(2),
                             DistanceKm = reader.GetInt32(3),

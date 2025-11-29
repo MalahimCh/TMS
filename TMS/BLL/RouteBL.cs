@@ -47,13 +47,13 @@ namespace TMS.BLL
         }
 
         // ---------------- DELETE ROUTE ----------------
-        public async Task<bool> DeleteRouteAsync(Guid routeId)
+        public async Task<bool> DeleteRouteAsync(int routeId)
         {
             return await _routeRepo.DeleteRouteAsync(routeId);
         }
 
         // ---------------- GET BY ID ----------------
-        public async Task<RouteDTO> GetRouteByIdAsync(Guid id)
+        public async Task<RouteDTO> GetRouteByIdAsync(int id)
         {
             return await _routeRepo.GetRouteByIdAsync(id);
         }

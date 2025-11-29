@@ -1,19 +1,27 @@
-﻿public class ScheduleDTO
+﻿using System;
+
+namespace TMS.DTO
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid RouteId { get; set; }
-    public Guid BusId { get; set; }
-    public Guid? RecurringScheduleId { get; set; } // nullable for normal schedules
-    public DateTime DepartureTime { get; set; }
-    public DateTime ArrivalTime { get; set; }
-    public decimal Price { get; set; }
+    public class ScheduleDTO
+    {
+        public int Id { get; set; }   // INT IDENTITY
 
-    public bool Completed { get; set; } = false;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public int RouteId { get; set; }
+        public int BusId { get; set; }
+        public int? RecurringScheduleId { get; set; }  // nullable
 
-    // These are populated when fetching schedules for display
-    public string BusNumber { get; set; } = "";
-    public string RouteDisplay { get; set; } = "";
+        public DateTime DepartureTime { get; set; }
+        public DateTime ArrivalTime { get; set; }
+        public decimal Price { get; set; }
 
-    public string DisplayName => $"{DepartureTime:yyyy-MM-dd HH:mm} | Bus: {BusNumber} | Route: {RouteDisplay}";
+        public bool Completed { get; set; }
+        public DateTime CreatedAt { get; set; }
+
+        // Display fields
+        public string BusNumber { get; set; }
+        public string RouteDisplay { get; set; }
+
+        public string DisplayName =>
+            $"{DepartureTime:yyyy-MM-dd HH:mm} | Bus: {BusNumber} | Route: {RouteDisplay}";
+    }
 }
