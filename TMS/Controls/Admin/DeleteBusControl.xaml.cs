@@ -27,17 +27,14 @@ namespace TMS.Controls.Admin
         {
             var buses = await _busBL.GetAllBusesAsync();
             cmbBuses.ItemsSource = buses;
-            cmbBuses.DisplayMemberPath = "BusNumber"; // or any property to show
+            cmbBuses.DisplayMemberPath = "BusNumber"; // display bus number
         }
 
-        private async void SelectBus_Click(object sender, RoutedEventArgs e)
+        // Automatically fill data when bus is selected
+        private void CmbBuses_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _bus = cmbBuses.SelectedItem as BusDTO;
-            if (_bus == null)
-            {
-                MessageBox.Show("Please select a bus first.");
-                return;
-            }
+            if (_bus == null) return;
 
             txtBusNumber.Text = _bus.BusNumber;
             txtBusType.Text = _bus.BusType;

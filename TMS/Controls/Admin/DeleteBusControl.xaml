@@ -42,37 +42,19 @@
 
                     <TextBlock Text="Select Bus to Delete" FontWeight="SemiBold" Foreground="#666666" Margin="0,0,0,5"/>
 
-                    <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,10">
+                    <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,20">
                         <ComboBox x:Name="cmbBuses" 
                                   Padding="10" 
                                   FontSize="14" 
                                   Background="Transparent" 
                                   BorderThickness="0"
-                                  VerticalContentAlignment="Center"/>
+                                  VerticalContentAlignment="Center"
+                                  SelectionChanged="CmbBuses_SelectionChanged"/>
                     </Border>
 
-                    <Button Content="Load Bus Data" 
-                            Click="SelectBus_Click" 
-                            Height="35" 
-                            Background="Transparent" 
-                            BorderBrush="#1E3A8A" 
-                            BorderThickness="1" 
-                            Foreground="#1E3A8A" 
-                            FontWeight="SemiBold"
-                            Margin="0,0,0,25">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="5"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
-
-                    <Separator Background="#E0E0E0" Margin="0,0,0,20"/>
-
-                    <TextBlock Text="Bus Details (Read Only)" FontSize="12" Foreground="Gray" Margin="0,0,0,10"/>
+                    <Separator Background="#E0E0E0" Height="1" Margin="0,10,0,20"/>
 
                     <TextBlock Text="Bus Number" FontWeight="SemiBold" Foreground="#666666" Margin="0,0,0,5"/>
-
                     <Border Background="#EEEEEE" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,10">
                         <TextBox x:Name="txtBusNumber" 
                                  IsReadOnly="True"
@@ -113,7 +95,6 @@
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Background" Value="#F44336"/>
-
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
@@ -122,12 +103,10 @@
                                                     CornerRadius="6">
                                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Border>
-
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsPressed" Value="True">
                                                     <Setter TargetName="border" Property="Background" Value="#B71C1C"/>
                                                 </Trigger>
-
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter TargetName="border" Property="Background" Value="#E53935"/>
                                                 </Trigger>

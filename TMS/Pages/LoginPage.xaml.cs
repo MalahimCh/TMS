@@ -27,7 +27,6 @@ namespace TMS.Pages
 
             if (_isPasswordVisible)
             {
-                // Show password
                 txtPasswordVisible.Text = pwdBox.Password;
                 PasswordBorder.Visibility = Visibility.Collapsed;
                 PasswordTextBorder.Visibility = Visibility.Visible;
@@ -36,7 +35,6 @@ namespace TMS.Pages
             }
             else
             {
-                // Hide password
                 pwdBox.Password = txtPasswordVisible.Text;
                 PasswordBorder.Visibility = Visibility.Visible;
                 PasswordTextBorder.Visibility = Visibility.Collapsed;
@@ -44,10 +42,6 @@ namespace TMS.Pages
                 EyePack.Kind = MaterialDesignThemes.Wpf.PackIconKind.Eye;
             }
         }
-
-
-
-
 
         private void pwdBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
@@ -61,8 +55,6 @@ namespace TMS.Pages
                 pwdBox.Password = txtPasswordVisible.Text;
         }
 
-
-
         private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string email = txtEmail.Text;
@@ -70,7 +62,6 @@ namespace TMS.Pages
 
             try
             {
-
                 if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 {
                     MessageBox.Show("Please enter both email and password.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -83,17 +74,17 @@ namespace TMS.Pages
                 {
                     if (user.Role == "admin")
                     {
-                        _mainFrame.Content = new AdminDashboard(_mainFrame, user.FullName,user.Email);
+                        _mainFrame.Content = new AdminDashboard(_mainFrame, user.FullName, user.Email);
                     }
                     else if (user.Role == "customer")
                     {
-                        _mainFrame.Content = new CustomerDashboard(_mainFrame, user.FullName,user.Email);
+                        _mainFrame.Content = new CustomerDashboard(_mainFrame, user.FullName, user.Email);
                     }
                     else
                     {
                         _mainFrame.Content = new SupportStaffDashboard(_mainFrame, user.FullName, user.Email);
                     }
-                    
+
                 }
                 else
                 {
@@ -108,8 +99,7 @@ namespace TMS.Pages
                     MessageBox.Show("Your email is not verified. Please verify your account first.",
                         "Email Not Verified", MessageBoxButton.OK, MessageBoxImage.Warning);
 
-                    // Navigate to OTP page automatically
-                    _mainFrame.Content = new OtpPage(_mainFrame,email);
+                    _mainFrame.Content = new OtpPage(_mainFrame, email);
                 }
                 else
                 {
@@ -123,7 +113,6 @@ namespace TMS.Pages
         {
             _mainFrame.Content = new ForgotPasswordPage(_mainFrame);
         }
-
 
         private void NavigateToRegister_Click(object sender, RoutedEventArgs e)
         {
