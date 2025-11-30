@@ -15,6 +15,8 @@ namespace TMS.DTO
         public string? BunkType { get; set; }   // "Lower", "Upper" for sleeper, null otherwise
         public string Status { get; set; } = "Available"; // Available, TemporarilyBooked, Booked, Reserved, NotAvailable
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public string? Gender { get; set; }
     }
 }
 

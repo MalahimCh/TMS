@@ -56,6 +56,7 @@ namespace TMS.Pages.Customer
                     // Update booking payment status to Paid
                     await _bookingBL.UpdatePaymentAsync(_booking.Id, "Paid", Guid.NewGuid().ToString(), context.MethodName);
                     MessageBox.Show("Payment successful!");
+
                     _mainFrame.Content = new CustomerDashboard(_mainFrame, _username, _email);
 
                 }

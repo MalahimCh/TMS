@@ -46,6 +46,7 @@ namespace TMS.DAL
         // ----------------------------------------------------------
         // INSERT BOOKING (returns new Id)
         // ----------------------------------------------------------
+
         public async Task<int> InsertBookingAsync(BookingDTO booking)
         {
             string query = @"
@@ -81,56 +82,131 @@ namespace TMS.DAL
 
 
         // ----------------------------------------------------------
-        // INSERT BOOKING SEATS
+        // INSERT BOOKING SEATS AND MARK THEM TEMPORARILY BOOKED
         // ----------------------------------------------------------
         public async Task InsertBookingSeatsAsync(int bookingId, List<BookingSeatDTO> seats)
         {
-            string query = @"
-                INSERT INTO BookingSeats (BookingId, SeatId, SeatPrice)
-                VALUES (@BookingId, @SeatId, @Price)
-            ";
-
             using var conn = new SqlConnection(_db.ConnectionString);
             await conn.OpenAsync();
 
-            using var cmd = new SqlCommand(query, conn);
+            using var tran = conn.BeginTransaction(); // ensure atomicity
 
-            foreach (var seat in seats)
+            try
             {
-                cmd.Parameters.Clear();
-                cmd.Parameters.AddWithValue("@BookingId", bookingId);
-                cmd.Parameters.AddWithValue("@SeatId", seat.SeatId);
-                cmd.Parameters.AddWithValue("@Price", seat.SeatPrice);
+                // Insert booking seats
+                string insertQuery = @"
+            INSERT INTO BookingSeats (BookingId, SeatId, SeatPrice,Gender)
+            VALUES (@BookingId, @SeatId, @Price,@Gender)
+        ";
 
-                await cmd.ExecuteNonQueryAsync();
+                using var cmd = new SqlCommand(insertQuery, conn, tran);
+                foreach (var seat in seats)
+                {
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@BookingId", bookingId);
+                    cmd.Parameters.AddWithValue("@SeatId", seat.SeatId);
+                    cmd.Parameters.AddWithValue("@Price", seat.SeatPrice);
+                    cmd.Parameters.AddWithValue("@Gender", seat.Gender);
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                // Update seat statuses to TemporarilyBooked
+                string updateSeatsQuery = @"
+            UPDATE Seats
+            SET Status = 'TemporarilyBooked'
+            WHERE Id IN (" + string.Join(",", seats.Select(s => s.SeatId)) + @")
+        ";
+
+                using var cmdUpdate = new SqlCommand(updateSeatsQuery, conn, tran);
+                await cmdUpdate.ExecuteNonQueryAsync();
+
+                tran.Commit();
+            }
+            catch
+            {
+                tran.Rollback();
+                throw;
             }
         }
 
-
         // ----------------------------------------------------------
-        // UPDATE PAYMENT STATUS
+        // UPDATE PAYMENT STATUS AND MARK SEATS AS BOOKED IF PAID
         // ----------------------------------------------------------
         public async Task UpdatePaymentAsync(int bookingId, string status, string txnId, string method)
         {
-            string query = @"
-                UPDATE Bookings
-                SET PaymentStatus = @Status,
-                    TransactionId = @Txn,
-                    PaymentMethod = @Method
-                WHERE Id = @Id
-            ";
-
             using var conn = new SqlConnection(_db.ConnectionString);
             await conn.OpenAsync();
 
-            using var cmd = new SqlCommand(query, conn);
+            using var tran = conn.BeginTransaction(); // atomic operation
 
-            cmd.Parameters.AddWithValue("@Id", bookingId);
-            cmd.Parameters.AddWithValue("@Status", status);
-            cmd.Parameters.AddWithValue("@Txn", (object?)txnId ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Method", (object?)method ?? DBNull.Value);
+            try
+            {
+                string bookingStatus;
+                string seatStatus;
 
-            await cmd.ExecuteNonQueryAsync();
+                // Determine new booking and seat status
+                if (status.Equals("Paid", StringComparison.OrdinalIgnoreCase))
+                {
+                    bookingStatus = "Confirmed";
+                    seatStatus = "Booked";
+                }
+                else if (status.Equals("Failed", StringComparison.OrdinalIgnoreCase))
+                {
+                    bookingStatus = "Expired";
+                    seatStatus = "Available";
+                }
+                else if (status.Equals("Refunded", StringComparison.OrdinalIgnoreCase))
+                {
+                    bookingStatus = "Cancelled";
+                    seatStatus = "Available";
+                }
+                else
+                {
+                    // Default fallback
+                    bookingStatus = "Pending";
+                    seatStatus = "TemporarilyBooked";
+                }
+
+                // 1. Update booking info
+                string updateBookingQuery = @"
+            UPDATE Bookings
+            SET BookingStatus = @BookingStatus,
+                PaymentStatus = @PaymentStatus,
+                TransactionId = @Txn,
+                PaymentMethod = @Method
+            WHERE Id = @Id
+        ";
+
+                using var cmd = new SqlCommand(updateBookingQuery, conn, tran);
+                cmd.Parameters.AddWithValue("@Id", bookingId);
+                cmd.Parameters.AddWithValue("@BookingStatus", bookingStatus);
+                cmd.Parameters.AddWithValue("@PaymentStatus", status);
+                cmd.Parameters.AddWithValue("@Txn", (object?)txnId ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Method", (object?)method ?? DBNull.Value);
+                await cmd.ExecuteNonQueryAsync();
+
+                // 2. Update seat status
+                string updateSeatsQuery = @"
+            UPDATE s
+            SET s.Status = @SeatStatus
+            FROM Seats s
+            INNER JOIN BookingSeats bs ON s.Id = bs.SeatId
+            WHERE bs.BookingId = @BookingId
+        ";
+
+                using var cmdSeats = new SqlCommand(updateSeatsQuery, conn, tran);
+                cmdSeats.Parameters.AddWithValue("@BookingId", bookingId);
+                cmdSeats.Parameters.AddWithValue("@SeatStatus", seatStatus);
+                await cmdSeats.ExecuteNonQueryAsync();
+
+                tran.Commit();
+            }
+            catch
+            {
+                tran.Rollback();
+                throw;
+            }
         }
 
 

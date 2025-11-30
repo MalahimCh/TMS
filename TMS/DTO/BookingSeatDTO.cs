@@ -13,5 +13,7 @@ namespace TMS.DTO
         public int BookingId { get; set; }
         public int SeatId { get; set; }
         public decimal SeatPrice { get; set; }
+
+        public string? Gender { get; set; }
     }
 }
