@@ -111,6 +111,11 @@ namespace TMS.BLL
             return await _userRepo.GetUserByEmailAsync(email);
         }
 
+        public async Task<int> GetUserIDByEmailAsync(string email)
+        {
+            return await _userRepo.GetUserIDByEmailAsync(email);
+        }
+
 
     }
 }

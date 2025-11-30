@@ -31,6 +31,15 @@ VALUES (
 );
 
 
+INSERT INTO Users (FullName, Email, PhoneNumber, PasswordHash, Role)
+VALUES (
+    'SupportStaff',
+    'support@gmail.com',
+    '03000000000',
+    '$2a$11$zI6bG/l7/ThMb/23mHV14eTM/wrjal0YPwxh5sx9y4BH7i4si8rx.',
+    'supportstaff'
+);
+
 
 --otp table
 CREATE TABLE OtpVerification (
@@ -181,11 +190,41 @@ CREATE TABLE Schedules (
     CONSTRAINT UQ_BusSchedule UNIQUE (BusId, DepartureTime)
 );
 
+CREATE TABLE SupportRequests (
+    RequestId           INT IDENTITY(1,1) PRIMARY KEY,
+    CustomerId          INT NULL,              
+    Category            VARCHAR(50) NOT NULL,  
+--Complaint
+--Inquiry
+--LostAndFound
+--PaymentIssue
+--TechnicalIssue
+--Suggestion
 
+    Subject             VARCHAR(200) NOT NULL,
+    Description         VARCHAR(MAX) NOT NULL,
+    Status              VARCHAR(30) NOT NULL, 
+    
+--Assigned
+--WaitingSupport
+--WaitingCustomer
+--Resolved
 
+    AssignedStaffId     INT NULL,              
+    CreatedAt           DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedAt           DATETIME NOT NULL DEFAULT GETDATE()
+);
 
-
-
+CREATE TABLE SupportRequestResponses (
+    ResponseId      INT IDENTITY(1,1) PRIMARY KEY,
+    RequestId       INT NOT NULL,
+    UserId          INT NOT NULL,
+    Message         VARCHAR(MAX) NOT NULL,
+    CreatedAt       DATETIME NOT NULL DEFAULT GETDATE(),
+    
+    FOREIGN KEY (RequestId) REFERENCES SupportRequests(RequestId)
+        ON DELETE CASCADE
+);
 
 
 

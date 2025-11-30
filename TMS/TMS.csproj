@@ -27,8 +27,4 @@
 	  </Resource>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Controls\Customer\" />
-	</ItemGroup>
-
 </Project>

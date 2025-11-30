@@ -91,7 +91,15 @@
                 <Button Content="Profile" Height="40" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Click="Profile_Click" Margin="0,5"/>
                 <Button Content="Payment and Discounts" Height="40" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Click="Payment_Click" Margin="0,5"/>
                 <Button Content="E-Ticket / History" Height="40" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Click="ETicket_Click" Margin="0,5"/>
-                <Button Content="Support" Height="40" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Click="Support_Click" Margin="0,5"/>
+                <Grid Margin="0,5">
+                    <Button x:Name="BtnSupportSidebar" Content="Support" Height="40" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Click="Support_Click"/>
+                    <Border x:Name="SupportBadgeSidebar" Width="18" Height="18" CornerRadius="9" Background="Red"
+            HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Collapsed">
+                        <TextBlock x:Name="SupportBadgeSidebarText" Text="0" Foreground="White" FontWeight="Bold"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11"/>
+                    </Border>
+                </Grid>
+
 
                 <Button Content="Logout" Height="40" Background="#C62828" Foreground="White" BorderThickness="0" Click="Logout_Click" Margin="0,40,0,0"/>
             </StackPanel>
@@ -172,12 +180,22 @@
                         </Border>
 
                         <Border Style="{StaticResource HoverCard}" CornerRadius="10" Background="White" Padding="20" Margin="10" BorderBrush="#1E3A8A" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="Support" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
-                                <TextBlock Text="Contact support" Foreground="Gray" FontSize="13"/>
-                                <Button Content="Contact" Click="Support_Click" Height="35" Background="#1E3A8A" Foreground="White" FontWeight="Bold" Margin="0,10,0,0"/>
-                            </StackPanel>
+                            <Grid>
+                                <StackPanel>
+                                    <TextBlock Text="Support" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
+                                    <TextBlock Text="Contact support" Foreground="Gray" FontSize="13"/>
+                                    <Button Content="Contact" Click="Support_Click" Height="35" Background="#1E3A8A" Foreground="White" FontWeight="Bold" Margin="0,10,0,0"/>
+                                </StackPanel>
+
+                                <Border x:Name="SupportBadgeCard" Width="20" Height="20" CornerRadius="10" Background="Red"
+                HorizontalAlignment="Right" VerticalAlignment="Top" Visibility="Collapsed">
+                                    <TextBlock x:Name="SupportBadgeCardText" Text="0" Foreground="White" FontWeight="Bold"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11"/>
+                                </Border>
+                            </Grid>
                         </Border>
+
+               
 
                     </UniformGrid>
                 </StackPanel>

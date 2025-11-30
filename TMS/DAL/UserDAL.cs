@@ -70,12 +70,12 @@ namespace TMS.DAL
                     {
                         return new UserDTO
                         {
-                            Id = reader.GetInt32(0),  
+                            Id = reader.GetInt32(0),
 
                             FullName = reader.GetString(1),
                             Email = reader.GetString(2),
 
-                            PhoneNumber = reader.IsDBNull(3)? null: reader.GetString(3),
+                            PhoneNumber = reader.IsDBNull(3) ? null : reader.GetString(3),
 
                             PasswordHash = reader.GetString(4),
                             Role = reader.GetString(5),
@@ -89,5 +89,17 @@ namespace TMS.DAL
             return null;
         }
 
+
+        public async Task<int> GetUserIDByEmailAsync(string email)
+        {
+            using (var conn = new SqlConnection(_db.ConnectionString))
+            {
+                await conn.OpenAsync();
+                var cmd = new SqlCommand("SELECT Id FROM Users WHERE Email=@Email", conn);
+                cmd.Parameters.AddWithValue("@Email", email);
+                var result = await cmd.ExecuteScalarAsync();
+                return result != null ? (int)result : -1;
+            }
+        }
     }
 }

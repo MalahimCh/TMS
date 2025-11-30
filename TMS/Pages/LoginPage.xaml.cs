@@ -4,6 +4,7 @@ using TMS.BLL;
 using TMS.DAL;
 using TMS.Pages.Admin;
 using TMS.Pages.Customer;
+using TMS.Pages.SupportStaff;
 namespace TMS.Pages
 {
     public partial class LoginPage : Page
@@ -90,8 +91,7 @@ namespace TMS.Pages
                     }
                     else
                     {
-                        MessageBox.Show($"Welcome {user.FullName}! Role: {user.Role}",
-                            "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        _mainFrame.Content = new SupportStaffDashboard(_mainFrame, user.FullName, user.Email);
                     }
                     
                 }

@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using TMS.Controls;
 using TMS.Pages.Customer;
+using TMS.Pages.SupportStaff;
 
 namespace TMS.Pages.Admin
 {
@@ -38,6 +39,10 @@ namespace TMS.Pages.Admin
                     case "customer":
                         ((mainWindow.Content as Frame).Content) = new CustomerDashboard((mainWindow.Content as Frame), _username, _email);
                         break;
+                    case "supportstaff":
+                        ((mainWindow.Content as Frame).Content) = new SupportStaffDashboard((mainWindow.Content as Frame), _username, _email);
+                        break;
+
                 }
             }
         }
