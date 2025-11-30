@@ -1,36 +1,158 @@
 ﻿<UserControl x:Class="TMS.Controls.Admin.ViewScheduleControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Height="Auto" Width="Auto">
-    <StackPanel Margin="20">
-        <TextBlock Text="View Schedules" FontSize="24" FontWeight="Bold" Foreground="#1E3A8A" Margin="0,0,0,20"/>
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="1000"
+             FontFamily="Segoe UI">
 
-        <TextBlock Text="Recurring Schedules" FontWeight="Bold" Margin="0,0,0,10"/>
-        <DataGrid x:Name="dgRecurringSchedules" AutoGenerateColumns="False" CanUserAddRows="False" Height="200" Margin="0,0,0,20">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Bus" Binding="{Binding BusName}" Width="*"/>
-                <DataGridTextColumn Header="Route" Binding="{Binding RouteName}" Width="*"/>
-                <DataGridTextColumn Header="Start → End" Binding="{Binding DateRange}" Width="120"/>
-                <DataGridTextColumn Header="Days" Binding="{Binding Days}" Width="150"/>
-                <DataGridTextColumn Header="Frequency" Binding="{Binding Frequency}" Width="80"/>
-                <DataGridTextColumn Header="Departure" Binding="{Binding DepartureTime}" Width="80"/>
-                <DataGridTextColumn Header="Arrival" Binding="{Binding ArrivalTime}" Width="80"/>
-                <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="60"/>
-            </DataGrid.Columns>
-        </DataGrid>
+    <UserControl.Resources>
+        <Style x:Key="ModernColumnHeader" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#1E3A8A"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,10,10,10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="BorderThickness" Value="0,0,1,0"/>
+            <Setter Property="BorderBrush" Value="#3052A4"/>
+        </Style>
 
+        <Style x:Key="ModernRow" TargetType="DataGridRow">
+            <Setter Property="Padding" Value="0,8,0,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
 
+        <Style x:Key="ModernCell" TargetType="DataGridCell">
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#E3F2FD"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
 
-        <TextBlock Text="One-Time Schedules" FontWeight="Bold" Margin="0,10,0,10"/>
-        <DataGrid x:Name="dgOneTimeSchedules" AutoGenerateColumns="False" CanUserAddRows="False" Height="400">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Bus" Binding="{Binding BusName}" Width="*"/>
-                <DataGridTextColumn Header="Route" Binding="{Binding RouteName}" Width="*"/>
-                <DataGridTextColumn Header="Departure" Binding="{Binding DepartureTime}" Width="*"/>
-                <DataGridTextColumn Header="Arrival" Binding="{Binding ArrivalTime}" Width="*"/>
-                <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="*"/>
-                <DataGridTextColumn Header="Completed" Binding="{Binding Completed}" Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
-    </StackPanel>
+    <Grid Background="#F0F2F5">
+
+        <Border Background="White" 
+                Margin="30"
+                CornerRadius="12"
+                BorderBrush="#E0E0E0"
+                BorderThickness="1">
+
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.1" Color="Black"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" 
+                        Background="#1E3A8A" 
+                        CornerRadius="12,12,0,0" 
+                        Padding="20">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="All Schedules Directory" 
+                                   Foreground="White" 
+                                   FontSize="20" 
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <Grid Grid.Row="1" Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="1.5*"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="2*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                        <Border Background="#FF9800" CornerRadius="4" Width="5" Height="20" Margin="0,0,10,0"/>
+                        <TextBlock Text="Recurring Schedules" FontSize="16" FontWeight="Bold" Foreground="#424242"/>
+                    </StackPanel>
+
+                    <DataGrid x:Name="dgRecurringSchedules" 
+                              Grid.Row="1"
+                              AutoGenerateColumns="False" 
+                              CanUserAddRows="False" 
+                              IsReadOnly="True"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="All"
+                              HorizontalGridLinesBrush="#BDBDBD" 
+                              VerticalGridLinesBrush="#BDBDBD"
+                              Background="White"
+                              BorderThickness="1"
+                              BorderBrush="#EEEEEE"
+                              ColumnHeaderStyle="{StaticResource ModernColumnHeader}"
+                              RowStyle="{StaticResource ModernRow}"
+                              CellStyle="{StaticResource ModernCell}">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Bus" Binding="{Binding BusName}" Width="*"/>
+                            <DataGridTextColumn Header="Route" Binding="{Binding RouteName}" Width="1.5*"/>
+                            <DataGridTextColumn Header="Range" Binding="{Binding DateRange}" Width="140"/>
+                            <DataGridTextColumn Header="Days" Binding="{Binding Days}" Width="1.5*"/>
+                            <DataGridTextColumn Header="Freq" Binding="{Binding Frequency}" Width="80"/>
+                            <DataGridTextColumn Header="Departs" Binding="{Binding DepartureTime}" Width="90"/>
+                            <DataGridTextColumn Header="Arrives" Binding="{Binding ArrivalTime}" Width="90"/>
+                            <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="70"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0,0,0,10">
+                        <Border Background="#1E3A8A" CornerRadius="4" Width="5" Height="20" Margin="0,0,10,0"/>
+                        <TextBlock Text="One-Time Schedules" FontSize="16" FontWeight="Bold" Foreground="#424242"/>
+                    </StackPanel>
+
+                    <DataGrid x:Name="dgOneTimeSchedules" 
+                              Grid.Row="4"
+                              AutoGenerateColumns="False" 
+                              CanUserAddRows="False" 
+                              IsReadOnly="True"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="All"
+                              HorizontalGridLinesBrush="#BDBDBD" 
+                              VerticalGridLinesBrush="#BDBDBD"
+                              Background="White"
+                              BorderThickness="1"
+                              BorderBrush="#EEEEEE"
+                              ColumnHeaderStyle="{StaticResource ModernColumnHeader}"
+                              RowStyle="{StaticResource ModernRow}"
+                              CellStyle="{StaticResource ModernCell}">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Bus" Binding="{Binding BusName}" Width="*"/>
+                            <DataGridTextColumn Header="Route" Binding="{Binding RouteName}" Width="1.5*"/>
+                            <DataGridTextColumn Header="Departure" Binding="{Binding DepartureTime}" Width="*"/>
+                            <DataGridTextColumn Header="Arrival" Binding="{Binding ArrivalTime}" Width="*"/>
+                            <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="80"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Completed}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>
