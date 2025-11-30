@@ -374,6 +374,19 @@
                             </StackPanel>
                         </Border>
 
+                        <!-- ADD USER -->
+                        <Border Style="{StaticResource HoverCard}"
+                                CornerRadius="10" Background="White" Padding="20" Margin="10"
+                                BorderBrush="#1E3A8A" BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="Add User" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A"/>
+                                <TextBlock Text="Add a new user to the system" Foreground="Gray" FontSize="13"/>
+                                <Button Content="Add" Click="AddUser_Click"
+                                        Height="35" Background="#1E3A8A"
+                                        Foreground="White" FontWeight="Bold" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
+
                     </UniformGrid>
                 </StackPanel>
             </ScrollViewer>
