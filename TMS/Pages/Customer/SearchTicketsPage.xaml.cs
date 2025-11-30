@@ -26,6 +26,7 @@ namespace TMS.Pages.Customer
             _locationBL = new LocationBL(new DAL.LocationDAL());
             _busBL = new BusBL(new DAL.BusDAL());
             _scheduleBL = new ScheduleBL(new DAL.ScheduleDAL());
+            _email = email;
 
             LoadLocations();
             LoadBusTypes();

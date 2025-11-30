@@ -8,6 +8,7 @@ using TMS.BLL;
 using TMS.DAL;
 using TMS.Design_Patterns;
 using TMS.DTO;
+using TMS.Pages.Customer;
 
 namespace TMS.Controls.Customer
 {
@@ -20,14 +21,24 @@ namespace TMS.Controls.Customer
 
         private readonly SeatBL _seatBL = new SeatBL(new SeatDAL()); // assumes a BL class to fetch seat data
         private readonly string _busType;
+        private readonly BookingBL _bookingBL = new BookingBL();
+        private BookingDTO? _currentBooking; // Holds booking once inserted
+        private readonly string _email;
+        private readonly UserBL _userBL;
+        private readonly Frame _mainFrame;
+        private string _username;
 
-        public SeatLayoutControl(ScheduleDTO schedule)
+        public SeatLayoutControl(Frame frame,ScheduleDTO schedule,string email,string username)
         {
             InitializeComponent();
             _schedule = schedule;
             _seatPrice = _schedule.Price;
             _busType = schedule.BusType; // Make sure ScheduleDTO has BusType
+            _username = username;
             LoadSeatsFromDatabase();
+            _email = email;
+            _userBL = new UserBL(new UserDAL(),new OtpBL(new OtpDAL()));
+            _mainFrame = frame;
         }
 
         
@@ -211,24 +222,122 @@ namespace TMS.Controls.Customer
         }
 
  
-        private void UpdateSelectedSeatsOverlay()
-        {
-            if (_selectedSeats.Count == 0)
-            {
-                SelectedSeatsText.Text = "None";
-                TotalPriceText.Text = $"Rs. 0";
-            }
-            else
-            {
-                SelectedSeatsText.Text = string.Join(", ", _selectedSeats.Keys);
-                TotalPriceText.Text = $"Rs. {_selectedSeats.Count * _seatPrice:N0}";
-            }
-        }
+  
 
         public List<(int SeatNumber, string Gender)> GetSelectedSeats()
         {
             return _selectedSeats.Select(kvp => (kvp.Key, kvp.Value)).ToList();
         }
+
+
+        private async Task<BookingDTO> BuildBookingDTOAsync()
+        {
+            if (_selectedSeats.Count == 0)
+                throw new Exception("No seats selected.");
+
+            decimal total = 0;
+            var seatsDto = new List<BookingSeatDTO>();
+
+            foreach (var kvp in _selectedSeats)
+            {
+                var seat = _seats.FirstOrDefault(s => s.SeatNumber == kvp.Key);
+                if (seat == null) continue;
+
+                decimal price = seat.IsSide ? _seatPrice * 1.1m : _seatPrice;
+                total += price;
+
+                seatsDto.Add(new BookingSeatDTO
+                {
+                    SeatId = seat.Id,
+                    SeatPrice = price
+                });
+            }
+
+            var bookingRef = $"BK{DateTime.Now:yyyyMMddHHmmss}{new Random().Next(1000, 9999)}";
+            var user = await _userBL.GetUserByEmailAsync(_email); // **await instead of .Result**
+
+            if (user == null)
+                throw new Exception("User not found.");
+
+            var booking = new BookingDTO
+            {
+                UserId = user.Id,
+                ScheduleId = _schedule.Id,
+                TotalAmount = total,
+                DiscountAmount = 0,
+                PromotionCode = null,
+                BookingReference = bookingRef,
+                Seats = seatsDto
+            };
+
+            return booking;
+        }
+
+       
+        private void UpdateSelectedSeatsOverlay()
+        {
+            // Prepare list for ItemsControl
+            var seatList = new List<dynamic>();
+            decimal total = 0;
+
+            foreach (var kvp in _selectedSeats)
+            {
+                var seat = _seats.FirstOrDefault(s => s.SeatNumber == kvp.Key);
+                if (seat == null) continue;
+
+                // Apply 1.1x for side seats
+                decimal price = seat.IsSide ? _seatPrice * 1.1m : _seatPrice;
+                total += price;
+
+                seatList.Add(new { SeatNumber = seat.SeatNumber, Gender = kvp.Value, Price = price });
+            }
+
+            SelectedSeatsList.ItemsSource = seatList;
+            TotalPriceTextSidebar.Text = $"Rs. {total:N0}";
+        }
+
+
+        private async void PayLater_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var booking = await BuildBookingDTOAsync();
+                booking = await _bookingBL.CreateBookingAsync(booking);
+
+                MessageBox.Show(
+                    $"Booking reserved! You have 2 hours to pay.\nBooking Ref: {booking.BookingReference}",
+                    "Booking Reserved",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
+
+                _mainFrame.Content = new CustomerDashboard(_mainFrame, _username, _email);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error creating booking: {ex.Message}");
+            }
+        }
+
+
+        private async void PayNow_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var booking = await BuildBookingDTOAsync();
+                booking = await _bookingBL.CreateBookingAsync(booking);
+
+                // Navigate to PaymentPage with booking
+                _mainFrame.Content = new PaymentPage(_mainFrame, booking,_username,_email);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error creating booking: {ex.Message}");
+            }
+        }
+
+
+
 
         private void BookSeats_Click(object sender, RoutedEventArgs e)
         {
