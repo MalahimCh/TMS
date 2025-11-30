@@ -14,7 +14,7 @@ namespace TMS.Controls.Customer
     public partial class SeatLayoutControl : UserControl
     {
         private readonly ScheduleDTO _schedule;
-        private  List<SeatModel> _seats;
+        private List<SeatModel> _seats;
         private readonly Dictionary<int, string> _selectedSeats = new(); // SeatNumber => Gender
         private readonly decimal _seatPrice;
 
@@ -30,7 +30,6 @@ namespace TMS.Controls.Customer
             LoadSeatsFromDatabase();
         }
 
-        
         private async void LoadSeatsFromDatabase()
         {
             // Get seats for this bus/schedule from DB
@@ -210,7 +209,7 @@ namespace TMS.Controls.Customer
             UpdateSelectedSeatsOverlay();
         }
 
- 
+
         private void UpdateSelectedSeatsOverlay()
         {
             if (_selectedSeats.Count == 0)

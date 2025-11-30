@@ -75,7 +75,6 @@ CREATE TABLE Seats (
     BunkType NVARCHAR(10) NULL,      -- Lower, Upper (for sleeper), NULL otherwise
     Status NVARCHAR(20) NOT NULL DEFAULT 'Available', -- Available , TemporarilyBooked, Booked ,Reserved ,NotAvailable  
     CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE(),
-
     CONSTRAINT UQ_Seat_Bus UNIQUE (BusId, SeatNumber)
 );
 
