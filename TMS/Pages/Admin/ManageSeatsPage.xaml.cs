@@ -16,7 +16,7 @@ namespace TMS.Pages.Admin
         private readonly Frame _mainFrame;
         private readonly string _username;
         private readonly string _email;
-        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TMS_DB;Integrated Security=True;";
+        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TMS_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
 
         private List<SeatModel> _seats = new();
 
