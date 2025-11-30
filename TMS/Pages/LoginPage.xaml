@@ -18,7 +18,6 @@
             </Grid.Background>
         </Grid>
 
-
         <Grid Grid.Column="1" Background="White">
 
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="350">
@@ -106,14 +105,17 @@
                         Margin="0,0,5,30"
                         Click="ForgotPassword_Click"/>
 
-                <Button Content="Login" 
+                <!-- ONLY CHANGE: IsDefault="True" added -->
+                <Button x:Name="btnLogin"
+                        Content="Login" 
                         Height="50" 
                         Margin="0,0,0,30"
                         Foreground="White" 
                         FontWeight="Bold"
                         FontSize="16"
                         BorderThickness="0" 
-                        Click="LoginButton_Click">
+                        Click="LoginButton_Click"
+                        IsDefault="True">
 
                     <Button.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
