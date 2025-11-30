@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using TMS.DTO;
 using TMS.BLL;
-
+using TMS.Controls.Customer;
 namespace TMS.Pages.Customer
 {
     public partial class SearchTicketsPage : Page
@@ -72,15 +72,16 @@ namespace TMS.Pages.Customer
                 MessageBox.Show("No schedules found for the selected criteria.");
             }
         }
-
         private void SelectSeats_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is ScheduleDTO schedule)
             {
-                // Navigate to seat layout control/page
-                //_mainFrame.Content = new SeatLayoutPage(_mainFrame, _username, schedule);
+                _mainFrame.Navigate(new SeatLayoutPage(schedule, _mainFrame,  _username,  _email));
             }
         }
+
+
+
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {

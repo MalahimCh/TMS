@@ -37,7 +37,7 @@ namespace TMS.Controls.Admin
                     txtTotalSeats.Text = "33";
                     break;
                 case "Sleeper":
-                    txtTotalSeats.Text = "20";
+                    txtTotalSeats.Text = "36";
                     break;
                 default:
                     txtTotalSeats.Text = "";
