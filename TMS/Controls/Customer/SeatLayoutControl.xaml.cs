@@ -50,8 +50,7 @@ namespace TMS.Controls.Customer
 
             if (_busType == "Sleeper")
             {
-                // 2 left + 1 aisle + 1 side = 4 columns
-                int cols = 4;
+                int cols = 4; // 2 left + 1 aisle + 1 side
                 for (int c = 0; c < cols; c++)
                     SeatsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
@@ -67,28 +66,42 @@ namespace TMS.Controls.Customer
 
                         if (seat == null)
                         {
-                            // Empty space / aisle
                             element = new Border { Width = 35, Height = 35, Background = Brushes.Transparent };
                         }
                         else
                         {
-                            // Show lower/upper side with different colors
                             var btn = new Button
                             {
-                                Content = seat.SeatNumber.ToString(),
                                 Width = 35,
                                 Height = 35,
                                 Margin = new Thickness(2),
                                 Tag = seat,
-                                Background = seat.Status switch
-                                {
-                                    "Available" => seat.BunkType == "Upper" ? Brushes.LightBlue : Brushes.LightGreen,
-                                    "TemporarilyBooked" or "Booked" or "Reserved" => Brushes.DarkGray,
-                                    "NotAvailable" => Brushes.Red,
-                                    _ => Brushes.LightGray
-                                },
-                                IsEnabled = seat.Status == "Available"
+                                IsEnabled = seat.Status == "Available",
+                                Background = seat.Status == "Available" ? Brushes.LightGray :
+                                             seat.Status switch
+                                             {
+                                                 "TemporarilyBooked" or "Booked" or "Reserved" => Brushes.DarkGray,
+                                                 "NotAvailable" => Brushes.Red,
+                                                 _ => Brushes.LightGray
+                                             }
                             };
+
+                            // StackPanel inside button: seat number + U/L
+                            var stack = new StackPanel { Orientation = Orientation.Vertical, HorizontalAlignment = HorizontalAlignment.Center };
+                            stack.Children.Add(new TextBlock
+                            {
+                                Text = seat.SeatNumber.ToString(),
+                                FontSize = 12,
+                                FontWeight = FontWeights.Bold,
+                                HorizontalAlignment = HorizontalAlignment.Center
+                            });
+                            stack.Children.Add(new TextBlock
+                            {
+                                Text = seat.BunkType == "Upper" ? "U" : "L",
+                                FontSize = 10,
+                                HorizontalAlignment = HorizontalAlignment.Center
+                            });
+                            btn.Content = stack;
 
                             btn.Click += SeatButton_Click;
                             element = btn;
@@ -96,13 +109,29 @@ namespace TMS.Controls.Customer
 
                         Grid.SetRow(element, r);
                         Grid.SetColumn(element, c);
+                        element.SetValue(HorizontalAlignmentProperty, HorizontalAlignment.Center); // Center horizontally
                         SeatsGrid.Children.Add(element);
+                    }
+
+                    // Optional: separator line between upper and lower bunks
+                    if (r > 0 && seatLayout[r].Any(s => s != null) && seatLayout[r][0]?.BunkType == "Lower" &&
+                        seatLayout[r - 1].Any(s => s != null) && seatLayout[r - 1][0]?.BunkType == "Upper")
+                    {
+                        var line = new Border
+                        {
+                            BorderBrush = Brushes.Gray,
+                            BorderThickness = new Thickness(0, 1, 0, 0),
+                            Margin = new Thickness(0, 2, 0, 2)
+                        };
+                        Grid.SetRow(line, r);
+                        Grid.SetColumnSpan(line, cols);
+                        SeatsGrid.Children.Add(line);
                     }
                 }
             }
             else
             {
-                // Economy/Luxury layout using UniformGrid
+                // Economy/Luxury using UniformGrid
                 SeatsGrid.Children.Clear();
                 var uniformGrid = new UniformGrid
                 {
@@ -165,29 +194,23 @@ namespace TMS.Controls.Customer
             }
             else
             {
-                // Ask gender
-                var gender = AskGender();
-                if (gender == null) return;
+                // Show nice popup for gender selection
+                var genderDialog = new GenderSelectionWindow
+                {
+                    Owner = Window.GetWindow(this) // set parent window
+                };
 
-                _selectedSeats[seat.SeatNumber] = gender;
-                btn.Background = gender == "Female" ? Brushes.Pink : Brushes.LightBlue;
+                if (genderDialog.ShowDialog() == true && genderDialog.SelectedGender != null)
+                {
+                    _selectedSeats[seat.SeatNumber] = genderDialog.SelectedGender;
+                    btn.Background = genderDialog.SelectedGender == "Female" ? Brushes.Pink : Brushes.LightBlue;
+                }
             }
 
             UpdateSelectedSeatsOverlay();
         }
 
-        private string? AskGender()
-        {
-            var result = MessageBox.Show("Select Yes for Female, No for Male", "Gender", MessageBoxButton.YesNoCancel);
-
-            return result switch
-            {
-                MessageBoxResult.Yes => "Female",
-                MessageBoxResult.No => "Male",
-                _ => null
-            };
-        }
-
+ 
         private void UpdateSelectedSeatsOverlay()
         {
             if (_selectedSeats.Count == 0)

@@ -8,22 +8,19 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>
-            <!-- Matches Manage Buses width -->
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- ============ SIDEBAR ============ -->
         <Border Background="#17358A" Grid.Column="0">
-            <StackPanel Margin="0,20,0,0">
+            <StackPanel Margin="20">
 
-                <!-- BACK BUTTON -->
                 <Button Click="Back_Click"
-                        Height="50"
+                        Height="40"
                         Background="Transparent"
                         BorderThickness="0"
                         Foreground="White"
                         HorizontalContentAlignment="Left"
-                        Padding="20,0,0,0"
+                        Padding="0"
                         Margin="0,0,0,30">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="ArrowLeft" Width="20" Height="20" Margin="0,0,10,0"/>
@@ -35,70 +32,65 @@
                            FontSize="22"
                            Foreground="White"
                            FontWeight="Bold"
-                           Margin="25,0,0,20" />
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,30" />
 
-                <!-- SIDEBAR BUTTONS -->
-
-                <!-- ADD ROUTE -->
                 <Button Tag="Add"
                         Click="Sidebar_Click"
                         Height="50"
                         Background="Transparent"
                         Foreground="White"
-                        BorderThickness="0" 
-                        HorizontalContentAlignment="Left"
-                        Padding="25,0,0,0">
+                        BorderBrush="White"
+                        BorderThickness="1"
+                        HorizontalContentAlignment="Center"
+                        Margin="0,0,0,15">
                     <StackPanel Orientation="Horizontal">
-                        <!-- Used 'Plus' icon (Safe) -->
-                        <materialDesign:PackIcon Kind="Plus" Width="24" Height="24" Margin="0,0,15,0"/>
+                        <materialDesign:PackIcon Kind="Plus" Width="22" Height="22" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <TextBlock Text="Add Route" FontSize="15" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
-                <!-- UPDATE ROUTE -->
                 <Button Tag="Update"
                         Click="Sidebar_Click"
                         Height="50"
                         Background="Transparent"
                         Foreground="White"
-                        BorderThickness="0"
-                        HorizontalContentAlignment="Left"
-                        Padding="25,0,0,0">
+                        BorderBrush="White"
+                        BorderThickness="1"
+                        HorizontalContentAlignment="Center"
+                        Margin="0,0,0,15">
                     <StackPanel Orientation="Horizontal">
-                        <!-- Used 'Pencil' icon (Safe) -->
-                        <materialDesign:PackIcon Kind="Pencil" Width="24" Height="24" Margin="0,0,15,0"/>
+                        <materialDesign:PackIcon Kind="Pencil" Width="22" Height="22" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <TextBlock Text="Update Route" FontSize="15" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
-                <!-- DELETE ROUTE -->
                 <Button Tag="Delete"
                         Click="Sidebar_Click"
                         Height="50"
                         Background="Transparent"
                         Foreground="White"
-                        BorderThickness="0"
-                        HorizontalContentAlignment="Left"
-                        Padding="25,0,0,0">
+                        BorderBrush="White"
+                        BorderThickness="1"
+                        HorizontalContentAlignment="Center"
+                        Margin="0,0,0,15">
                     <StackPanel Orientation="Horizontal">
-                        <!-- Used 'Delete' icon (Safe) -->
-                        <materialDesign:PackIcon Kind="Delete" Width="24" Height="24" Margin="0,0,15,0"/>
+                        <materialDesign:PackIcon Kind="Delete" Width="22" Height="22" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <TextBlock Text="Delete Route" FontSize="15" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 
-                <!-- VIEW ALL ROUTES -->
                 <Button Tag="View"
                         Click="Sidebar_Click"
                         Height="50"
                         Background="Transparent"
                         Foreground="White"
-                        BorderThickness="0"
-                        HorizontalContentAlignment="Left"
-                        Padding="25,0,0,0">
+                        BorderBrush="White"
+                        BorderThickness="1"
+                        HorizontalContentAlignment="Center"
+                        Margin="0,0,0,15">
                     <StackPanel Orientation="Horizontal">
-                        <!-- Used 'ViewList' icon (Safe) -->
-                        <materialDesign:PackIcon Kind="ViewList" Width="24" Height="24" Margin="0,0,15,0"/>
+                        <materialDesign:PackIcon Kind="ViewList" Width="22" Height="22" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <TextBlock Text="View All Routes" FontSize="15" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
@@ -106,7 +98,6 @@
             </StackPanel>
         </Border>
 
-        <!-- ============ MAIN CONTENT AREA ============ -->
         <Grid Grid.Column="1" Margin="20">
             <ContentControl x:Name="ContentArea"/>
         </Grid>
