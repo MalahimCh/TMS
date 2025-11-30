@@ -199,5 +199,10 @@ namespace TMS.Pages
                 }
             }
         }
+
+        private void BtnExit_Click(object sender, RoutedEventArgs e)
+        {
+            _mainFrame.Content = new LoginPage(_mainFrame);
+        }
     }
 }
