@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMS.DTO;
+using TMS.Design_Patterns;
 
 namespace TMS.DAL
 {
@@ -39,51 +40,50 @@ namespace TMS.DAL
         // ---------------- ADD BUS ----------------
         public async Task AddBusAsync(BusDTO bus)
         {
-            using (var conn = new SqlConnection(_db.ConnectionString))
+            using var conn = new SqlConnection(_db.ConnectionString);
+            await conn.OpenAsync();
+            using var trans = conn.BeginTransaction();
+            try
             {
-                await conn.OpenAsync();
-                using (var trans = conn.BeginTransaction())
+                // Insert bus
+                var cmd = new SqlCommand(@"
+            INSERT INTO Buses (BusNumber, BusType, TotalSeats)
+            OUTPUT INSERTED.Id
+            VALUES (@BusNumber, @BusType, @TotalSeats);
+        ", conn, trans);
+                cmd.Parameters.AddWithValue("@BusNumber", bus.BusNumber);
+                cmd.Parameters.AddWithValue("@BusType", bus.BusType);
+                cmd.Parameters.AddWithValue("@TotalSeats", bus.TotalSeats);
+                int newBusId = (int)await cmd.ExecuteScalarAsync();
+                bus.Id = newBusId;
+
+                // Generate seats using factory
+                var generator = SeatGeneratorFactory.GetGenerator(bus.BusType);
+                var seats = generator.GenerateSeats();
+
+                foreach (var s in seats)
                 {
-                    try
-                    {
-                        // Insert bus (Id identity generated automatically)
-                        var cmd = new SqlCommand(@"
-                            INSERT INTO Buses (BusNumber, BusType, TotalSeats)
-                            OUTPUT INSERTED.Id
-                            VALUES (@BusNumber, @BusType, @TotalSeats);
-                        ", conn, trans);
-
-                        cmd.Parameters.AddWithValue("@BusNumber", bus.BusNumber);
-                        cmd.Parameters.AddWithValue("@BusType", bus.BusType);
-                        cmd.Parameters.AddWithValue("@TotalSeats", bus.TotalSeats);
-
-                        int newBusId = (int)await cmd.ExecuteScalarAsync();
-                        bus.Id = newBusId;
-
-                        // Insert seats
-                        for (int i = 1; i <= bus.TotalSeats; i++)
-                        {
-                            var seatCmd = new SqlCommand(@"
-                                INSERT INTO Seats (BusId, SeatNumber, Status)
-                                VALUES (@BusId, @SeatNumber, 'Available');
-                            ", conn, trans);
-
-                            seatCmd.Parameters.AddWithValue("@BusId", newBusId);
-                            seatCmd.Parameters.AddWithValue("@SeatNumber", i.ToString());
-                            await seatCmd.ExecuteNonQueryAsync();
-                        }
-
-                        trans.Commit();
-                    }
-                    catch
-                    {
-                        trans.Rollback();
-                        throw;
-                    }
+                    var seatCmd = new SqlCommand(@"
+                INSERT INTO Seats (BusId, SeatNumber, IsSide, BunkType,Status)
+                VALUES (@BusId, @SeatNumber, @IsSide, @BunkType,@Status);
+            ", conn, trans);
+                    seatCmd.Parameters.AddWithValue("@BusId", newBusId);
+                    seatCmd.Parameters.AddWithValue("@SeatNumber", s.SeatNumber);
+                    seatCmd.Parameters.AddWithValue("@IsSide", s.IsSide);
+                    seatCmd.Parameters.AddWithValue("@BunkType", (object?)s.BunkType ?? DBNull.Value);
+                    seatCmd.Parameters.AddWithValue("@Status", s.Status);
+                    await seatCmd.ExecuteNonQueryAsync();
                 }
+
+                trans.Commit();
+            }
+            catch
+            {
+                trans.Rollback();
+                throw;
             }
         }
-
+      
         // ---------------- UPDATE BUS ----------------
         public async Task<bool> UpdateBusAsync(BusDTO bus)
         {
@@ -114,74 +114,7 @@ namespace TMS.DAL
                             return false;
                         }
 
-                        // Count existing seats
-                        var countCmd = new SqlCommand(
-                            "SELECT COUNT(*) FROM Seats WHERE BusId = @BusId",
-                            conn, trans);
-
-                        countCmd.Parameters.AddWithValue("@BusId", bus.Id);
-                        int existing = Convert.ToInt32(await countCmd.ExecuteScalarAsync());
-
-                        // Add seats
-                        if (bus.TotalSeats > existing)
-                        {
-                            for (int i = existing + 1; i <= bus.TotalSeats; i++)
-                            {
-                                var addCmd = new SqlCommand(@"
-                                    INSERT INTO Seats (BusId, SeatNumber, Status)
-                                    VALUES (@BusId, @SeatNumber, 'Available');
-                                ", conn, trans);
-
-                                addCmd.Parameters.AddWithValue("@BusId", bus.Id);
-                                addCmd.Parameters.AddWithValue("@SeatNumber", i.ToString());
-                                await addCmd.ExecuteNonQueryAsync();
-                            }
-                        }
-
-                        // Remove seats
-                        if (bus.TotalSeats < existing)
-                        {
-                            int removeCount = existing - bus.TotalSeats;
-
-                            string selectQuery = $@"
-                                SELECT TOP({removeCount}) Id
-                                FROM Seats
-                                WHERE BusId = @BusId AND Status = 'Available' 
-                                      AND TRY_CAST(SeatNumber AS INT) IS NOT NULL
-                                ORDER BY TRY_CAST(SeatNumber AS INT) DESC;
-                            ";
-
-                            var selectCmd = new SqlCommand(selectQuery, conn, trans);
-                            selectCmd.Parameters.AddWithValue("@BusId", bus.Id);
-
-                            var idsToDelete = new List<int>();
-                            using (var reader = await selectCmd.ExecuteReaderAsync())
-                            {
-                                while (await reader.ReadAsync())
-                                    idsToDelete.Add(reader.GetInt32(0));
-                            }
-
-                            if (idsToDelete.Count < removeCount)
-                            {
-                                trans.Rollback();
-                                return false;
-                            }
-
-                            var paramNames = new List<string>();
-                            for (int i = 0; i < idsToDelete.Count; i++)
-                                paramNames.Add($"@id{i}");
-
-                            string deleteQuery =
-                                $"DELETE FROM Seats WHERE Id IN ({string.Join(",", paramNames)})";
-
-                            var deleteCmd = new SqlCommand(deleteQuery, conn, trans);
-
-                            for (int i = 0; i < idsToDelete.Count; i++)
-                                deleteCmd.Parameters.AddWithValue(paramNames[i], idsToDelete[i]);
-
-                            await deleteCmd.ExecuteNonQueryAsync();
-                        }
-
+ 
                         trans.Commit();
                         return true;
                     }

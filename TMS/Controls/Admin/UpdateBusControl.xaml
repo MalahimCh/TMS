@@ -68,12 +68,12 @@
                     <TextBlock Text="Bus Type" FontWeight="SemiBold" Foreground="#666666" Margin="0,0,0,5"/>
                     <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,10">
                         <ComboBox x:Name="cmbBusType" 
-                  Padding="10" 
-                  FontSize="14" 
-                  Background="Transparent" 
-                  BorderThickness="0"
-                  VerticalContentAlignment="Center"
-                  SelectionChanged="CmbBusType_SelectionChanged">
+              Padding="10" 
+              FontSize="14" 
+              Background="Transparent" 
+              BorderThickness="0"
+              IsEnabled="False">
+                            <!-- Disable selection -->
                             <ComboBoxItem Content="Economy"/>
                             <ComboBoxItem Content="Luxury"/>
                             <ComboBoxItem Content="Sleeper"/>
@@ -83,13 +83,15 @@
                     <TextBlock Text="Total Seats" FontWeight="SemiBold" Foreground="#666666" Margin="0,0,0,20"/>
                     <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,25">
                         <TextBox x:Name="txtTotalSeats" 
-                 Padding="10" 
-                 FontSize="14" 
-                 Background="Transparent" 
-                 BorderThickness="0"
-                 IsReadOnly="True"
-                 Foreground="#666666"/>
+             Padding="10" 
+             FontSize="14" 
+             Background="Transparent" 
+             BorderThickness="0"
+             IsReadOnly="True"
+             Foreground="#666666"/>
                     </Border>
+
+
 
                     <!-- Update Button -->
                     <Button Content="Update Bus" 

@@ -1,0 +1,22 @@
+﻿<Page x:Class="TMS.Pages.Customer.SeatLayoutPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:controls="clr-namespace:TMS.Controls.Customer"
+      Title="Seat Layout">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header + Back button -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="Back" Width="80" Click="Back_Click"/>
+            <TextBlock Text="Select Seats" FontSize="20" FontWeight="Bold" Margin="10,0,0,0"/>
+        </StackPanel>
+
+        <!-- Container for the seat layout control -->
+        <ContentControl x:Name="SeatLayoutHost" Grid.Row="1"/>
+    </Grid>
+</Page>
