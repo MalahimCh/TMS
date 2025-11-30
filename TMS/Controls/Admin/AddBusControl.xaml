@@ -76,7 +76,9 @@
                                  FontSize="14" 
                                  Background="Transparent" 
                                  BorderThickness="0"
-                                 VerticalContentAlignment="Center"/>
+                                 VerticalContentAlignment="Center"
+                                 IsReadOnly="True"
+                                 Foreground="#666666"/>
                     </Border>
 
                 </StackPanel>
