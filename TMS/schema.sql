@@ -66,15 +66,19 @@ CREATE TABLE Buses (
     CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE()
 );
 
+
 CREATE TABLE Seats (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     BusId INT NOT NULL FOREIGN KEY REFERENCES Buses(Id),
-    SeatNumber NVARCHAR(10) NOT NULL,
-    Status NVARCHAR(20) NOT NULL DEFAULT 'Available',
+    SeatNumber INT NOT NULL,         -- sequential number
+    IsSide BIT NOT NULL DEFAULT 0,   -- 1 = single seat (premium), 0 = normal
+    BunkType NVARCHAR(10) NULL,      -- Lower, Upper (for sleeper), NULL otherwise
+    Status NVARCHAR(20) NOT NULL DEFAULT 'Available', -- Available , TemporarilyBooked, Booked ,Reserved ,NotAvailable  
     CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE(),
 
     CONSTRAINT UQ_Seat_Bus UNIQUE (BusId, SeatNumber)
 );
+
 
 CREATE TABLE Locations (
     Id INT IDENTITY(1,1) PRIMARY KEY,
@@ -170,7 +174,7 @@ CREATE TABLE RecurringSchedules (
     CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE(),
     SelectedDays NVARCHAR(20) NULL,
 
-    CONSTRAINT UQ_Recurring UNIQUE (BusId, StartDate, DepartureTime)
+    CONSTRAINT UQ_Recurring UNIQUE (BusId, StartDate, DepartureTime,SelectedDays)
 );
 
 CREATE TABLE Schedules (
@@ -228,37 +232,39 @@ CREATE TABLE SupportRequestResponses (
 
 
 
---CREATE TABLE Bookings (
---    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
---    UserId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Users(Id),
---    ScheduleId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Schedules(Id),
---    BookingDate DATETIME2(7) DEFAULT GETUTCDATE(),
+-- Bookings Table
+CREATE TABLE Bookings (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    UserId INT NOT NULL FOREIGN KEY REFERENCES Users(Id),
+    ScheduleId INT NOT NULL FOREIGN KEY REFERENCES Schedules(Id),
+    BookingDate DATETIME2(7) DEFAULT GETUTCDATE(),
 
---    -- Amounts
---    TotalAmount DECIMAL(10,2) NOT NULL,
---    DiscountAmount DECIMAL(10,2) DEFAULT 0,
---    PromotionCode NVARCHAR(50) NULL,
---    FinalAmount AS (TotalAmount - DiscountAmount) PERSISTED,
+    -- Amounts
+    TotalAmount DECIMAL(10,2) NOT NULL,
+    DiscountAmount DECIMAL(10,2) DEFAULT 0,
+    PromotionCode NVARCHAR(50) NULL,
+    FinalAmount AS (TotalAmount - DiscountAmount) PERSISTED,
 
---    -- Status
---    BookingStatus NVARCHAR(50) DEFAULT 'Pending', 
---    PaymentStatus NVARCHAR(50) DEFAULT 'Pending',
+    -- Booking and Payment Status
+    BookingStatus NVARCHAR(50) DEFAULT 'Pending', -- Pending, Confirmed, Cancelled, Expired
+    PaymentStatus NVARCHAR(50) DEFAULT 'Pending', -- Pending, Paid, Failed, Refunded
 
---    -- Payment tracking
---    TransactionId NVARCHAR(100) NULL,
---    PaymentMethod NVARCHAR(50) NULL,
+    -- Payment tracking
+    TransactionId NVARCHAR(100) NULL,
+    PaymentMethod NVARCHAR(50) NULL,
 
---    BookingReference NVARCHAR(50) NOT NULL UNIQUE
---);
+    BookingReference NVARCHAR(50) NOT NULL UNIQUE
+);
+
+-- BookingSeats Table
+CREATE TABLE BookingSeats (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    BookingId INT NOT NULL FOREIGN KEY REFERENCES Bookings(Id),
+    SeatId INT NOT NULL FOREIGN KEY REFERENCES Seats(Id),
+    SeatPrice DECIMAL(10,2) NOT NULL
+);
 
 
-
---CREATE TABLE BookingSeats (
---    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
---    BookingId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Bookings(Id),
---    SeatId UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES Seats(Id),
---    SeatPrice DECIMAL(10,2) NOT NULL
---);
 
 
 --CREATE TABLE Promotions (

@@ -30,6 +30,7 @@ namespace TMS.Controls.Admin
         }
 
         // Auto-load bus data when selected
+  
         private void CmbBuses_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _bus = cmbBuses.SelectedItem as BusDTO;
@@ -37,6 +38,7 @@ namespace TMS.Controls.Admin
 
             txtBusNumber.Text = _bus.BusNumber;
 
+            // Show BusType but do not allow changing
             foreach (ComboBoxItem item in cmbBusType.Items)
             {
                 if ((string)item.Content == _bus.BusType)
@@ -46,29 +48,11 @@ namespace TMS.Controls.Admin
                 }
             }
 
-            // Show total seats for selected bus
+            // Show total seats (read-only)
             txtTotalSeats.Text = _bus.TotalSeats.ToString();
         }
 
-        private void CmbBusType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_bus == null) return;
-
-            var selectedType = ((ComboBoxItem)cmbBusType.SelectedItem)?.Content.ToString();
-            switch (selectedType)
-            {
-                case "Economy":
-                    _bus.TotalSeats = 49;
-                    break;
-                case "Luxury":
-                    _bus.TotalSeats = 33;
-                    break;
-                case "Sleeper":
-                    _bus.TotalSeats = 20;
-                    break;
-            }
-            txtTotalSeats.Text = _bus.TotalSeats.ToString();
-        }
+        // Remove CmbBusType_SelectionChanged entirely since type cannot change
 
         private async void UpdateBus_Click(object sender, RoutedEventArgs e)
         {
@@ -78,11 +62,13 @@ namespace TMS.Controls.Admin
                 return;
             }
 
+            // Only update BusNumber
             _bus.BusNumber = txtBusNumber.Text.Trim();
-            _bus.BusType = ((ComboBoxItem)cmbBusType.SelectedItem)?.Content.ToString();
 
             bool updated = await _busBL.UpdateBusAsync(_bus);
             MessageBox.Show(updated ? "Bus updated successfully!" : "Failed to update bus.");
         }
+
+
     }
 }
