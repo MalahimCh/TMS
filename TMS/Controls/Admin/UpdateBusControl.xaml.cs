@@ -26,20 +26,16 @@ namespace TMS.Controls.Admin
         {
             var buses = await _busBL.GetAllBusesAsync();
             cmbBuses.ItemsSource = buses;
-            cmbBuses.DisplayMemberPath = "BusNumber"; // or any property
+            cmbBuses.DisplayMemberPath = "BusNumber";
         }
 
-        private void SelectBus_Click(object sender, RoutedEventArgs e)
+        // Auto-load bus data when selected
+        private void CmbBuses_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _bus = cmbBuses.SelectedItem as BusDTO;
-            if (_bus == null)
-            {
-                MessageBox.Show("Please select a bus first.");
-                return;
-            }
+            if (_bus == null) return;
 
             txtBusNumber.Text = _bus.BusNumber;
-            txtTotalSeats.Text = _bus.TotalSeats.ToString();
 
             foreach (ComboBoxItem item in cmbBusType.Items)
             {
@@ -49,6 +45,29 @@ namespace TMS.Controls.Admin
                     break;
                 }
             }
+
+            // Show total seats for selected bus
+            txtTotalSeats.Text = _bus.TotalSeats.ToString();
+        }
+
+        private void CmbBusType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_bus == null) return;
+
+            var selectedType = ((ComboBoxItem)cmbBusType.SelectedItem)?.Content.ToString();
+            switch (selectedType)
+            {
+                case "Economy":
+                    _bus.TotalSeats = 49;
+                    break;
+                case "Luxury":
+                    _bus.TotalSeats = 33;
+                    break;
+                case "Sleeper":
+                    _bus.TotalSeats = 20;
+                    break;
+            }
+            txtTotalSeats.Text = _bus.TotalSeats.ToString();
         }
 
         private async void UpdateBus_Click(object sender, RoutedEventArgs e)
@@ -59,13 +78,8 @@ namespace TMS.Controls.Admin
                 return;
             }
 
+            _bus.BusNumber = txtBusNumber.Text.Trim();
             _bus.BusType = ((ComboBoxItem)cmbBusType.SelectedItem)?.Content.ToString();
-            if (!int.TryParse(txtTotalSeats.Text, out int seats))
-            {
-                MessageBox.Show("Invalid total seats");
-                return;
-            }
-            _bus.TotalSeats = seats;
 
             bool updated = await _busBL.UpdateBusAsync(_bus);
             MessageBox.Show(updated ? "Bus updated successfully!" : "Failed to update bus.");
