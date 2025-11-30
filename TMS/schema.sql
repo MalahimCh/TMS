@@ -58,6 +58,11 @@ UPDATE Users
 SET IsEmailVerified = 1
 WHERE Email IN ('admin@gmail.com', 'customer@gmail.com');
 
+UPDATE Users
+SET IsEmailVerified = 1
+WHERE Email IN ('support@gmail.com');
+
+
 CREATE TABLE Buses (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     BusNumber NVARCHAR(20) NOT NULL UNIQUE,
