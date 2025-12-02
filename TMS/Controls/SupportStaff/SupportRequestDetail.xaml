@@ -2,110 +2,174 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:conv="clr-namespace:TMS.BLL"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              Loaded="UserControl_Loaded">
+
     <UserControl.Resources>
         <conv:StatusToColorConverter x:Key="StatusToColorConverter"/>
-
-        <!-- Modern Button Style -->
-        <Style x:Key="ModernButton" TargetType="Button">
-            <Setter Property="Background" Value="#1E3A8A"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="10,6"/>
-            <Setter Property="Margin" Value="5,0,0,0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="MinWidth" Value="120"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#0D2C8B"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#162D6B"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect Color="Black" Opacity="0.2" BlurRadius="6" ShadowDepth="2"/>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </UserControl.Resources>
 
-    <Grid Background="#f0f4f8" Margin="10">
-        <StackPanel>
-            <!-- Back Button -->
-            <Button Content="← Back to Requests" Style="{StaticResource ModernButton}" Width="150" Click="BackButton_Click"/>
+    <Grid Background="#F0F2F5">
+        <Border Background="White" Margin="30" CornerRadius="12" BorderBrush="#E0E0E0" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.1" Color="Black"/>
+            </Border.Effect>
 
-            <!-- Original Request -->
-            <Border CornerRadius="8" Padding="10" Margin="0,10,0,10"
-                    Background="{Binding Request.Status, Converter={StaticResource StatusToColorConverter}}">
-                <StackPanel>
-                    <TextBlock Text="{Binding Request.Subject}" FontWeight="Bold" FontSize="16"/>
-                    <TextBlock Text="{Binding Request.Category}" FontStyle="Italic" FontSize="14"/>
-                    <TextBlock Text="{Binding Request.CreatedAt, StringFormat=yyyy-MM-dd HH:mm}" FontSize="12"/>
-                    <TextBlock Text="{Binding Request.Description}" TextWrapping="Wrap" Margin="0,5,0,0"/>
-                    <TextBlock Text="Customer:" FontWeight="Bold" FontSize="12" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding Request.CustomerName}" FontSize="12"/>
-                    <TextBlock Text="Status:" FontWeight="Bold" FontSize="12" Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding Request.Status}" FontSize="12"/>
-                </StackPanel>
-            </Border>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <!-- Status / Reply Legend -->
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10" HorizontalAlignment="Left">
-                <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
-                    <Rectangle Width="20" Height="20" Fill="#4A90E2" Margin="0,0,5,0"/>
-                    <TextBlock Text="Support message" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
-                    <Rectangle Width="20" Height="20" Fill="#FFA726" Margin="0,0,5,0"/>
-                    <TextBlock Text="Customer message" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Rectangle Width="20" Height="20" Fill="#66BB6A" Margin="0,0,5,0"/>
-                    <TextBlock Text="Resolved" VerticalAlignment="Center"/>
-                </StackPanel>
-            </StackPanel>
+                <Border Grid.Row="0" Background="#1E3A8A" CornerRadius="12,12,0,0" Padding="20">
+                    <Grid>
+                        <Button Click="BackButton_Click"
+                                HorizontalAlignment="Left"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="White"
+                                Padding="0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="ArrowLeft" Width="20" Height="20" Margin="0,0,5,0"/>
+                                <TextBlock Text="Back" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-            <!-- Replies Header + Mark as Resolved -->
-            <DockPanel Margin="0,0,0,5">
-                <TextBlock Text="Replies:" FontWeight="Bold" FontSize="14" DockPanel.Dock="Left" VerticalAlignment="Center"/>
-                <Button Content="Mark as Resolved" Style="{StaticResource ModernButton}" DockPanel.Dock="Right" Click="MarkResolved_Click"/>
-            </DockPanel>
+                        <TextBlock Text="Request Details" 
+                                   Foreground="White" 
+                                   FontSize="20" 
+                                   FontWeight="Bold" 
+                                   HorizontalAlignment="Center"/>
 
-            <!-- Replies List -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Height="300">
-                <ItemsControl x:Name="RepliesList">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border CornerRadius="12" Padding="10" Margin="0,0,0,8"
-                                    Background="{Binding ReplyBackground}" MaxWidth="500">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding UserName}" FontWeight="Bold"/>
-                                    <TextBlock Text="{Binding CreatedAt, StringFormat=yyyy-MM-dd HH:mm}" FontSize="10" Foreground="#555"/>
-                                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                        <Button Click="MarkResolved_Click"
+                                HorizontalAlignment="Right"
+                                Background="#4CAF50"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Height="30"
+                                Padding="15,0"
+                                FontSize="12"
+                                FontWeight="Bold"
+                                Content="Mark Resolved">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="15"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" Padding="30" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+
+                        <Border Background="#F9FAFC" CornerRadius="10" BorderBrush="#E0E0E0" BorderThickness="1" Padding="20" Margin="0,0,0,20">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="{Binding Request.Subject}" FontSize="20" FontWeight="Bold" Foreground="#1E3A8A" TextWrapping="Wrap"/>
+
+                                    <Border Grid.Column="1" Background="{Binding Request.Status, Converter={StaticResource StatusToColorConverter}}" CornerRadius="10" Padding="12,4">
+                                        <TextBlock Text="{Binding Request.Status}" Foreground="White" FontSize="12" FontWeight="SemiBold"/>
+                                    </Border>
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                                    <materialDesign:PackIcon Kind="Tag" Foreground="Gray" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding Request.Category}" Foreground="Gray" Margin="0,0,15,0" FontWeight="SemiBold"/>
+
+                                    <materialDesign:PackIcon Kind="CalendarClock" Foreground="Gray" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding Request.CreatedAt, StringFormat=yyyy-MM-dd HH:mm}" Foreground="Gray"/>
                                 </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
 
-            <!-- Add Reply -->
-            <TextBlock Text="Add Your Reply:" FontWeight="Bold" FontSize="14" Margin="0,10,0,2"/>
-            <TextBox x:Name="ReplyTextBox" AcceptsReturn="True" Height="80" TextWrapping="Wrap" Margin="0,0,0,5"/>
-            <Button Content="Send Reply" Style="{StaticResource ModernButton}" Width="120" Click="SendReply_Click"/>
-        </StackPanel>
+                                <TextBlock Text="Description" FontWeight="Bold" Foreground="#333" Margin="0,0,0,5"/>
+                                <TextBlock Text="{Binding Request.Description}" TextWrapping="Wrap" Foreground="#555" LineHeight="20" FontSize="14"/>
+
+                                <Separator Background="#E0E0E0" Margin="0,15"/>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="UserCircle" Foreground="#1E3A8A" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding Request.CustomerName}" Foreground="#1E3A8A" FontWeight="Bold"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="Conversation History" FontSize="16" FontWeight="Bold" Foreground="#1E3A8A" Margin="0,0,0,10"/>
+
+                        <ItemsControl x:Name="RepliesList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border CornerRadius="10" Padding="15" Margin="0,0,0,10"
+                                            Background="{Binding ReplyBackground}" 
+                                            BorderBrush="#EEE" BorderThickness="1">
+                                        <StackPanel>
+                                            <Grid Margin="0,0,0,5">
+                                                <TextBlock Text="{Binding UserName}" FontWeight="Bold" Foreground="#333"/>
+                                                <TextBlock Text="{Binding CreatedAt, StringFormat=yyyy-MM-dd HH:mm}" HorizontalAlignment="Right" FontSize="11" Foreground="Gray"/>
+                                            </Grid>
+                                            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Foreground="#444"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Border Grid.Row="2" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0" Background="#FAFAFA" Padding="20" CornerRadius="0,0,12,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Add a Reply" FontWeight="Bold" Foreground="#666" Margin="0,0,0,5"/>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Background="White" BorderBrush="#DDD" BorderThickness="1" CornerRadius="5" Padding="5">
+                                <TextBox x:Name="ReplyTextBox" 
+                                         AcceptsReturn="True" 
+                                         Height="60" 
+                                         TextWrapping="Wrap" 
+                                         VerticalScrollBarVisibility="Auto"
+                                         BorderThickness="0"
+                                         materialDesign:HintAssist.Hint="Type your response here..."
+                                         Padding="5"/>
+                            </Border>
+
+                            <Button Content="Send" 
+                                    Grid.Column="1"
+                                    Width="100" 
+                                    Height="40"
+                                    Margin="15,0,0,0"
+                                    Background="#1E3A8A" 
+                                    Foreground="White"
+                                    FontWeight="Bold"
+                                    BorderThickness="0"
+                                    VerticalAlignment="Bottom"
+                                    Click="SendReply_Click">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="20"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>
