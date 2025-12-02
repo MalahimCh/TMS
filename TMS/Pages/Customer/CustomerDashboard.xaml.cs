@@ -64,12 +64,12 @@ namespace TMS.Pages.Customer
         // ---------------------- DASHBOARD BUTTONS ----------------------
         private void SearchTickets_Click(object sender, RoutedEventArgs e)
         {
-            _mainFrame.Content = new SearchTicketsPage(_mainFrame, _username,_email);
+            _mainFrame.Content = new SearchTicketsPage(_mainFrame, _username, _email);
         }
 
         private void MyBookings_Click(object sender, RoutedEventArgs e)
         {
-           // _mainFrame.Content = new MyBookingsPage(_mainFrame, _username);
+            _mainFrame.Content = new CustomerBookingsPage(_mainFrame, _username, _email);
         }
 
         private void Profile_Click(object sender, RoutedEventArgs e)
@@ -100,12 +100,12 @@ namespace TMS.Pages.Customer
         // ---------------------- PROFILE MENU HANDLERS ----------------------
         private void UpdateProfile_Click(object sender, RoutedEventArgs e)
         {
-            _mainFrame.Content = new UpdateInfo(_email,_username,"customer");
+            _mainFrame.Content = new UpdateInfo(_email, _username, "customer");
         }
 
         private void ChangePassword_Click(object sender, RoutedEventArgs e)
         {
-            var updatePage = new UpdateInfo(_email,_username,"customer");
+            var updatePage = new UpdateInfo(_email, _username, "customer");
             updatePage.ContentArea.Content = new ChangePasswordControl(_email);
             _mainFrame.Content = updatePage;
         }
