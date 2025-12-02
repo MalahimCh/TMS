@@ -69,7 +69,7 @@ namespace TMS.Pages.Customer
 
         private void MyBookings_Click(object sender, RoutedEventArgs e)
         {
-            //_mainFrame.Content = new MyBookingsPage(_mainFrame, _username);
+           // _mainFrame.Content = new MyBookingsPage(_mainFrame, _username);
         }
 
         private void Profile_Click(object sender, RoutedEventArgs e)

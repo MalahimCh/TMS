@@ -51,7 +51,7 @@ namespace TMS.Pages.Admin
         // ---------------------- SEATS ----------------------
         private void ManageSeats_Click(object sender, RoutedEventArgs e)
         {
-            _mainFrame.Content = new ManageSeatsPage(_mainFrame, _username, _email);
+            _mainFrame.Content = new ManageSeatsPage(_mainFrame, _email, _username);
         }
 
         // ---------------------- REPORTS ----------------------
