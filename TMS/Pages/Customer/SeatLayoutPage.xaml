@@ -1,22 +1,66 @@
 ﻿<Page x:Class="TMS.Pages.Customer.SeatLayoutPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:controls="clr-namespace:TMS.Controls.Customer"
-      Title="Seat Layout">
+      Title="Seat Layout"
+      Background="#F0F2F5"
+      FontFamily="Segoe UI">
 
-    <Grid Margin="10">
+    <Grid Margin="30">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- Header -->
             <RowDefinition Height="*"/>
+            <!-- Seat Layout Card -->
         </Grid.RowDefinitions>
 
-        <!-- Header + Back button -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-            <Button Content="Back" Width="80" Click="Back_Click"/>
-            <TextBlock Text="Select Seats" FontSize="20" FontWeight="Bold" Margin="10,0,0,0"/>
+        <!-- ================= 1. HEADER SECTION ================= -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,25">
+            <!-- Back Button -->
+            <Button Click="Back_Click"
+                    Height="40"
+                    HorizontalAlignment="Left"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="0"
+                    Foreground="#1E3A8A"
+                    Margin="0,0,0,10">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Back" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
+            <TextBlock Text="Select Your Seats" FontSize="32" FontWeight="Bold" Foreground="#1E3A8A"/>
+            <TextBlock Text="Choose your preferred seats for the journey" FontSize="16" Foreground="Gray" Margin="0,5,0,0"/>
         </StackPanel>
 
-        <!-- Container for the seat layout control -->
-        <ContentControl x:Name="SeatLayoutHost" Grid.Row="1"/>
+        <!-- ================= 2. SEAT LAYOUT CARD ================= -->
+        <Border Grid.Row="1" Background="White" CornerRadius="12" BorderBrush="#E0E0E0" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.05" Color="Black"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Blue Header Strip -->
+                <Border Grid.Row="0" Background="#1E3A8A" CornerRadius="12,12,0,0" Padding="20">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="EventChair" Width="24" Height="24" Foreground="White" Margin="0,0,10,0"/>
+                        <TextBlock Text="Bus Layout" Foreground="White" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Seat Layout Container -->
+                <!-- The dynamic seat control will load here inside the white card -->
+                <ContentControl x:Name="SeatLayoutHost" Grid.Row="1" Margin="20"/>
+            </Grid>
+        </Border>
+
     </Grid>
 </Page>

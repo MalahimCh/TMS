@@ -4,155 +4,177 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:dto="clr-namespace:TMS.DTO"
       Title="Search Tickets"
-      Background="#F5F7FF">
+      Background="#F0F2F5"
+      FontFamily="Segoe UI">
 
-    <Grid Margin="20">
+    <Grid Margin="30">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Back + Header -->
             <RowDefinition Height="Auto"/>
-            <!-- Search Panel -->
             <RowDefinition Height="*"/>
-            <!-- Schedule Cards -->
         </Grid.RowDefinitions>
 
-        <!-- ================= BACK + HEADER ================= -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,20">
-            <!-- Back Button -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,25">
             <Button Click="Back_Click"
                     Height="40"
-                    Width="120"
+                    HorizontalAlignment="Left"
                     Background="Transparent"
                     BorderThickness="0"
+                    Padding="0"
                     Foreground="#1E3A8A"
-                    HorizontalAlignment="Left"
-                    Padding="10,0,0,0"
                     Margin="0,0,0,10">
                 <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="ArrowLeft" Width="20" Height="20" Margin="0,0,10,0"/>
-                    <TextBlock Text="Back" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Back to Dashboard" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
 
-            <!-- Page Header -->
-            <TextBlock Text="Book Your Bus Tickets" FontSize="28" FontWeight="Bold" Foreground="#1E3A8A"/>
-            <TextBlock Text="Find and select schedules easily" FontSize="16" Foreground="Gray"/>
+            <TextBlock Text="Search &amp; Book Tickets" FontSize="32" FontWeight="Bold" Foreground="#1E3A8A"/>
+            <TextBlock Text="Find available buses and select your seat" FontSize="16" Foreground="Gray" Margin="0,5,0,0"/>
         </StackPanel>
 
-        <!-- ================= SEARCH PANEL ================= -->
-        <Border Grid.Row="1" Background="Transparent" CornerRadius="12" Padding="20" Margin="0,0,0,20">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" >
+        <Border Grid.Row="1" Background="White" CornerRadius="12" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,30" Padding="20">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="3" Opacity="0.05" Color="Black"/>
+            </Border.Effect>
 
-                <!-- Origin -->
-                <StackPanel Margin="0,0,10,0">
-                    <TextBlock Text="Origin" FontWeight="SemiBold"/>
-                    <ComboBox x:Name="cmbOrigin" Width="180" Height="35" 
-                              materialDesign:HintAssist.Hint="Select Origin" 
-                              IsEditable="True"/>
+            <WrapPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+
+                <StackPanel Margin="0,0,20,0">
+                    <TextBlock Text="From" FontWeight="Bold" Foreground="#1E3A8A" Margin="0,0,0,5"/>
+                    <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Width="180" Height="40">
+                        <ComboBox x:Name="cmbOrigin" Padding="10,8" Background="Transparent" BorderThickness="0" IsEditable="True"/>
+                    </Border>
                 </StackPanel>
 
-                <!-- Destination -->
-                <StackPanel Margin="0,0,10,0">
-                    <TextBlock Text="Destination" FontWeight="SemiBold"/>
-                    <ComboBox x:Name="cmbDestination" Width="180" Height="35" 
-                              materialDesign:HintAssist.Hint="Select Destination" 
-                              IsEditable="True"/>
+                <StackPanel Margin="0,0,20,0">
+                    <TextBlock Text="To" FontWeight="Bold" Foreground="#1E3A8A" Margin="0,0,0,5"/>
+                    <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Width="180" Height="40">
+                        <ComboBox x:Name="cmbDestination" Padding="10,8" Background="Transparent" BorderThickness="0" IsEditable="True"/>
+                    </Border>
                 </StackPanel>
 
-                <!-- Date -->
-                <StackPanel Margin="0,0,10,0">
-                    <TextBlock Text="Date (optional)" FontWeight="SemiBold"/>
-                    <DatePicker x:Name="dpDate" Width="150" Height="35" materialDesign:HintAssist.Hint="Select Date"/>
+                <StackPanel Margin="0,0,20,0">
+                    <TextBlock Text="Date" FontWeight="Bold" Foreground="#1E3A8A" Margin="0,0,0,5"/>
+                    <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Width="150" Height="40">
+                        <DatePicker x:Name="dpDate" Padding="5" BorderThickness="0" VerticalContentAlignment="Center"/>
+                    </Border>
                 </StackPanel>
 
-                <!-- Bus Type -->
-                <StackPanel Margin="0,0,10,0">
-                    <TextBlock Text="Bus Type (optional)" FontWeight="SemiBold"/>
-                    <ComboBox x:Name="cmbBusType" Width="150" Height="35" 
-                              materialDesign:HintAssist.Hint="Bus Type" 
-                              IsEditable="True"/>
+                <StackPanel Margin="0,0,20,0">
+                    <TextBlock Text="Class" FontWeight="Bold" Foreground="#1E3A8A" Margin="0,0,0,5"/>
+                    <Border Background="#F7F9FC" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Width="140" Height="40">
+                        <ComboBox x:Name="cmbBusType" Padding="10,8" Background="Transparent" BorderThickness="0"/>
+                    </Border>
                 </StackPanel>
 
-                <!-- Search Button -->
                 <Button Content="Search"
-                        Width="150" Height="35"
+                        Width="120" Height="40"
                         Background="#1E3A8A"
                         Foreground="White"
                         FontWeight="Bold"
+                        BorderThickness="0"
+                        Margin="0,0,0,0"
                         VerticalAlignment="Bottom"
-                        Click="ViewSchedules_Click"/>
-            </StackPanel>
+                        Click="ViewSchedules_Click">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </WrapPanel>
         </Border>
 
-        <!-- ================= SCHEDULE CARDS ================= -->
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="ScheduleCardsPanel" Margin="0,0,0,20">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel IsItemsHost="True" Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+        <Border Grid.Row="2" Background="White" CornerRadius="12" BorderBrush="#E0E0E0" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="5" Opacity="0.05" Color="Black"/>
+            </Border.Effect>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type dto:ScheduleDTO}">
-                        <Border Background="White" CornerRadius="12" BorderBrush="#E0E0E0" BorderThickness="1"
-                                Padding="15" Margin="10">
-                            <Border.Effect>
-                                <DropShadowEffect Color="Gray" ShadowDepth="3" Opacity="0.3"/>
-                            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                            <StackPanel>
-                                <!-- Route -->
-                                <TextBlock Text="{Binding RouteDisplay}" FontWeight="Bold" FontSize="16" Foreground="#1E3A8A"/>
+                <Border Grid.Row="0" Background="#1E3A8A" CornerRadius="12,12,0,0" Padding="20">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="BusClock" Width="24" Height="24" Foreground="White" Margin="0,0,10,0"/>
+                        <TextBlock Text="Available Schedules" Foreground="White" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
 
-                                <!-- Departure & Arrival -->
-                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                    <TextBlock Text="Departure: " FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding DepartureTime, StringFormat=dd MMM yyyy HH:mm}" Foreground="Gray"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                    <TextBlock Text="Arrival: " FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding ArrivalTime, StringFormat=dd MMM yyyy HH:mm}" Foreground="Gray"/>
-                                </StackPanel>
+                <DataGrid x:Name="ScheduleCardsPanel" 
+                          Grid.Row="1"
+                          AutoGenerateColumns="False" 
+                          CanUserAddRows="False" 
+                          IsReadOnly="True"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="#EEEEEE"
+                          Background="White"
+                          BorderThickness="0"
+                          Padding="10">
 
-                                <!-- Duration & Distance -->
-                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                    <TextBlock Text="Distance: " FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding DistanceKm, StringFormat={}{0} km}" Foreground="Gray"/>
-                                    <TextBlock Text="  |  " Foreground="Gray"/>
-                                    <TextBlock Text="Duration: " FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding Duration}" Foreground="Gray"/>
-                                </StackPanel>
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="#F5F7FA"/>
+                            <Setter Property="Foreground" Value="#1E3A8A"/>
+                            <Setter Property="Padding" Value="15,12"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </Style>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Padding" Value="10"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="DataGridCell">
+                                        <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                                            <ContentPresenter VerticalAlignment="Center" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGrid.Resources>
 
-                                <!-- Bus info -->
-                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                    <TextBlock Text="{Binding BusNumber}" FontWeight="SemiBold"/>
-                                    <TextBlock Text=" | " Foreground="Gray"/>
-                                    <TextBlock Text="{Binding BusType}" Foreground="Gray"/>
-                                </StackPanel>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Route" Binding="{Binding RouteDisplay}" Width="2*" FontWeight="Bold"/>
 
-                                <!-- Price + Button -->
-                                <Grid Margin="0,10,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
+                        <DataGridTextColumn Header="Bus" Binding="{Binding BusNumber}" Width="*"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding BusType}" Width="*"/>
 
-                                    <TextBlock Text="{Binding Price, StringFormat=Rs. {0:N0}}" FontWeight="SemiBold" FontSize="14" Foreground="#0F2A6F" VerticalAlignment="Center"/>
-                                    <Button Content="Select Seats"
-                                            Width="100" Height="30"
+                        <DataGridTextColumn Header="Departure" Binding="{Binding DepartureTime, StringFormat=hh:mm tt}" Width="*"/>
+                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="*"/>
+
+                        <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=Rs. {0:N0}}" Width="*" Foreground="Green" FontWeight="Bold"/>
+
+                        <DataGridTemplateColumn Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Book Now"
+                                            Height="30"
                                             Background="#1E3A8A"
                                             Foreground="White"
+                                            BorderThickness="0"
+                                            FontSize="12"
                                             FontWeight="Bold"
-                                            Grid.Column="1"
-                                            Click="SelectSeats_Click"/>
-                                </Grid>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+                                            Click="SelectSeats_Click"
+                                            Tag="{Binding}">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="15"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
 
     </Grid>
 </Page>

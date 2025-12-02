@@ -1,24 +1,105 @@
 ﻿<Page x:Class="TMS.Pages.Customer.PaymentPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       Title="PaymentPage"
-      Background="White">
+      Background="#F0F2F5"
+      FontFamily="Segoe UI">
 
-    <Grid Margin="10">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
-            <TextBlock Text="Complete Payment" FontSize="18" FontWeight="Bold" Margin="0,0,0,20" TextAlignment="Center"/>
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <RowDefinition Height="*"/>    </Grid.RowDefinitions>
 
-            <TextBlock Text="Select Payment Method:" FontWeight="Bold"/>
-            <ComboBox x:Name="PaymentMethodCombo" Margin="0,5">
-                <ComboBoxItem Content="JazzCash"/>
-                <ComboBoxItem Content="EasyPaisa"/>
-            </ComboBox>
-
-            <TextBlock Text="Total Amount:" FontWeight="Bold" Margin="0,10,0,0"/>
-            <TextBlock x:Name="TotalAmountText" FontSize="14" FontWeight="Bold" Margin="0,2"/>
-
-            <Button Content="Pay Now" Margin="0,20,0,0" Background="#10B981" Foreground="White" Click="PayNow_Click"/>
-            <Button Content="Cancel and Return to Dashboard" Margin="0,10,0,0" Background="#F59E0B" Foreground="White" Click="Cancel_Click"/>
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <Button Click="Cancel_Click"
+                    Height="40"
+                    HorizontalAlignment="Left"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Foreground="#1E3A8A"
+                    Padding="0">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ArrowLeft" Width="24" Height="24" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Cancel" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            
+            <TextBlock Text="Checkout" FontSize="32" FontWeight="Bold" Foreground="#1E3A8A" Margin="0,10,0,0"/>
+            <TextBlock Text="Select a payment method to complete your booking" FontSize="16" Foreground="Gray"/>
         </StackPanel>
+
+        <Border Grid.Row="1" 
+                Background="White" 
+                CornerRadius="15" 
+                Width="500"
+                VerticalAlignment="Top" 
+                HorizontalAlignment="Center"
+                Margin="0,20,0,0">
+            
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="25" ShadowDepth="5" Opacity="0.05" Color="Black"/>
+            </Border.Effect>
+
+            <StackPanel Margin="40">
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,30">
+                    <Border Background="#E3F2FD" CornerRadius="30" Width="60" Height="60">
+                        <materialDesign:PackIcon Kind="CreditCardOutline" Width="30" Height="30" Foreground="#1E3A8A" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </StackPanel>
+
+                <TextBlock Text="Payment Method" FontWeight="Bold" Foreground="#1E3A8A" Margin="0,0,0,8"/>
+                
+                <Border Background="#F5F7FA" CornerRadius="8" BorderBrush="#E0E0E0" BorderThickness="1" Height="50" Margin="0,0,0,25">
+                    <Grid>
+                        <ComboBox x:Name="PaymentMethodCombo" 
+                                  Padding="15,12" 
+                                  Background="Transparent" 
+                                  BorderThickness="0"
+                                  FontSize="14"
+                                  VerticalContentAlignment="Center"
+                                  materialDesign:HintAssist.Hint="Select Option (e.g. JazzCash)">
+                            <ComboBoxItem Content="JazzCash"/>
+                            <ComboBoxItem Content="EasyPaisa"/>
+                            <ComboBoxItem Content="Credit/Debit Card"/>
+                        </ComboBox>
+                    </Grid>
+                </Border>
+
+                <Border Background="#F0FDF4" BorderBrush="#DCFCE7" BorderThickness="1" CornerRadius="10" Padding="20" Margin="0,0,0,30">
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock Text="Total Amount" Foreground="#166534" FontSize="14"/>
+                            <TextBlock x:Name="TotalAmountText" Text="Rs. 0.00" Foreground="#15803D" FontSize="32" FontWeight="Bold"/>
+                        </StackPanel>
+                        <materialDesign:PackIcon Kind="CashMultiple" Width="40" Height="40" Foreground="#86EFAC" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <Button Content="Confirm &amp; Pay" 
+                        Height="50" 
+                        Background="#1E3A8A" 
+                        Foreground="White" 
+                        FontWeight="Bold" 
+                        FontSize="16"
+                        BorderThickness="0" 
+                        Click="PayNow_Click">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="25"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <Button Content="Cancel Transaction" 
+                        Height="30" 
+                        Margin="0,15,0,0" 
+                        Background="Transparent" 
+                        Foreground="#EF4444" 
+                        BorderThickness="0" 
+                        Click="Cancel_Click"/>
+
+            </StackPanel>
+        </Border>
     </Grid>
 </Page>
