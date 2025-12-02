@@ -74,7 +74,7 @@ namespace TMS.Pages.Customer
 
         private void Profile_Click(object sender, RoutedEventArgs e)
         {
-            //_mainFrame.Content = new UpdateInfo(_username);
+            _mainFrame.Content = new UpdateInfo(_email, _username, "customer");
         }
 
         private void Payment_Click(object sender, RoutedEventArgs e)
@@ -116,5 +116,3 @@ namespace TMS.Pages.Customer
         }
     }
 }
-
-
