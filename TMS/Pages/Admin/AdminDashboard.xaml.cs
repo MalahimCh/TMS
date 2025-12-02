@@ -20,7 +20,7 @@ namespace TMS.Pages.Admin
             _username = username;
             _email = email;
 
-            DataContext = this; // for profile menu binding
+            DataContext = this;
             txtAdminName.Text = $"Welcome, {username}";
         }
 
@@ -51,7 +51,7 @@ namespace TMS.Pages.Admin
         // ---------------------- SEATS ----------------------
         private void ManageSeats_Click(object sender, RoutedEventArgs e)
         {
-            //_mainFrame.Content = new ManageSeatsPage(_mainFrame, _username);
+            _mainFrame.Content = new ManageSeatsPage(_mainFrame, _username, _email);
         }
 
         // ---------------------- REPORTS ----------------------

@@ -12,18 +12,29 @@ namespace TMS.DAL
         {
             _db = new DBConnection();
         }
-
         public async Task<List<SeatModel>> GetSeatsByBusAsync(int busId)
         {
             var seats = new List<SeatModel>();
 
             using (var conn = new SqlConnection(_db.ConnectionString))
             {
-                string query = "SELECT * FROM Seats WHERE BusId = @BusId ORDER BY SeatNumber";
+                string query = @"
+          SELECT s.*, bs.Gender
+FROM Seats s
+LEFT JOIN BookingSeats bs
+    ON s.Id = bs.SeatId
+LEFT JOIN Bookings b
+    ON bs.BookingId = b.Id AND b.BookingStatus IN ('Pending','Confirmed')
+WHERE s.BusId = @BusId
+ORDER BY s.SeatNumber
+
+        ";
+
                 using (var cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@BusId", busId);
                     await conn.OpenAsync();
+
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
@@ -36,7 +47,8 @@ namespace TMS.DAL
                                 IsSide = (bool)reader["IsSide"],
                                 BunkType = reader["BunkType"] as string,
                                 Status = (string)reader["Status"],
-                                CreatedAt = (DateTime)reader["CreatedAt"]
+                                CreatedAt = (DateTime)reader["CreatedAt"],
+                                Gender = reader["Gender"] as string ?? "" // only for booked seats
                             });
                         }
                     }
@@ -45,6 +57,8 @@ namespace TMS.DAL
 
             return seats;
         }
+
+
 
         public async Task UpdateSeatStatusAsync(int seatId, string status)
         {

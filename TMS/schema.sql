@@ -80,7 +80,6 @@ CREATE TABLE Seats (
     BunkType NVARCHAR(10) NULL,      -- Lower, Upper (for sleeper), NULL otherwise
     Status NVARCHAR(20) NOT NULL DEFAULT 'Available', -- Available , TemporarilyBooked, Booked ,Reserved ,NotAvailable  
     CreatedAt DATETIME2(7) NOT NULL DEFAULT GETUTCDATE(),
-
     CONSTRAINT UQ_Seat_Bus UNIQUE (BusId, SeatNumber)
 );
 
@@ -261,13 +260,16 @@ CREATE TABLE Bookings (
     BookingReference NVARCHAR(50) NOT NULL UNIQUE
 );
 
+
 -- BookingSeats Table
 CREATE TABLE BookingSeats (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     BookingId INT NOT NULL FOREIGN KEY REFERENCES Bookings(Id),
     SeatId INT NOT NULL FOREIGN KEY REFERENCES Seats(Id),
-    SeatPrice DECIMAL(10,2) NOT NULL
+    SeatPrice DECIMAL(10,2) NOT NULL,
+    Gender NVARCHAR(10) NOT NULL -- Male/Female/Other
 );
+
 
 
 

@@ -21,7 +21,7 @@ namespace TMS.Pages.Customer
             _email = email;
 
             // Add SeatLayoutControl to the ContentControl
-            var seatControl = new SeatLayoutControl(_schedule);
+            var seatControl = new SeatLayoutControl(_mainFrame,_schedule,_email,_username);
             SeatLayoutHost.Content = seatControl;
         }
 
