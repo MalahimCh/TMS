@@ -60,5 +60,10 @@ namespace TMS.Pages
                 MessageBox.Show("Failed to resend OTP. Try again later.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void txtOtp_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
