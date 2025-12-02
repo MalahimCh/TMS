@@ -16,29 +16,33 @@
             <Grid.Background>
                 <ImageBrush ImageSource="/images/tickit.png" Stretch="UniformToFill"/>
             </Grid.Background>
+            <Border Background="#101E3A8A"/>
         </Grid>
+
 
         <Grid Grid.Column="1" Background="White">
 
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="350">
 
-                <TextBlock Text="Welcome Back!" 
-                           FontSize="32" 
-                           FontWeight="Bold" 
-                           Foreground="#1E3A8A" 
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,5"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                    <materialDesign:PackIcon Kind="AccountCircle" Width="40" Height="40" Foreground="#1E3A8A" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock Text="Welcome Back" 
+                               FontSize="30" 
+                               FontWeight="Bold" 
+                               Foreground="#1E3A8A" 
+                               VerticalAlignment="Center"/>
+                </StackPanel>
 
                 <TextBlock Text="Please login to your account" 
                            FontSize="14" 
-                           Foreground="#9E9E9E" 
+                           Foreground="Gray" 
                            HorizontalAlignment="Center" 
                            Margin="0,0,0,40"/>
 
                 <TextBlock Text="Email" FontWeight="SemiBold" Foreground="#1E3A8A" Margin="15,0,0,5"/>
 
                 <Border CornerRadius="25" 
-                        Background="#B9F6CA" 
+                        Background="#E3F2FD" 
                         Height="50"
                         Margin="0,0,0,20">
                     <TextBox x:Name="txtEmail" 
@@ -47,13 +51,14 @@
                              Padding="20,0,20,0"
                              FontSize="14"
                              VerticalContentAlignment="Center"
-                             Foreground="#1E3A8A"/>
+                             Foreground="#1E3A8A"
+                             CaretBrush="#1E3A8A"/>
                 </Border>
 
                 <TextBlock Text="Password" FontWeight="SemiBold" Foreground="#1E3A8A" Margin="15,0,0,5"/>
 
                 <Border CornerRadius="25" 
-                        Background="#B9F6CA" 
+                        Background="#E3F2FD" 
                         Height="50"
                         Margin="0,0,0,10">
                     <Grid>
@@ -65,6 +70,7 @@
                                          FontSize="14"
                                          VerticalContentAlignment="Center"
                                          Foreground="#1E3A8A"
+                                         CaretBrush="#1E3A8A"
                                          PasswordChanged="pwdBox_PasswordChanged"/>
                         </Border>
 
@@ -79,6 +85,7 @@
                                      FontSize="14"
                                      VerticalContentAlignment="Center"
                                      Foreground="#1E3A8A"
+                                     CaretBrush="#1E3A8A"
                                      TextChanged="txtPasswordVisible_TextChanged"/>
                         </Border>
 
@@ -90,7 +97,7 @@
                                 VerticalAlignment="Center"
                                 Margin="0,0,15,0"
                                 Click="TogglePasswordVisibility_Click">
-                            <materialDesign:PackIcon x:Name="EyePack" Kind="Eye" Foreground="#1E3A8A" Opacity="0.5"/>
+                            <materialDesign:PackIcon x:Name="EyePack" Kind="Eye" Foreground="#1E3A8A" Opacity="0.6"/>
                         </Button>
                     </Grid>
                 </Border>
@@ -105,22 +112,19 @@
                         Margin="0,0,5,30"
                         Click="ForgotPassword_Click"/>
 
-                <!-- ONLY CHANGE: IsDefault="True" added -->
-                <Button x:Name="btnLogin"
-                        Content="Login" 
+                <Button Content="Login" 
                         Height="50" 
                         Margin="0,0,0,30"
                         Foreground="White" 
                         FontWeight="Bold"
                         FontSize="16"
                         BorderThickness="0" 
-                        Click="LoginButton_Click"
-                        IsDefault="True">
+                        Click="LoginButton_Click">
 
                     <Button.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                            <GradientStop Color="#00C6FF" Offset="0.0"/>
-                            <GradientStop Color="#0072FF" Offset="1.0"/>
+                            <GradientStop Color="#42A5F5" Offset="0.0"/>
+                            <GradientStop Color="#1565C0" Offset="1.0"/>
                         </LinearGradientBrush>
                     </Button.Background>
 
@@ -135,7 +139,7 @@
                     <TextBlock Text="Don't have an account? " Foreground="#757575"/>
                     <Button Content="Register" 
                             Background="Transparent" 
-                            Foreground="#0072FF" 
+                            Foreground="#1E3A8A" 
                             BorderThickness="0" 
                             FontWeight="Bold"
                             Margin="5,0,0,0"
