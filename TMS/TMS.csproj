@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\logo.png" />
     <None Remove="images\tickit.png" />
   </ItemGroup>
 
@@ -22,6 +23,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Resource Include="images\logo.png">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Resource>
 	  <Resource Include="images\tickit.png">
 	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
 	  </Resource>
