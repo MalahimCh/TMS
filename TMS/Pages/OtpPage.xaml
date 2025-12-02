@@ -1,75 +1,126 @@
 ﻿<Page x:Class="TMS.Pages.OtpPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       Title="OTP Verification"
+      FontFamily="Segoe UI"
       Background="White">
 
     <Grid>
         <Grid.ColumnDefinitions>
+            <!-- 3:2 Ratio (Left side wider, matching Login/Register) -->
             <ColumnDefinition Width="3*" />
-            <!-- Left side -->
             <ColumnDefinition Width="2*" />
-            <!-- Right side -->
         </Grid.ColumnDefinitions>
 
-        <!-- Left Panel -->
-        <Grid Grid.Column="0" Background="#FF17358A">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20">
-                <TextBlock Text="Verify Your Email" 
-                           Foreground="White" 
-                           FontSize="28" 
-                           FontWeight="Bold" 
-                           TextAlignment="Center"
-                           TextWrapping="Wrap"/>
-                <TextBlock Text="Enter the OTP sent to your email to complete registration." 
-                           Foreground="White" 
-                           FontSize="16" 
-                           Margin="0,10,0,0" 
-                           TextWrapping="Wrap"
-                           TextAlignment="Center"/>
-            </StackPanel>
+        <!-- ========================================================= -->
+        <!-- LEFT PANEL (IMAGE BACKGROUND) -->
+        <!-- ========================================================= -->
+        <Grid Grid.Column="0">
+            <Grid.Background>
+                <ImageBrush ImageSource="/images/tickit.png" Stretch="UniformToFill" Opacity="0.9"/>
+            </Grid.Background>
+
+            <!-- Optional: Remove text overlay to match your Register page preference -->
+            <!-- Or keep a simple icon if desired -->
         </Grid>
 
-        <!-- Right Panel -->
-        <Grid Grid.Column="1" Margin="40">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
+        <!-- ========================================================= -->
+        <!-- RIGHT PANEL (OTP FORM) -->
+        <!-- ========================================================= -->
+        <Grid Grid.Column="1" Background="White">
 
-                <!-- Title -->
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="350">
+
+                <!-- HEADER -->
                 <TextBlock Text="OTP Verification" 
-                           FontSize="28" 
+                           FontSize="32" 
                            FontWeight="Bold" 
                            Foreground="#1E3A8A" 
-                           HorizontalAlignment="Center"/>
+                           HorizontalAlignment="Center" 
+                           Margin="0,0,0,5"/>
+
                 <TextBlock Text="Enter the 6-digit code sent to your email" 
                            FontSize="14" 
-                           Foreground="Gray" 
+                           Foreground="#9E9E9E" 
                            HorizontalAlignment="Center" 
-                           Margin="0,5,0,20"/>
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           Margin="0,0,0,30"/>
 
-                <!-- Email (read-only) -->
-                <TextBlock Text="Email" FontWeight="SemiBold" Margin="0,10,0,5"/>
-                <Border CornerRadius="5" Background="#F0F4FF" BorderBrush="#1E3A8A" BorderThickness="1">
-                    <TextBox x:Name="txtEmail" Background="Transparent" BorderThickness="0" Padding="10" IsReadOnly="True"/>
+                <!-- 1. EMAIL (READ ONLY) -->
+                <TextBlock Text="Email" FontWeight="SemiBold" Foreground="#1E3A8A" Margin="15,0,0,5"/>
+
+                <Border CornerRadius="25" 
+                        Background="#E0E0E0" 
+                        Height="50"
+                        Margin="0,0,0,20">
+                    <TextBox x:Name="txtEmail" 
+                             Background="Transparent" 
+                             BorderThickness="0" 
+                             Padding="20,0,20,0"
+                             FontSize="14"
+                             VerticalContentAlignment="Center"
+                             Foreground="#555555"
+                             IsReadOnly="True"/>
                 </Border>
 
-                <!-- OTP Code -->
-                <TextBlock Text="OTP Code" FontWeight="SemiBold" Margin="0,10,0,5"/>
-                <Border CornerRadius="5" Background="#F0F4FF" BorderBrush="#1E3A8A" BorderThickness="1">
-                    <TextBox x:Name="txtOtp" Background="Transparent" BorderThickness="0" Padding="10"/>
+                <!-- 2. OTP CODE INPUT -->
+                <TextBlock Text="OTP Code" FontWeight="SemiBold" Foreground="#1E3A8A" Margin="15,0,0,5"/>
+
+                <Border CornerRadius="25" 
+                        Background="#B9F6CA" 
+                        Height="50"
+                        Margin="0,0,0,25">
+                    <TextBox x:Name="txtOtp" 
+                             Background="Transparent" 
+                             BorderThickness="0" 
+                             Padding="20,0,20,0"
+                             FontSize="16"
+                             FontWeight="Bold"
+                             VerticalContentAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             Foreground="#1E3A8A"
+                             MaxLength="6"/>
                 </Border>
 
-                <!-- Verify Button -->
-                <Button Content="Verify OTP" Height="40" Margin="0,20,0,10"
-                        Background="#1E3A8A" Foreground="White" 
+                <!-- VERIFY BUTTON -->
+                <Button Content="Verify OTP" 
+                        Height="50" 
+                        Margin="0,0,0,15"
+                        Foreground="White" 
                         FontWeight="Bold"
+                        FontSize="16"
                         BorderThickness="0" 
-                        Click="VerifyButton_Click"/>
+                        Click="VerifyButton_Click">
 
-                <!-- Resend OTP -->
-                <Button Content="Resend OTP" Height="30" Margin="0,10,0,0"
-                        Background="Transparent" Foreground="#1E3A8A"
-                        BorderThickness="0"
-                        Click="ResendButton_Click"/>
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#00C6FF" Offset="0.0"/>
+                            <GradientStop Color="#0072FF" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Button.Background>
+
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="25"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+
+                <!-- RESEND LINK -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Didn't receive code? " Foreground="#757575"/>
+                    <Button Content="Resend OTP" 
+                            Background="Transparent" 
+                            Foreground="#0072FF" 
+                            BorderThickness="0" 
+                            FontWeight="Bold"
+                            Margin="5,0,0,0"
+                            Padding="0"
+                            Click="ResendButton_Click"/>
+                </StackPanel>
+
             </StackPanel>
         </Grid>
     </Grid>
