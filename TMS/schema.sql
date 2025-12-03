@@ -271,24 +271,24 @@ CREATE TABLE BookingSeats (
 );
 
 
---CREATE TABLE Promotions (
---    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
---    Code NVARCHAR(50) NOT NULL UNIQUE,
---    DiscountPercentage INT NOT NULL,
---    MinOrderAmount DECIMAL(10,2) NULL,
---    ValidFrom DATETIME2(7) NOT NULL,
---    ValidTo DATETIME2(7) NOT NULL,
---    MaxUsage INT NULL,
---    UsageCount INT NOT NULL DEFAULT 0,
---    IsActive BIT NOT NULL DEFAULT 1,
---    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE()
---);
+CREATE TABLE Promotions (
+    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+    Code NVARCHAR(50) NOT NULL UNIQUE,
+    DiscountPercentage INT NOT NULL,
+    MinOrderAmount DECIMAL(10,2) NULL,
+    ValidFrom DATETIME2(7) NOT NULL,
+    ValidTo DATETIME2(7) NOT NULL,
+    MaxUsage INT NULL,
+    UsageCount INT NOT NULL DEFAULT 0,
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE()
+);
 
 
---CREATE TABLE CancellationPolicies (
---    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
---    RefundPercentage INT NOT NULL,
---    CutoffHoursBeforeDeparture INT NOT NULL,
---    IsActive BIT NOT NULL DEFAULT 1,
---    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE()
---);
+CREATE TABLE CancellationPolicies (
+    Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+    RefundPercentage INT NOT NULL,
+    CutoffHoursBeforeDeparture INT NOT NULL,
+    IsActive BIT NOT NULL DEFAULT 1,
+    CreatedAt DATETIME2(7) DEFAULT GETUTCDATE()
+);
