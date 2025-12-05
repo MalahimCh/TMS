@@ -51,7 +51,7 @@
                 <!-- Blue Header Strip -->
                 <Border Grid.Row="0" Background="#1E3A8A" CornerRadius="12,12,0,0" Padding="20">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="EventChair" Width="24" Height="24" Foreground="White" Margin="0,0,10,0"/>
+                        <materialDesign:PackIcon Kind="SeatPassenger" Width="24" Height="24" Foreground="White" Margin="0,0,10,0"/>
                         <TextBlock Text="Bus Layout" Foreground="White" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>

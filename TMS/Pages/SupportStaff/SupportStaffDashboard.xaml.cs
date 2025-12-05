@@ -131,7 +131,7 @@ namespace TMS.Pages.SupportStaff
 
         private void Profile_Click(object sender, RoutedEventArgs e)
         {
-            _mainFrame.Content = new UpdateInfo(_email, _username, "supportstaff");
+            _mainFrame.Content = new UpdateInfo(_mainFrame, _email, _username, "supportstaff");
         }
 
         private void Logout_Click(object sender, RoutedEventArgs e)
@@ -146,12 +146,12 @@ namespace TMS.Pages.SupportStaff
 
         private void UpdateProfile_Click(object sender, RoutedEventArgs e)
         {
-            _mainFrame.Content = new UpdateInfo(_email, _username, "supportstaff");
+            _mainFrame.Content = new UpdateInfo(_mainFrame,_email, _username, "supportstaff");
         }
 
         private void ChangePassword_Click(object sender, RoutedEventArgs e)
         {
-            var page = new UpdateInfo(_email, _username, "supportstaff");
+            var page = new UpdateInfo(_mainFrame,_email, _username, "supportstaff");
             page.ContentArea.Content = new ChangePasswordControl(_email);
             _mainFrame.Content = page;
         }

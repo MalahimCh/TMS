@@ -140,27 +140,30 @@
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Route" Binding="{Binding RouteDisplay}" Width="2*" FontWeight="Bold"/>
-
                         <DataGridTextColumn Header="Bus" Binding="{Binding BusNumber}" Width="*"/>
                         <DataGridTextColumn Header="Type" Binding="{Binding BusType}" Width="*"/>
 
-                        <DataGridTextColumn Header="Departure" Binding="{Binding DepartureTime, StringFormat=hh:mm tt}" Width="*"/>
-                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="*"/>
+                        <!-- Separate Departure Date and Time -->
+                        <DataGridTextColumn Header="Dep. Date" Binding="{Binding DepartureTime, StringFormat=dd/MM/yyyy}" Width="*"/>
+                        <DataGridTextColumn Header="Dep. Time" Binding="{Binding DepartureTime, StringFormat=hh:mm tt}" Width="*"/>
 
+                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="*"/>
+                        <DataGridTextColumn Header="Distance (Km)" Binding="{Binding DistanceKm}" Width="*"/>
                         <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=Rs. {0:N0}}" Width="*" Foreground="Green" FontWeight="Bold"/>
+
 
                         <DataGridTemplateColumn Width="120">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Content="Book Now"
-                                            Height="30"
-                                            Background="#1E3A8A"
-                                            Foreground="White"
-                                            BorderThickness="0"
-                                            FontSize="12"
-                                            FontWeight="Bold"
-                                            Click="SelectSeats_Click"
-                                            Tag="{Binding}">
+                        Height="30"
+                        Background="#1E3A8A"
+                        Foreground="White"
+                        BorderThickness="0"
+                        FontSize="12"
+                        FontWeight="Bold"
+                        Click="SelectSeats_Click"
+                        Tag="{Binding}">
                                         <Button.Resources>
                                             <Style TargetType="Border">
                                                 <Setter Property="CornerRadius" Value="15"/>
@@ -170,8 +173,8 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-
                     </DataGrid.Columns>
+
                 </DataGrid>
             </Grid>
         </Border>

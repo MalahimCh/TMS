@@ -42,12 +42,6 @@ namespace TMS.Pages.Admin
             _mainFrame.Content = new ManageSchedulesPage(_mainFrame, _username, _email);
         }
 
-        // ---------------------- PRICES ----------------------
-        private void ManagePrices_Click(object sender, RoutedEventArgs e)
-        {
-            //_mainFrame.Content = new ManagePricesPage(_mainFrame, _username);
-        }
-
         // ---------------------- SEATS ----------------------
         private void ManageSeats_Click(object sender, RoutedEventArgs e)
         {
@@ -82,13 +76,13 @@ namespace TMS.Pages.Admin
         private void UpdateProfile_Click(object sender, RoutedEventArgs e)
         {
             // Navigate to UpdateInfo page (formerly AdminSettingsPage)
-            _mainFrame.Content = new UpdateInfo(_email, _username, "admin");
+            _mainFrame.Content = new UpdateInfo(_mainFrame,_email, _username, "admin");
         }
 
         private void ChangePassword_Click(object sender, RoutedEventArgs e)
         {
             // Navigate to UpdateInfo page but open ChangePasswordControl by default
-            var updatePage = new UpdateInfo(_email, _username, "admin");
+            var updatePage = new UpdateInfo(_mainFrame,_email, _username, "admin");
             updatePage.ContentArea.Content = new ChangePasswordControl(_email);
             _mainFrame.Content = updatePage;
         }

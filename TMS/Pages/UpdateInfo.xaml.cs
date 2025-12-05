@@ -12,13 +12,14 @@ namespace TMS.Pages.Admin
         private  string _username;
 
         private readonly string _role;
-
-        public UpdateInfo(string email, string username, string role)
+        private readonly Frame _mainFrame;
+        public UpdateInfo(Frame frame,string email, string username, string role)
         {
             InitializeComponent();
             _email = email;
             _username = username;
             _role = role;
+            _mainFrame = frame;
 
             var control = new UpdateInfoControl(_email);
             control.OnNameUpdated += newName => _username = newName;  // <-- UPDATE USERNAME
@@ -29,21 +30,19 @@ namespace TMS.Pages.Admin
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            if (Application.Current.MainWindow is Window mainWindow && (mainWindow.Content as Frame) != null)
+            switch (_role.ToLower())
             {
-                switch (_role.ToLower())
-                {
-                    case "admin":
-                        ((mainWindow.Content as Frame).Content) = new AdminDashboard((mainWindow.Content as Frame), _username, _email);
-                        break;
-                    case "customer":
-                        ((mainWindow.Content as Frame).Content) = new CustomerDashboard((mainWindow.Content as Frame), _username, _email);
-                        break;
-                    case "supportstaff":
-                        ((mainWindow.Content as Frame).Content) = new SupportStaffDashboard((mainWindow.Content as Frame), _username, _email);
-                        break;
+                case "admin":
+                    _mainFrame.Content = new AdminDashboard(_mainFrame, _username, _email);
+                    break;
+                case "customer":
+                    _mainFrame.Content = new CustomerDashboard(_mainFrame, _username, _email);
+                    break;
+                case "supportstaff":
+                    _mainFrame.Content = new SupportStaffDashboard(_mainFrame, _username, _email);
+                    break;
 
-                }
+
             }
         }
 
