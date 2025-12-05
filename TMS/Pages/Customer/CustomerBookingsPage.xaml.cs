@@ -42,21 +42,17 @@ namespace TMS.Pages.Customer
             try
             {
 
-                MessageBox.Show("Starting LoadBookingHistoryAsync");
 
                 var userId = await _userBL.GetUserIDByEmailAsync(_email);
-                MessageBox.Show("UserID: " + userId);
                 List<BookingDTO> bookings = null;
                 try
                 {
                     bookings = await _bookingBL.GetBookingsByUserIdAsync(userId);
-                    MessageBox.Show("Inside try: bookings call returned");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error inside GetBookingsByUserIdAsync:\n" + ex.Message);
                 }
-                MessageBox.Show("Bookings: " + (bookings?.Count ?? 0));
 
 
                 if (bookings == null || bookings.Count == 0)
@@ -74,7 +70,6 @@ namespace TMS.Pages.Customer
                 ConfirmedBookingsDataGrid.ItemsSource = confirmed;
                 PendingBookingsDataGrid.ItemsSource = pending;
 
-                MessageBox.Show($"Confirmed: {confirmed.Count}, Pending: {pending.Count}");
             }
             catch (Exception ex)
             {
