@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
-using TMS.DTO;
+using TMS.BLL;
 using TMS.Design_Patterns;
+using TMS.DTO;
 
 namespace TMS.DAL
 {
@@ -42,6 +44,69 @@ namespace TMS.DAL
             return count == 0;
         }
 
+        //Get bookings by user ID
+        public async Task<List<BookingDTO>> GetBookingsByUserIdAsync(int userID)
+        {
+            string query = @"
+        SELECT 
+            b.Id, b.UserId, b.BookingReference, b.BookingDate, b.ScheduleId,
+            b.TotalAmount, b.DiscountAmount, b.FinalAmount, b.BookingStatus,
+            b.PaymentStatus, b.PromotionCode, b.TransactionId, b.PaymentMethod,
+            s.DepartureTime,
+            bus.BusNumber,
+            CONCAT(locOrigin.Name, N' → ', locDest.Name) AS RouteDisplay
+        FROM Bookings b
+        JOIN Schedules s      ON b.ScheduleId = s.Id
+        JOIN Buses bus        ON s.BusId = bus.Id
+        JOIN Routes r         ON s.RouteId = r.Id
+        JOIN Locations locOrigin ON r.OriginId = locOrigin.Id
+        JOIN Locations locDest   ON r.DestinationId = locDest.Id
+        WHERE b.UserId = @UserId
+        ORDER BY b.BookingDate DESC";
+
+            var bookings = new List<BookingDTO>();
+
+            using var conn = new SqlConnection(_db.ConnectionString);
+            await conn.OpenAsync();
+
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userID;
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                // Safely read nullable columns
+                string? promo = reader.IsDBNull(reader.GetOrdinal("PromotionCode")) ? null : reader.GetString(reader.GetOrdinal("PromotionCode"));
+                string? txn = reader.IsDBNull(reader.GetOrdinal("TransactionId")) ? null : reader.GetString(reader.GetOrdinal("TransactionId"));
+                string? payM = reader.IsDBNull(reader.GetOrdinal("PaymentMethod")) ? null : reader.GetString(reader.GetOrdinal("PaymentMethod"));
+
+                var departureTime = reader.GetDateTime(reader.GetOrdinal("DepartureTime"));
+                var busNumber = reader.GetString(reader.GetOrdinal("BusNumber"));
+                var routeDisplay = reader.GetString(reader.GetOrdinal("RouteDisplay"));
+
+                bookings.Add(new BookingDTO
+                {
+                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                    UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+                    ScheduleId = reader.GetInt32(reader.GetOrdinal("ScheduleId")),
+                    BookingDate = reader.GetDateTime(reader.GetOrdinal("BookingDate")),
+                    TotalAmount = reader.GetDecimal(reader.GetOrdinal("TotalAmount")),
+                    DiscountAmount = reader.GetDecimal(reader.GetOrdinal("DiscountAmount")),
+                    PromotionCode = promo,
+                    FinalAmount = reader.GetDecimal(reader.GetOrdinal("FinalAmount")),
+                    BookingStatus = reader.GetString(reader.GetOrdinal("BookingStatus")),
+                    PaymentStatus = reader.GetString(reader.GetOrdinal("PaymentStatus")),
+                    TransactionId = txn,
+                    PaymentMethod = payM,
+                    BookingReference = reader.GetString(reader.GetOrdinal("BookingReference")),
+
+                    ScheduleDisplay = $"{departureTime:yyyy-MM-dd HH:mm} | Bus: {busNumber} | Route: {routeDisplay}"
+                });
+            }
+
+            return bookings;
+        }
+
 
         // ----------------------------------------------------------
         // INSERT BOOKING (returns new Id)
@@ -78,6 +143,8 @@ namespace TMS.DAL
             cmd.Parameters.AddWithValue("@Ref", booking.BookingReference);
 
             return (int)await cmd.ExecuteScalarAsync();
+
+
         }
 
 

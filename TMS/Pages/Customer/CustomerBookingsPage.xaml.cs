@@ -1,8 +1,12 @@
 ﻿using Microsoft.Data.SqlClient;
 using System;
 using System.Data;
+using System.Transactions;
 using System.Windows;
 using System.Windows.Controls;
+using TMS.BLL;
+using TMS.DAL;
+using TMS.DTO;
 
 namespace TMS.Pages.Customer
 {
@@ -11,10 +15,10 @@ namespace TMS.Pages.Customer
         private readonly Frame _mainFrame;
         private readonly string _username;
         private readonly string _email;
-        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=TMS_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
+          private readonly UserBL _userBL;
+        private readonly BookingBL _bookingBL;
 
-        private int _userId;
-
+   
         public CustomerBookingsPage(Frame frame, string username, string email)
         {
             InitializeComponent();
@@ -22,53 +26,76 @@ namespace TMS.Pages.Customer
             _mainFrame = frame;
             _username = username;
             _email = email;
+            _bookingBL = new BookingBL();
+            _userBL = new UserBL(new UserDAL(), new OtpBL(new OtpDAL()));
 
-            LoadUserId();
-            LoadBookingHistory();
+            this.Loaded += CustomerBookingsPage_Loaded;
         }
 
-        private void LoadUserId()
+        private async void CustomerBookingsPage_Loaded(object sender, RoutedEventArgs e)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            await LoadBookingHistoryAsync();
+        }
+
+        private async Task LoadBookingHistoryAsync()
+        {
+            try
             {
-                conn.Open();
-                string query = "SELECT Id FROM Users WHERE Email = @Email";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+
+                MessageBox.Show("Starting LoadBookingHistoryAsync");
+
+                var userId = await _userBL.GetUserIDByEmailAsync(_email);
+                MessageBox.Show("UserID: " + userId);
+                List<BookingDTO> bookings = null;
+                try
                 {
-                    cmd.Parameters.AddWithValue("@Email", _email);
-                    object result = cmd.ExecuteScalar();
-                    _userId = result != null ? Convert.ToInt32(result) : 0;
+                    bookings = await _bookingBL.GetBookingsByUserIdAsync(userId);
+                    MessageBox.Show("Inside try: bookings call returned");
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error inside GetBookingsByUserIdAsync:\n" + ex.Message);
+                }
+                MessageBox.Show("Bookings: " + (bookings?.Count ?? 0));
+
+
+                if (bookings == null || bookings.Count == 0)
+                {
+                    ConfirmedBookingsDataGrid.ItemsSource = null;
+                    PendingBookingsDataGrid.ItemsSource = null;
+                    return;
+                }
+
+
+                // Split into confirmed and pending
+                var confirmed = bookings.Where(b => b.BookingStatus.Equals("Confirmed", StringComparison.OrdinalIgnoreCase)).ToList();
+                var pending = bookings.Where(b => b.BookingStatus.Equals("Pending", StringComparison.OrdinalIgnoreCase)).ToList();
+
+                ConfirmedBookingsDataGrid.ItemsSource = confirmed;
+                PendingBookingsDataGrid.ItemsSource = pending;
+
+                MessageBox.Show($"Confirmed: {confirmed.Count}, Pending: {pending.Count}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR LOADING BOOKINGS:\n" + ex.Message);
             }
         }
 
-        private void LoadBookingHistory()
+
+
+
+        // Button click handlers (empty for now)
+        private void PayNow_Click(object sender, RoutedEventArgs e)
         {
-            if (_userId == 0) return;
-
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                conn.Open();
-                string query = @"
-                    SELECT BookingReference, BookingDate, ScheduleId, TotalAmount, DiscountAmount, FinalAmount, BookingStatus, PaymentStatus
-                    FROM Bookings
-                    WHERE UserId = @UserId
-                    ORDER BY BookingDate DESC";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@UserId", _userId);
-
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
-                    {
-                        DataTable dt = new DataTable();
-                        adapter.Fill(dt);
-
-                        BookingsDataGrid.ItemsSource = dt.DefaultView;
-                    }
-                }
-            }
+            // TODO: implement payment logic
         }
+
+        private void CancelBooking_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: implement cancel logic
+        }
+
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {

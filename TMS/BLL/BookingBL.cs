@@ -35,13 +35,10 @@ namespace TMS.BLL
             if (booking.DiscountAmount > booking.TotalAmount)
                 throw new Exception("Discount cannot exceed total amount.");
 
-            // Always start as pending
+            
             booking.BookingStatus = "Pending";
             booking.PaymentStatus = "Pending";
 
-            // ------------------------------------------------------
-            // Validate seats (async)
-            // ------------------------------------------------------
             foreach (var seat in booking.Seats)
             {
                 bool available = await _dal.IsSeatAvailableAsync(booking.ScheduleId, seat.SeatId);
@@ -50,20 +47,23 @@ namespace TMS.BLL
                     throw new Exception($"Seat {seat.SeatId} is already booked.");
             }
 
-            // ------------------------------------------------------
-            // Insert booking
-            // ------------------------------------------------------
             int bookingId = await _dal.InsertBookingAsync(booking);
 
-            // ------------------------------------------------------
-            // Insert booking seats
-            // ------------------------------------------------------
             await _dal.InsertBookingSeatsAsync(bookingId, booking.Seats);
 
             booking.Id = bookingId;
             return booking;
         }
 
+
+        //get bookings by userID
+        public async Task<List<BookingDTO>> GetBookingsByUserIdAsync(int userId)
+        {
+            if (userId <= 0)
+                throw new Exception("Invalid user ID.");
+
+            return await _dal.GetBookingsByUserIdAsync(userId);
+        }
 
         // -------------------------------------------------------------
         // GET BOOKING BY REFERENCE (Async)

@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TMS"
         mc:Ignorable="d"
-        Title="Tickit" 
-        Height="700" Width="1200"
+        Title="Tickit"
         WindowStartupLocation="CenterScreen"
-        Icon="/images/logo.png">
+        Icon="/images/logo.png"
+        WindowState="Maximized">
 
     <Grid>
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
