@@ -44,7 +44,6 @@ namespace TMS.DAL
             return count == 0;
         }
 
-        //Get bookings by user ID
         public async Task<List<BookingDTO>> GetBookingsByUserIdAsync(int userID)
         {
             string query = @"
@@ -56,11 +55,11 @@ namespace TMS.DAL
             bus.BusNumber,
             CONCAT(locOrigin.Name, N' → ', locDest.Name) AS RouteDisplay
         FROM Bookings b
-        JOIN Schedules s      ON b.ScheduleId = s.Id
-        JOIN Buses bus        ON s.BusId = bus.Id
-        JOIN Routes r         ON s.RouteId = r.Id
+        JOIN Schedules s ON b.ScheduleId = s.Id
+        JOIN Buses bus ON s.BusId = bus.Id
+        JOIN Routes r ON s.RouteId = r.Id
         JOIN Locations locOrigin ON r.OriginId = locOrigin.Id
-        JOIN Locations locDest   ON r.DestinationId = locDest.Id
+        JOIN Locations locDest ON r.DestinationId = locDest.Id
         WHERE b.UserId = @UserId
         ORDER BY b.BookingDate DESC";
 
@@ -69,43 +68,77 @@ namespace TMS.DAL
             using var conn = new SqlConnection(_db.ConnectionString);
             await conn.OpenAsync();
 
-            using var cmd = new SqlCommand(query, conn);
-            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userID;
-
-            using var reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            // First, read bookings
+            using (var cmd = new SqlCommand(query, conn))
             {
-                // Safely read nullable columns
-                string? promo = reader.IsDBNull(reader.GetOrdinal("PromotionCode")) ? null : reader.GetString(reader.GetOrdinal("PromotionCode"));
-                string? txn = reader.IsDBNull(reader.GetOrdinal("TransactionId")) ? null : reader.GetString(reader.GetOrdinal("TransactionId"));
-                string? payM = reader.IsDBNull(reader.GetOrdinal("PaymentMethod")) ? null : reader.GetString(reader.GetOrdinal("PaymentMethod"));
+                cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userID;
 
-                var departureTime = reader.GetDateTime(reader.GetOrdinal("DepartureTime"));
-                var busNumber = reader.GetString(reader.GetOrdinal("BusNumber"));
-                var routeDisplay = reader.GetString(reader.GetOrdinal("RouteDisplay"));
-
-                bookings.Add(new BookingDTO
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                    UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
-                    ScheduleId = reader.GetInt32(reader.GetOrdinal("ScheduleId")),
-                    BookingDate = reader.GetDateTime(reader.GetOrdinal("BookingDate")),
-                    TotalAmount = reader.GetDecimal(reader.GetOrdinal("TotalAmount")),
-                    DiscountAmount = reader.GetDecimal(reader.GetOrdinal("DiscountAmount")),
-                    PromotionCode = promo,
-                    FinalAmount = reader.GetDecimal(reader.GetOrdinal("FinalAmount")),
-                    BookingStatus = reader.GetString(reader.GetOrdinal("BookingStatus")),
-                    PaymentStatus = reader.GetString(reader.GetOrdinal("PaymentStatus")),
-                    TransactionId = txn,
-                    PaymentMethod = payM,
-                    BookingReference = reader.GetString(reader.GetOrdinal("BookingReference")),
+                    bookings.Add(new BookingDTO
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+                        ScheduleId = reader.GetInt32(reader.GetOrdinal("ScheduleId")),
+                        BookingDate = reader.GetDateTime(reader.GetOrdinal("BookingDate")),
+                        TotalAmount = reader.GetDecimal(reader.GetOrdinal("TotalAmount")),
+                        DiscountAmount = reader.GetDecimal(reader.GetOrdinal("DiscountAmount")),
+                        PromotionCode = reader.IsDBNull(reader.GetOrdinal("PromotionCode"))
+                                        ? null : reader.GetString(reader.GetOrdinal("PromotionCode")),
+                        FinalAmount = reader.GetDecimal(reader.GetOrdinal("FinalAmount")),
+                        BookingStatus = reader.GetString(reader.GetOrdinal("BookingStatus")),
+                        PaymentStatus = reader.GetString(reader.GetOrdinal("PaymentStatus")),
+                        TransactionId = reader.IsDBNull(reader.GetOrdinal("TransactionId"))
+                                        ? null : reader.GetString(reader.GetOrdinal("TransactionId")),
+                        PaymentMethod = reader.IsDBNull(reader.GetOrdinal("PaymentMethod"))
+                                        ? null : reader.GetString(reader.GetOrdinal("PaymentMethod")),
+                        BookingReference = reader.GetString(reader.GetOrdinal("BookingReference")),
+                        ScheduleDisplay = $"{reader.GetDateTime(reader.GetOrdinal("DepartureTime")):yyyy-MM-dd HH:mm} | Bus: {reader.GetString(reader.GetOrdinal("BusNumber"))} | Route: {reader.GetString(reader.GetOrdinal("RouteDisplay"))}",
+                        SeatsDisplay = "—" // default
+                    });
+                }
+            } // reader closed
 
-                    ScheduleDisplay = $"{departureTime:yyyy-MM-dd HH:mm} | Bus: {busNumber} | Route: {routeDisplay}"
-                });
+            // Now load all seats for these bookings
+            var bookingIds = bookings.Select(b => b.Id).ToList();
+            if (bookingIds.Count > 0)
+            {
+                string seatQuery = $@"
+            SELECT bs.BookingId, s.SeatNumber
+            FROM BookingSeats bs
+            JOIN Seats s ON bs.SeatId = s.Id
+            WHERE bs.BookingId IN ({string.Join(",", bookingIds)})";
+
+                using var seatCmd = new SqlCommand(seatQuery, conn);
+                using var seatReader = await seatCmd.ExecuteReaderAsync();
+
+                var seatMap = new Dictionary<int, List<string>>();
+                while (await seatReader.ReadAsync())
+                {
+                    int bId = seatReader.GetInt32(0);
+
+                    // Correct: read as int and convert to string
+                    int seatNumInt = seatReader.GetInt32(1);
+                    string seatNum = seatNumInt.ToString();
+
+                    if (!seatMap.ContainsKey(bId))
+                        seatMap[bId] = new List<string>();
+
+                    seatMap[bId].Add(seatNum);
+                }
+
+                // Attach seats to bookings
+                foreach (var b in bookings)
+                {
+                    if (seatMap.ContainsKey(b.Id))
+                        b.SeatsDisplay = string.Join(", ", seatMap[b.Id]);
+                }
             }
 
             return bookings;
         }
+
 
 
         // ----------------------------------------------------------

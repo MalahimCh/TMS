@@ -83,8 +83,18 @@ namespace TMS.Pages.Customer
         // Button click handlers (empty for now)
         private void PayNow_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: implement payment logic
+            // Get the booking associated with the clicked row
+            var booking = (sender as FrameworkElement)?.DataContext as BookingDTO;
+
+            if (booking == null)
+            {
+                MessageBox.Show("Unable to process payment. Please try again.");
+                return;
+            }
+
+            _mainFrame.Content = new PaymentPage(_mainFrame, booking, _username, _email);
         }
+
 
         private void CancelBooking_Click(object sender, RoutedEventArgs e)
         {

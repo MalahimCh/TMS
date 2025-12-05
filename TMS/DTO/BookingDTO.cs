@@ -21,6 +21,8 @@
         public string TransactionId { get; set; }
         public string PaymentMethod { get; set; }
 
+        public string SeatsDisplay { get; set; }
+
         public string BookingReference { get; set; }
 
         public List<BookingSeatDTO> Seats { get; set; }

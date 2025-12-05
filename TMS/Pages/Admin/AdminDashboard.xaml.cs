@@ -57,7 +57,7 @@ namespace TMS.Pages.Admin
         // ---------------------- POLICIES ----------------------
         private void Policies_Click(object sender, RoutedEventArgs e)
         {
-            //_mainFrame.Content = new PoliciesPage(_mainFrame, _username);
+            _mainFrame.Content = new PoliciesPage(_mainFrame,_email, _username);
         }
 
         // ---------------------- PROMO ----------------------

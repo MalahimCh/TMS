@@ -72,6 +72,7 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Ref Code" Binding="{Binding BookingReference}" Width="*"/>
                                 <DataGridTextColumn Header="Schedule" Binding="{Binding ScheduleDisplay}" Width="*"/>
+                                <DataGridTextColumn Header="Seats" Binding="{Binding SeatsDisplay}" Width="*"/>
                                 <DataGridTextColumn Header="Date" Binding="{Binding BookingDate, StringFormat=dd MMM yyyy}" Width="*"/>
                                 <DataGridTextColumn Header="Final Amount" Binding="{Binding FinalAmount, StringFormat=Rs. {0:N0}}" Width="*"/>
 
@@ -128,6 +129,7 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Ref Code" Binding="{Binding BookingReference}" Width="*"/>
                                 <DataGridTextColumn Header="Schedule" Binding="{Binding ScheduleDisplay}" Width="*"/>
+                                <DataGridTextColumn Header="Seats" Binding="{Binding SeatsDisplay}" Width="*"/>
                                 <DataGridTextColumn Header="Date" Binding="{Binding BookingDate, StringFormat=dd MMM yyyy}" Width="*"/>
                                 <DataGridTextColumn Header="Final Amount" Binding="{Binding FinalAmount, StringFormat=Rs. {0:N0}}" Width="*"/>
 
